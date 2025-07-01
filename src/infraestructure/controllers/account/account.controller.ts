@@ -1,0 +1,22 @@
+import { Body, Controller, Post } from '@nestjs/common';
+
+import RegisterUser from '@/application/use-cases/register-user/register-user';
+
+import { RegisterUserInputDto, RegisterUserOutputDto } from '@/infraestructure/dtos/register-user.dto';
+
+@Controller('/account')
+export default class AccountController {
+  constructor(private readonly _registerUser: RegisterUser) {}
+
+  @Post('/user')
+  async registerUser(@Body() input: RegisterUserInputDto): Promise<RegisterUserOutputDto> {
+    const output = await this._registerUser.execute(input);
+    return {
+      firstName: output.user.firstName,
+      lastName: output.user.lastName,
+      familyId: output.familyId,
+      email: output.user.email,
+      id: output.user.id,
+    };
+  }
+}
