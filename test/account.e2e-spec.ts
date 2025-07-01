@@ -2,8 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { App } from 'supertest/types';
-import AccountModule from '../src/shared/modules/account.module';
-import { RegisterUserInputDto } from '../src/infraestructure/dtos/register-user.dto';
+import AccountModule from '@/shared/modules/account.module';
+import { RegisterUserInputDto } from '@/infraestructure/dtos/register-user.dto';
 
 describe('AccountController (e2e)', () => {
   let app: INestApplication<App>;
