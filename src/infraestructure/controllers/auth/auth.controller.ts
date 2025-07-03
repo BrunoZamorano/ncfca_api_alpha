@@ -1,14 +1,14 @@
 import { Body, Controller, HttpCode, Post, UseGuards } from '@nestjs/common';
 
-import { Login } from '@/application/use-cases/login/login';
+import ValidateToken from '@/application/use-cases/validate-token/validate-token';
+import RefreshToken from '@/application/use-cases/refresh-token/refresh-token';
+import Logout from '@/application/use-cases/logout/logout';
+import Login from '@/application/use-cases/login/login';
 
 import { LoginInputDto, LoginOutputDto } from '@/infraestructure/dtos/login.dto';
-import RefreshToken from '@/application/use-cases/refresh-token/refresh-token';
 import { RefreshTokenInputDto, RefreshTokenOutputDto } from '@/infraestructure/dtos/refresh-token.dto';
-import ValidateToken from '@/application/use-cases/validate-token/validate-token';
 import { ValidateTokenInputDto, ValidateTokenOutputDto } from '@/infraestructure/dtos/validate-token.dto';
-import Logout from '@/application/use-cases/logout/logout';
-import { LogoutInputDto } from '@/infraestructure/dtos/logout.dto';
+
 import AuthGuard from '@/shared/guards/auth.guard';
 
 @Controller('auth')
@@ -38,9 +38,9 @@ export default class AuthController {
     return await this._validateToken.execute(input.token);
   }
 
-  @UseGuards(AuthGuard)
   @Post('logout')
   @HttpCode(204)
+  @UseGuards(AuthGuard)
   async logout(): Promise<void> {
     return this._logout.execute();
   }

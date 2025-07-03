@@ -3,8 +3,9 @@ import { Request } from 'express';
 
 import TokenService from '@/application/services/token-service';
 
-import { TOKEN_SERVICE } from '@/shared/constants/service-constants';
 import UnauthorizedException from '@/domain/errors/domain-exception';
+
+import { TOKEN_SERVICE } from '@/shared/constants/service-constants';
 
 export default class AuthGuard implements CanActivate {
   constructor(@Inject(TOKEN_SERVICE) private readonly _tokenService: TokenService) {}

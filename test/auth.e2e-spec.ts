@@ -18,13 +18,10 @@ import TokenServiceJwt from '@/infraestructure/services/token-service-jwt';
 import { TOKEN_SERVICE } from '@/shared/constants/service-constants';
 
 import { AppModule } from '@/app.module';
-import UserRepositoryMemory from '@/infraestructure/repositories/user-repository-memory';
-import { USER_REPOSITORY } from '@/shared/constants/repository-constants';
 
 describe('AuthController (e2e)', () => {
   let app: INestApplication<App>;
   let tokenService: TokenService;
-  let userRepository: UserRepositoryMemory;
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -35,7 +32,6 @@ describe('AuthController (e2e)', () => {
     app.useGlobalFilters(new GlobalExceptionFilter());
     app.useGlobalPipes(new ValidationPipe());
     await app.init();
-    userRepository = app.get<UserRepositoryMemory>(USER_REPOSITORY);
     tokenService = app.get<TokenServiceJwt>(TOKEN_SERVICE);
   });
 

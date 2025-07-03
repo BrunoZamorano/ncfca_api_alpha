@@ -1,19 +1,24 @@
+import * as request from 'supertest';
+
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
 import { App } from 'supertest/types';
-import AccountModule from '@/shared/modules/account.module';
-import { RegisterUserInputDto } from '@/infraestructure/dtos/register-user.dto';
+
 import Cpf from '@/domain/value-objects/cpf/cpf';
+
+import { RegisterUserInputDto } from '@/infraestructure/dtos/register-user.dto';
 import UserRepositoryMemory from '@/infraestructure/repositories/user-repository-memory';
+
 import { USER_REPOSITORY } from '@/shared/constants/repository-constants';
+
+import { AppModule } from '@/app.module';
 
 describe('AccountController (e2e)', () => {
   let app: INestApplication<App>;
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AccountModule],
+      imports: [AppModule],
     }).compile();
 
     app = moduleFixture.createNestApplication();

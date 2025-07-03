@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
-// todo: organize imports
 
-import AuthController from '@/infraestructure/controllers/auth/auth.controller';
 import ValidateToken from '@/application/use-cases/validate-token/validate-token';
 import RefreshToken from '@/application/use-cases/refresh-token/refresh-token';
-import { Login } from '@/application/use-cases/login/login';
+import Logout from '@/application/use-cases/logout/logout';
+import Login from '@/application/use-cases/login/login';
+
+import AuthController from '@/infraestructure/controllers/auth/auth.controller';
 
 import SharedModule from '@/shared/modules/shared-module';
-import Logout from '@/application/use-cases/logout/logout';
 
 @Module({
   imports: [SharedModule],

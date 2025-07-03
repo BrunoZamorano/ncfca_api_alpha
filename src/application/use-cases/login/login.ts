@@ -1,14 +1,16 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { FAMILY_REPOSITORY, USER_REPOSITORY } from '@/shared/constants/repository-constants';
-import TokenService from '@/application/services/token-service';
-import { HASHING_SERVICE, TOKEN_SERVICE } from '@/shared/constants/service-constants';
-import UserRepository from '@/domain/repositories/user-repository';
+import { Inject } from '@nestjs/common';
+
 import HashingService from '@/application/services/hashing-service';
-import FamilyRepository from '@/domain/repositories/family-repository';
+import TokenService from '@/application/services/token-service';
+
 import { DomainException } from '@/domain/errors/domain-exception';
+import FamilyRepository from '@/domain/repositories/family-repository';
+import UserRepository from '@/domain/repositories/user-repository';
 
+import { FAMILY_REPOSITORY, USER_REPOSITORY } from '@/shared/constants/repository-constants';
+import { HASHING_SERVICE, TOKEN_SERVICE } from '@/shared/constants/service-constants';
 
-export class Login {
+export default class Login {
   constructor(
     @Inject(FAMILY_REPOSITORY) private readonly familyRepository: FamilyRepository,
     @Inject(USER_REPOSITORY) private readonly userRepository: UserRepository,
