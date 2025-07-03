@@ -1,0 +1,50 @@
+import { Inject, Injectable } from '@nestjs/common';
+import { FAMILY_REPOSITORY, USER_REPOSITORY } from '@/shared/constants/repository-constants';
+import TokenService from '@/application/services/token-service';
+import { HASHING_SERVICE, TOKEN_SERVICE } from '@/shared/constants/service-constants';
+import UserRepository from '@/domain/repositories/user-repository';
+import HashingService from '@/application/services/hashing-service';
+import FamilyRepository from '@/domain/repositories/family-repository';
+import { DomainException } from '@/domain/errors/domain-exception';
+
+
+export class Login {
+  constructor(
+    @Inject(FAMILY_REPOSITORY) private readonly familyRepository: FamilyRepository,
+    @Inject(USER_REPOSITORY) private readonly userRepository: UserRepository,
+    @Inject(HASHING_SERVICE) private readonly hashingService: HashingService,
+    @Inject(TOKEN_SERVICE) private readonly tokenService: TokenService,
+  ) {}
+
+  async execute({ email, password }: Input): Promise<Output> {
+    const user = await this.userRepository.findByEmail(email);
+    if (!user) throw new DomainException(Login.errorCodes.INVALID_CREDENTIALS);
+    if (!this.isValidPassword(password, user.password)) throw new DomainException(Login.errorCodes.INVALID_CREDENTIALS);
+    const family = await this.familyRepository.findByHolderId(user.id);
+    if (!family) throw new DomainException(Login.errorCodes.SOMETHING_WENT_WRONG);
+    const payload = { sub: user.id, roles: user.roles, email: user.email, familyId: family.id };
+    return {
+      refreshToken: await this.tokenService.signRefreshToken(payload),
+      accessToken: await this.tokenService.signAccessToken(payload),
+    };
+  }
+
+  private isValidPassword(password: string, hash: string) {
+    return this.hashingService.compare(password, hash);
+  }
+
+  static errorCodes = {
+    SOMETHING_WENT_WRONG: 'SOMETHING_WENT_WRONG',
+    INVALID_CREDENTIALS: 'INVALID_CREDENTIALS',
+  };
+}
+
+interface Input {
+  email: string;
+  password: string;
+}
+
+interface Output {
+  accessToken: string;
+  refreshToken: string;
+}
