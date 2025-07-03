@@ -7,23 +7,27 @@ import FamilyRepositoryMemory from '@/infraestructure/repositories/family.reposi
 import UserRepositoryMemory from '@/infraestructure/repositories/user-repository-memory';
 
 import RegisterUser from './register-user';
+import TokenService, { Payload } from '@/application/services/token-service';
+import AnemicTokenService from '@/infraestructure/services/anemic-token-service';
 
 describe('Register User', function () {
   let familyRepository: FamilyRepositoryMemory;
   let userRepository: UserRepositoryMemory;
   let hashingService: HashingService;
   let registerUser: RegisterUser;
+  let tokenService: TokenService;
   let idGenerator: IdGenerator;
 
   beforeEach(() => {
     familyRepository = new FamilyRepositoryMemory([]);
     userRepository = new UserRepositoryMemory([]);
     hashingService = { hash: () => '<hashed-pwd>', compare: () => true };
+    tokenService = new AnemicTokenService();
     idGenerator = (() => {
       let id = 999;
       return { generate: () => `${id++}` };
     })();
-    registerUser = new RegisterUser(familyRepository, userRepository, hashingService, idGenerator);
+    registerUser = new RegisterUser(familyRepository, userRepository, hashingService, tokenService, idGenerator);
   });
 
   it('Deve registrar um usuário', async function () {
@@ -79,5 +83,19 @@ describe('Register User', function () {
       cpf: '<invalid-cpf>',
     };
     await expect(registerUser.execute(props)).rejects.toThrowError(RegisterUser.errorCodes.INVALID_CPF);
+  });
+
+  it('Deve retornar tokens de acesso e ao registrar um usuário', async function () {
+    const props = {
+      firstName: 'Jose',
+      lastName: 'silva',
+      password: '123123',
+      email: 'eg@email.com',
+      cpf: Cpf.VALID_CPF,
+    };
+    const tokens = await registerUser.execute(props);
+    expect(tokens).toBeDefined();
+    expect(tokens!.accessToken).toBe(AnemicTokenService.ACCESS_TOKEN);
+    expect(tokens!.refreshToken).toBe(AnemicTokenService.REFRESH_TOKEN);
   });
 });

@@ -18,27 +18,20 @@ export class RegisterUserInputDto {
   clubId?: string;
 
   @IsEmail()
+  @IsNotEmpty()
   email: string;
+
+  @IsString()
+  @IsNotEmpty()
+  cpf: string;
 }
 
 export class RegisterUserOutputDto {
   @IsString()
   @IsNotEmpty()
-  firstName: string;
+  accessToken: string;
 
   @IsString()
   @IsNotEmpty()
-  lastName: string;
-
-  @IsEmail()
-  email: string;
-
-  @IsString()
-  @IsNotEmpty()
-  familyId: string;
-
-  @IsString()
-  @IsNotEmpty()
-  id: string;
+  refreshToken: string;
 }
- 
