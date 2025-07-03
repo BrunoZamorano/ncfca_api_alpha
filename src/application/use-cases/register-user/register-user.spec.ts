@@ -1,14 +1,14 @@
 import HashingService from '@/application/services/hashing-service';
+import TokenService from '@/application/services/token-service';
 import IdGenerator from '@/application/services/id-generator';
 
 import Cpf from '@/domain/value-objects/cpf/cpf';
 
 import FamilyRepositoryMemory from '@/infraestructure/repositories/family.repository-memory';
 import UserRepositoryMemory from '@/infraestructure/repositories/user-repository-memory';
+import AnemicTokenService from '@/infraestructure/services/anemic-token-service';
 
 import RegisterUser from './register-user';
-import TokenService, { Payload } from '@/application/services/token-service';
-import AnemicTokenService from '@/infraestructure/services/anemic-token-service';
 
 describe('Register User', function () {
   let familyRepository: FamilyRepositoryMemory;

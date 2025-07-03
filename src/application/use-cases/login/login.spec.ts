@@ -1,6 +1,6 @@
 import HashingService from '@/application/services/hashing-service';
 import TokenService from '@/application/services/token-service';
-import { Login } from '@/application/use-cases/login/login';
+import Login from '@/application/use-cases/login/login';
 
 import Family from '@/domain/entities/family/family';
 import User from '@/domain/entities/user/user';

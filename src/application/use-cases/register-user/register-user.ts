@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject } from '@nestjs/common';
 
 import TokenService, { Payload } from '@/application/services/token-service';
 import HashingService from '@/application/services/hashing-service';

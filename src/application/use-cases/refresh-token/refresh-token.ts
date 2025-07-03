@@ -2,7 +2,7 @@ import { Inject } from '@nestjs/common';
 
 import TokenService, { Payload } from '@/application/services/token-service';
 
-import UnauthorizedException from '@/domain/errors/domain-exception';
+import { UnauthorizedException } from '@/domain/errors/domain-exception';
 
 import { TOKEN_SERVICE } from '@/shared/constants/service-constants';
 

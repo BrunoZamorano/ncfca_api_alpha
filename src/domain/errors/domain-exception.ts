@@ -11,7 +11,7 @@ export class EntityNotFoundException extends DomainException {
   }
 }
 
-export default class UnauthorizedException extends DomainException {
+export class UnauthorizedException extends DomainException {
   constructor(message: string = 'Unauthorized') {
     super(message);
   }

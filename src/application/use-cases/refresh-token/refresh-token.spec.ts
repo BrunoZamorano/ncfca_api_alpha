@@ -1,11 +1,7 @@
-import FamilyRepositoryMemory from '@/infraestructure/repositories/family.repository-memory';
-import UserRepositoryMemory from '@/infraestructure/repositories/user-repository-memory';
-import HashingService from '@/application/services/hashing-service';
-// todo: organize imports
-import RegisterUser from '@/application/use-cases/register-user/register-user';
-import TokenService from '@/application/services/token-service';
-import AnemicTokenService from '@/infraestructure/services/anemic-token-service';
 import RefreshToken from '@/application/use-cases/refresh-token/refresh-token';
+import TokenService from '@/application/services/token-service';
+
+import AnemicTokenService from '@/infraestructure/services/anemic-token-service';
 
 describe('Renovar o token', function () {
   let tokenService: TokenService;

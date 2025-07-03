@@ -1,12 +1,12 @@
 import { ArgumentsHost, ExceptionFilter, HttpStatus } from '@nestjs/common';
+import { JsonWebTokenError } from '@nestjs/jwt';
 import { Request, Response } from 'express';
 
-import UnauthorizedException, {
-  DomainException,
+import {
+  UnauthorizedException,
   EntityNotFoundException,
   InvalidOperationException,
 } from '@/domain/errors/domain-exception';
-import { JsonWebTokenError } from '@nestjs/jwt';
 
 export default class GlobalExceptionFilter implements ExceptionFilter {
   catch(exception: Error, host: ArgumentsHost) {

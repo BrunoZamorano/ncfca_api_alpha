@@ -1,5 +1,3 @@
-import { JwtModule } from '@nestjs/jwt';
-// TODO: ORGANIZE IMPORTS
 import { Module } from '@nestjs/common';
 
 import RegisterUser from '@/application/use-cases/register-user/register-user';

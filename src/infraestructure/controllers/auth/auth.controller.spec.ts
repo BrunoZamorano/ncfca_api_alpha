@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import ValidateToken from '@/application/use-cases/validate-token/validate-token';
 import RefreshToken from '@/application/use-cases/refresh-token/refresh-token';
-import { Login } from '@/application/use-cases/login/login';
+import Login from '@/application/use-cases/login/login';
 
 import User from '@/domain/entities/user/user';
 
