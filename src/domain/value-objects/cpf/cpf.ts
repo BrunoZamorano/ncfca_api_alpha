@@ -1,3 +1,5 @@
+import { DomainException } from '@/domain/errors/domain-exception';
+
 export default class Cpf {
   static readonly VALID_CPF = '91609085809';
   private readonly FIRST_DIGIT_FACTOR = 10;
@@ -5,7 +7,7 @@ export default class Cpf {
   private readonly _value: string;
 
   constructor(value: string = Cpf.VALID_CPF) {
-    if (!this.validateCpf(value)) throw new Error(Cpf.errorCodes.INVALID_CPF);
+    if (!this.validateCpf(value)) throw new DomainException(Cpf.errorCodes.INVALID_CPF);
     this._value = value;
   }
 

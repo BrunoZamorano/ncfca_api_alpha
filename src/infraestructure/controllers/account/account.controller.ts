@@ -10,13 +10,6 @@ export default class AccountController {
 
   @Post('/user')
   async registerUser(@Body() input: RegisterUserInputDto): Promise<RegisterUserOutputDto> {
-    const output = await this._registerUser.execute(input);
-    return {
-      firstName: output.user.firstName,
-      lastName: output.user.lastName,
-      familyId: output.familyId,
-      email: output.user.email,
-      id: output.user.id,
-    };
+    return await this._registerUser.execute(input);
   }
 }
