@@ -1,11 +1,12 @@
-import { UserRoles } from '../../enums/user-roles';
+import { UserRoles } from '@/domain/enums/user-roles';
 import Cpf from '@/domain/value-objects/cpf/cpf';
 
 export default class User {
-  private readonly _firstName: string;
-  private readonly _lastName: string;
+  private _firstName: string;
+  private _lastName: string;
   private readonly _password: string;
-  private readonly _email: string;
+  private _email: string;
+  private _phone: string;
   private readonly _roles: UserRoles[] = [];
   private readonly _cpf: Cpf;
   private readonly _id: string;
@@ -16,6 +17,7 @@ export default class User {
     this._lastName = props.lastName ?? 'Silva';
     this._password = props.password ?? User.DEFAULT_PASSWORD;
     this._email = props.email ?? User.DEFAULT_EMAIL;
+    this._phone = props.phone ?? User.DEFAULT_PHONE;
     this._cpf = props.cpf ? new Cpf(props.cpf) : new Cpf();
     this._id = props.id;
     if (props.roles) this.addRoles(props.roles);
@@ -37,6 +39,10 @@ export default class User {
     return this._email;
   }
 
+  get phone() {
+    return this._phone;
+  }
+
   get roles() {
     return this._roles;
   }
@@ -47,6 +53,13 @@ export default class User {
 
   get id(): string {
     return this._id;
+  }
+
+  updateProfile(input: Omit<Props, 'cpf' | 'id' | 'password' | 'roles'>): void {
+    if (input.firstName) this._firstName = input.firstName;
+    if (input.lastName) this._lastName = input.lastName;
+    if (input.email) this._email = input.email;
+    if (input.phone) this._phone = input.phone;
   }
 
   private addRoles(roles: UserRoles[]): void {
@@ -61,6 +74,7 @@ export default class User {
   };
 
   static readonly DEFAULT_PASSWORD = '<PASSWORD>';
+  static readonly DEFAULT_PHONE = '<DEFAULT_PHONE>';
   static readonly DEFAULT_EMAIL = 'default@email.com';
 }
 
@@ -69,6 +83,7 @@ interface Props {
   password?: string;
   lastName?: string;
   email?: string;
+  phone?: string;
   roles?: UserRoles[];
   cpf?: string;
   id: string;

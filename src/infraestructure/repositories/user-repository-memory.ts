@@ -7,6 +7,9 @@ export default class UserRepositoryMemory implements UserRepository {
   constructor(users?: User[]) {
     this.users = users ?? this.populate();
   }
+  async find(id: string): Promise<User | null> {
+    return this.users.find((p) => p.id === id) ?? null;
+  }
 
   async findByEmail(email: string): Promise<User | null> {
     if (this.users.length === 0) return null;
@@ -33,6 +36,6 @@ export default class UserRepositoryMemory implements UserRepository {
   }
 
   private populate(): User[] {
-    return Array.from({length: 10}, (_, i) => new User({ id: `${++i}` }));
+    return Array.from({ length: 10 }, (_, i) => new User({ id: `${++i}` }));
   }
 }
