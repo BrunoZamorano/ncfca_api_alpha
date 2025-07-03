@@ -6,7 +6,7 @@ export default class Club {
   private readonly _id: string;
 
   constructor(props: Props) {
-    this.addAffiliatedFamily(props.ownerId);
+    this.addAffiliatedFamilies(props.ownerId);
     this._ownerId = props.ownerId;
     this._city = props.city ?? Club.DEFAULT_CITY;
     this._name = props.name ?? Club.DEFAULT_NAME;
@@ -33,7 +33,7 @@ export default class Club {
     return this._id;
   }
 
-  addAffiliatedFamily(familyId: string): void {
+  addAffiliatedFamilies(familyId: string): void {
     if (this._affiliatedFamilies.includes(familyId)) throw new Error(Club.errorCodes.ALREADY_AFFILIATED);
     this._affiliatedFamilies.push(familyId);
   }
@@ -47,7 +47,7 @@ export default class Club {
 }
 
 interface Props {
-  members?: string[];
+  affiliatedFamilies?: string[];
   ownerId: string;
   city?: string;
   name?: string;

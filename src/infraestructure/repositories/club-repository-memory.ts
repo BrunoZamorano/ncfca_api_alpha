@@ -43,20 +43,12 @@ export default class ClubRepositoryMemory implements ClubRepository {
     };
   }
 
-  async update(club: Club): Promise<Club> {
+  async save(club: Club): Promise<Club> {
     const index = this.clubs.findIndex((p) => p.id === club.id);
-    if (index === -1) throw new Error('CLUB_NOT_FOUND');
-    this.clubs[index] = club;
+    index === -1 ? this.clubs.push(club) : (this.clubs[index] = club);
     const updatedClub = await this.find(club.id);
     if (!updatedClub) throw new Error('CLUB_NOT_UPDATED');
     return updatedClub;
-  }
-
-  async create(club: Club): Promise<Club> {
-    this.clubs.push(club);
-    const createdClub = await this.find(club.id);
-    if (!createdClub) throw new Error('CLUB_NOT_CREATED');
-    return createdClub;
   }
 
   async findByOwnerId(ownerId: string): Promise<Club | null> {

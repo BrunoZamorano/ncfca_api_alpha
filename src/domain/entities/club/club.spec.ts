@@ -18,7 +18,7 @@ describe('Clube', function () {
       id: '1',
     };
     const club = new Club(props);
-    club.addAffiliatedFamily('2');
+    club.addAffiliatedFamilies('2');
     expect(club.affiliatedFamilies).toContain('2');
   });
 
@@ -28,7 +28,7 @@ describe('Clube', function () {
       id: '1',
     };
     const club = new Club(props);
-    club.addAffiliatedFamily('2');
-    expect(() => club.addAffiliatedFamily('2')).toThrow(Club.errorCodes.ALREADY_AFFILIATED);
+    club.addAffiliatedFamilies('2');
+    expect(() => club.addAffiliatedFamilies('2')).toThrow(Club.errorCodes.ALREADY_AFFILIATED);
   });
 });
