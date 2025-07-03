@@ -10,12 +10,12 @@ export default class User {
   private readonly _cpf: Cpf;
   private readonly _id: string;
 
-  constructor({ firstName = 'Jose', lastName = 'Silva', password = '<password>', ...props }: Props) {
+  constructor(props: Props) {
     this._roles.push(UserRoles.SEM_FUNCAO);
-    this._firstName = firstName;
-    this._lastName = lastName;
-    this._password = password;
-    this._email = props.email;
+    this._firstName = props.firstName ?? 'Jose';
+    this._lastName = props.lastName ?? 'Silva';
+    this._password = props.password ?? User.DEFAULT_PASSWORD;
+    this._email = props.email ?? User.DEFAULT_EMAIL;
     this._cpf = props.cpf ? new Cpf(props.cpf) : new Cpf();
     this._id = props.id;
     if (props.roles) this.addRoles(props.roles);
@@ -49,23 +49,26 @@ export default class User {
     return this._id;
   }
 
-  static errorCodes = {
-    DUPLICATED_ROLES: 'DUPLICATED_ROLES',
-  };
-
   private addRoles(roles: UserRoles[]): void {
     for (const role of roles) {
       if (this._roles.includes(role)) throw new Error(User.errorCodes.DUPLICATED_ROLES);
       this._roles.push(role);
     }
   }
+
+  static errorCodes = {
+    DUPLICATED_ROLES: 'DUPLICATED_ROLES',
+  };
+
+  static readonly DEFAULT_PASSWORD = '<PASSWORD>';
+  static readonly DEFAULT_EMAIL = 'default@email.com';
 }
 
 interface Props {
   firstName?: string;
   password?: string;
   lastName?: string;
-  email: string;
+  email?: string;
   roles?: UserRoles[];
   cpf?: string;
   id: string;

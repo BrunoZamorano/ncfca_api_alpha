@@ -33,6 +33,6 @@ export default class UserRepositoryMemory implements UserRepository {
   }
 
   private populate(): User[] {
-    return Array.from({length: 10}, (_, i) => new User({ id: `${++i}`, email: `${i}@email.com` }));
+    return Array.from({length: 10}, (_, i) => new User({ id: `${++i}` }));
   }
 }
