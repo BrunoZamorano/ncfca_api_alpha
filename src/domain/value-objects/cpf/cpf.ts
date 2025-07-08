@@ -1,4 +1,4 @@
-import { DomainException } from '@/domain/errors/domain-exception';
+import { DomainException } from '@/domain/exceptions/domain-exception';
 
 export default class Cpf {
   static readonly VALID_CPF = '91609085809';

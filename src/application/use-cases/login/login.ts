@@ -1,9 +1,9 @@
 import { Inject } from '@nestjs/common';
 
-import HashingService from '@/application/services/hashing-service';
+import HashingService from '@/domain/services/hashing-service';
 import TokenService from '@/application/services/token-service';
 
-import { DomainException } from '@/domain/errors/domain-exception';
+import { DomainException } from '@/domain/exceptions/domain-exception';
 import FamilyRepository from '@/domain/repositories/family-repository';
 import UserRepository from '@/domain/repositories/user-repository';
 
@@ -23,7 +23,7 @@ export default class Login {
     if (!user) throw new DomainException(Login.errorCodes.INVALID_CREDENTIALS);
     if (!this.isValidPassword(password, user.password)) throw new DomainException(Login.errorCodes.INVALID_CREDENTIALS);
     const family = await this.familyRepository.findByHolderId(user.id);
-    if (!family) throw new DomainException(Login.errorCodes.SOMETHING_WENT_WRONG);
+    if (!family) throw new DomainException(Login.errorCodes.FAMILY_NOT_FOUND);
     const payload = { sub: user.id, roles: user.roles, email: user.email, familyId: family.id };
     return {
       refreshToken: await this.tokenService.signRefreshToken(payload),
@@ -36,8 +36,8 @@ export default class Login {
   }
 
   static errorCodes = {
-    SOMETHING_WENT_WRONG: 'SOMETHING_WENT_WRONG',
     INVALID_CREDENTIALS: 'INVALID_CREDENTIALS',
+    FAMILY_NOT_FOUND: 'FAMILY_NOT_FOUND',
   };
 }
 

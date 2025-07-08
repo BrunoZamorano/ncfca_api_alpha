@@ -1,0 +1,4 @@
+export enum FamilyStatus {
+  NOT_AFFILIATED = 'NOT_AFFILIATED',
+  AFFILIATED = 'AFFILIATED',
+}

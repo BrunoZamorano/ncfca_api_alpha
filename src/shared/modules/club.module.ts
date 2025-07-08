@@ -4,7 +4,7 @@ import SearchClubs from '@/application/use-cases/search-clubs/search-clubs';
 
 import ClubController from '@/infraestructure/controllers/club/club.controller';
 
-import SharedModule from '@/shared/modules/shared-module';
+import SharedModule from '@/shared/modules/shared.module';
 
 @Module({
   imports: [SharedModule],

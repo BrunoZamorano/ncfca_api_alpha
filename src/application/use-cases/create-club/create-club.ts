@@ -2,7 +2,7 @@ import { Inject } from '@nestjs/common';
 
 import IdGenerator from '@/application/services/id-generator';
 
-import { EntityNotFoundException } from '@/domain/errors/domain-exception';
+import { EntityNotFoundException } from '@/domain/exceptions/domain-exception';
 import FamilyRepository from '@/domain/repositories/family-repository';
 import UserRepository from '@/domain/repositories/user-repository';
 import ClubRepository from '@/domain/repositories/club-repository';

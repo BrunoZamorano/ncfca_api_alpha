@@ -1,26 +1,34 @@
+import { DomainException } from '@/domain/exceptions/domain-exception';
 import { UserRoles } from '@/domain/enums/user-roles';
+import HashingService from '@/domain/services/hashing-service';
+import Password from '@/domain/value-objects/password/password';
 import Cpf from '@/domain/value-objects/cpf/cpf';
+import Address, { AddressProps } from '@/domain/value-objects/address/address';
 
 export default class User {
-  private _firstName: string;
-  private _lastName: string;
-  private readonly _password: string;
-  private _email: string;
-  private _phone: string;
+  private readonly _address: Address;
   private readonly _roles: UserRoles[] = [];
   private readonly _cpf: Cpf;
   private readonly _id: string;
+  private _firstName: string;
+  private _password: Password;
+  private _lastName: string;
+  private _email: string;
+  private _phone: string;
 
-  constructor(props: Props) {
-    this._roles.push(UserRoles.SEM_FUNCAO);
-    this._firstName = props.firstName ?? 'Jose';
-    this._lastName = props.lastName ?? 'Silva';
-    this._password = props.password ?? User.DEFAULT_PASSWORD;
-    this._email = props.email ?? User.DEFAULT_EMAIL;
-    this._phone = props.phone ?? User.DEFAULT_PHONE;
-    this._cpf = props.cpf ? new Cpf(props.cpf) : new Cpf();
+  public constructor(props: Props) {
+    this._address = new Address(props.address ?? {});
+    this._firstName = props.firstName;
+    this._lastName = props.lastName;
+    this._password = props.password;
+    this._email = props.email;
+    this._phone = props.phone;
+    this._cpf = props.cpf;
     this._id = props.id;
-    if (props.roles) this.addRoles(props.roles);
+  }
+
+  get address() {
+    return this._address;
   }
 
   get firstName() {
@@ -32,7 +40,7 @@ export default class User {
   }
 
   get password() {
-    return this._password;
+    return this._password.value;
   }
 
   get email() {
@@ -55,36 +63,50 @@ export default class User {
     return this._id;
   }
 
-  updateProfile(input: Omit<Props, 'cpf' | 'id' | 'password' | 'roles'>): void {
+  public changePassword(oldPassword: string, newPassword: string, hashingService: HashingService): void {
+    if (!this._password.compare(oldPassword, hashingService))
+      throw new DomainException(User.errorCodes.INVALID_CREDENTIALS);
+    if (this._password.compare(newPassword, hashingService)) throw new DomainException(User.errorCodes.SAME_PASSWORD);
+    this._password = Password.create(newPassword, hashingService);
+    return void 0;
+  }
+
+  public updateProfile(input: Partial<Omit<Props, 'cpf' | 'id' | 'password' | 'roles'>>): void {
     if (input.firstName) this._firstName = input.firstName;
     if (input.lastName) this._lastName = input.lastName;
     if (input.email) this._email = input.email;
     if (input.phone) this._phone = input.phone;
+    return void 0;
   }
 
-  private addRoles(roles: UserRoles[]): void {
+  addRoles(roles: UserRoles[]): void {
     for (const role of roles) {
       if (this._roles.includes(role)) throw new Error(User.errorCodes.DUPLICATED_ROLES);
       this._roles.push(role);
     }
+    return void 0;
   }
 
   static errorCodes = {
+    INVALID_CREDENTIALS: 'INVALID_CREDENTIALS',
     DUPLICATED_ROLES: 'DUPLICATED_ROLES',
+    SAME_PASSWORD: 'SAME_PASSWORD',
   };
 
-  static readonly DEFAULT_PASSWORD = '<PASSWORD>';
-  static readonly DEFAULT_PHONE = '<DEFAULT_PHONE>';
+  static readonly DEFAULT_PHONE = '99 99999-9999';
   static readonly DEFAULT_EMAIL = 'default@email.com';
+  static readonly DEFAULT_PASSWORD = '<P@ssw0rd>';
+  static readonly DEFAULT_LAST_NAME = '<DEFAULT_LAST_NAME>';
+  static readonly DEFAULT_FIRST_NAME = '<DEFAULT_FIRST_NAME>';
 }
 
 interface Props {
-  firstName?: string;
-  password?: string;
-  lastName?: string;
-  email?: string;
-  phone?: string;
-  roles?: UserRoles[];
-  cpf?: string;
+  address?: AddressProps;
+  firstName: string;
+  lastName: string;
+  password: Password;
+  email: string;
+  phone: string;
+  cpf: Cpf;
   id: string;
 }

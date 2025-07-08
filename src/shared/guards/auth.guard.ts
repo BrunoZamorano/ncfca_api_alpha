@@ -3,7 +3,7 @@ import { Request } from 'express';
 
 import TokenService from '@/application/services/token-service';
 
-import { UnauthorizedException } from '@/domain/errors/domain-exception';
+import { UnauthorizedException } from '@/domain/exceptions/domain-exception';
 
 import { TOKEN_SERVICE } from '@/shared/constants/service-constants';
 

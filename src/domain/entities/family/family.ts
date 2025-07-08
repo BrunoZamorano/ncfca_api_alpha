@@ -1,10 +1,14 @@
+import { FamilyStatus } from '@/domain/enums/family-status';
+
 export default class Family {
+  private _status: FamilyStatus;
   private readonly _dependants: string[] = [];
   private readonly _holderId: string;
   private readonly _id: string;
 
   constructor(props: Props) {
     this._holderId = props.holderId;
+    this._status = props.status ?? FamilyStatus.NOT_AFFILIATED;
     this._id = props.id;
   }
 
@@ -16,8 +20,16 @@ export default class Family {
     return this._holderId;
   }
 
+  get status(): FamilyStatus {
+    return this._status;
+  }
+
   get id(): string {
     return this._id;
+  }
+
+  activateAffiliation(): void {
+    this._status = FamilyStatus.AFFILIATED;
   }
 
   addDependant(dependantId: string): void {
@@ -33,5 +45,6 @@ export default class Family {
 interface Props {
   dependants?: string[];
   holderId: string;
+  status?: FamilyStatus;
   id: string;
 }

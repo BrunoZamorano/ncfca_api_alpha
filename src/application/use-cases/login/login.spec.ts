@@ -1,4 +1,4 @@
-import HashingService from '@/application/services/hashing-service';
+import HashingService from '@/domain/services/hashing-service';
 import TokenService from '@/application/services/token-service';
 import Login from '@/application/use-cases/login/login';
 
@@ -8,25 +8,30 @@ import User from '@/domain/entities/user/user';
 import FamilyRepositoryMemory from '@/infraestructure/repositories/family.repository-memory';
 import UserRepositoryMemory from '@/infraestructure/repositories/user-repository-memory';
 import AnemicTokenService from '@/infraestructure/services/anemic-token-service';
+import UserFactory from '@/domain/factories/user.factory';
 
 describe('Login', function () {
   let familyRepository: FamilyRepositoryMemory;
   let userRepository: UserRepositoryMemory;
   let hashingService: HashingService;
   let tokenService: TokenService;
+  let userFactory: UserFactory;
   let dependencies: [FamilyRepositoryMemory, UserRepositoryMemory, HashingService, TokenService];
   let login: Login;
 
   beforeEach(() => {
     familyRepository = new FamilyRepositoryMemory([new Family({ id: '1', holderId: '1' })]);
-    userRepository = new UserRepositoryMemory([new User({ id: '1' })]);
     hashingService = { hash: (pwd: string) => pwd, compare: (pwd: string, hash: string) => pwd === hash };
+    userFactory = new UserFactory(hashingService, { generate: () => '1' });
+    userRepository = new UserRepositoryMemory();
     tokenService = new AnemicTokenService();
     dependencies = [familyRepository, userRepository, hashingService, tokenService];
     login = new Login(...dependencies);
   });
 
   it('Deve realizar o login', async function () {
+    userRepository.populate(userFactory, { id: '1' }, 1);
+    await familyRepository.create(new Family({ id: '1', holderId: '1' }));
     const input = { email: User.DEFAULT_EMAIL, password: User.DEFAULT_PASSWORD };
     const output = await login.execute(input);
     expect(output.accessToken).toBeDefined();

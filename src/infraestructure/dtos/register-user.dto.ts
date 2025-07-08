@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsEmail, IsMobilePhone, IsNotEmpty, IsOptional, IsPhoneNumber, IsString } from 'class-validator';
 
 export class RegisterUserInputDto {
   @IsString()
@@ -13,9 +13,9 @@ export class RegisterUserInputDto {
   @IsNotEmpty()
   password: string;
 
-  @IsString()
-  @IsOptional()
-  clubId?: string;
+  @IsMobilePhone()
+  @IsNotEmpty()
+  phone: string;
 
   @IsEmail()
   @IsNotEmpty()

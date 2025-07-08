@@ -1,4 +1,5 @@
 import Family from './family';
+import { FamilyStatus } from '@/domain/enums/family-status';
 
 describe('Família', function () {
   it('Deve criar uma nova Família', function () {
@@ -20,5 +21,19 @@ describe('Família', function () {
     const family = new Family(props);
     family.addDependant('2');
     expect(() => family.addDependant('2')).toThrow(Family.errorCodes.ALREADY_MEMBER);
+  });
+
+  it('Deve criar família com status de não afiliado', function () {
+    const props = { holderId: '1', id: '1' };
+    const family = new Family(props);
+    expect(family.status).toBe(FamilyStatus.NOT_AFFILIATED);
+  });
+
+  it('Deve alterar o status para afiliado', function () {
+    const props = { holderId: '1', id: '1' };
+    const family = new Family(props);
+    expect(family.status).toBe(FamilyStatus.NOT_AFFILIATED);
+    family.activateAffiliation();
+    expect(family.status).toBe(FamilyStatus.AFFILIATED);
   });
 });

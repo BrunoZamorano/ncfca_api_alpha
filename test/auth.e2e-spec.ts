@@ -18,12 +18,16 @@ import TokenServiceJwt from '@/infraestructure/services/token-service-jwt';
 import { TOKEN_SERVICE } from '@/shared/constants/service-constants';
 
 import { AppModule } from '@/app.module';
+import User from '@/domain/entities/user/user';
+import InMemoryDatabase from '@/infraestructure/database/in-memory.database';
 
 describe('AuthController (e2e)', () => {
+  let db = InMemoryDatabase.getInstance();
   let app: INestApplication<App>;
   let tokenService: TokenService;
 
   beforeEach(async () => {
+    db.beginTransaction();
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -36,6 +40,7 @@ describe('AuthController (e2e)', () => {
   });
 
   afterEach(async () => {
+    db.rollback();
     await app.close();
   });
 
@@ -45,13 +50,14 @@ describe('AuthController (e2e)', () => {
         firstName: 'E2E',
         lastName: 'User',
         password: 'Password@123',
+        phone: User.DEFAULT_PHONE,
         email: 'e2e-user@test.com',
         cpf: Cpf.VALID_CPF,
       };
       await request(app.getHttpServer()).post('/account/user').send(testUser).expect(201);
       const input: LoginInputDto = {
-        email: testUser.email,
         password: testUser.password,
+        email: testUser.email,
       };
       return request(app.getHttpServer())
         .post('/auth/login')
@@ -70,6 +76,7 @@ describe('AuthController (e2e)', () => {
         firstName: 'E2E',
         lastName: 'User',
         password: 'Password@123',
+        phone: User.DEFAULT_PHONE,
         email: 'e2e-user@test.com',
         cpf: Cpf.VALID_CPF,
       };
@@ -114,6 +121,7 @@ describe('AuthController (e2e)', () => {
         firstName: 'E2E',
         lastName: 'User',
         password: 'Password@123',
+        phone: User.DEFAULT_PHONE,
         email: 'e2e-user@test.com',
         cpf: Cpf.VALID_CPF,
       };
@@ -139,15 +147,14 @@ describe('AuthController (e2e)', () => {
   describe('/auth/logout (POST)', () => {
     let accessToken: string;
     const testUser: RegisterUserInputDto = {
-      email: 'logout-user@test.com',
-      password: 'Password@123',
       firstName: 'Logout',
       lastName: 'Test',
+      password: 'Password@123',
+      email: 'logout-user@test.com',
+      phone: User.DEFAULT_PHONE,
       cpf: Cpf.VALID_CPF,
     };
 
-    // Arrange: Antes de cada teste de logout, criamos um usuário e fazemos login
-    // para obter um token de acesso válido.
     beforeEach(async () => {
       await request(app.getHttpServer()).post('/account/user').send(testUser);
       const loginResponse = await request(app.getHttpServer())
@@ -157,7 +164,6 @@ describe('AuthController (e2e)', () => {
     });
 
     it('deve retornar status 204 para um usuário autenticado', async () => {
-      // Act & Assert
       return request(app.getHttpServer())
         .post('/auth/logout')
         .set('Authorization', `Bearer ${accessToken}`)

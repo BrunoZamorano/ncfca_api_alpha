@@ -1,4 +1,4 @@
-import HashingService from '@/application/services/hashing-service';
+import HashingService from '@/domain/services/hashing-service';
 
 export default class AnemicHashingService implements HashingService {
   private readonly secret: string = 'secret';

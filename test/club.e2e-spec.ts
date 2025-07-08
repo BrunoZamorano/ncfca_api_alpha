@@ -44,5 +44,11 @@ describe('ClubController (e2e)', () => {
           expect(meta.page).toBe(1);
         });
     });
+
+    it('Deve retornar erro se o token de acesso não for fornecido', async function () {
+      return request(app.getHttpServer())
+        .get('/club?pagination[page]=1&pagination[limit]=100')
+        .expect(HttpStatus.UNAUTHORIZED);
+    });
   });
 });

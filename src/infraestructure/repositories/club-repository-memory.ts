@@ -4,19 +4,23 @@ import ClubRepository from '@/domain/repositories/club-repository';
 import ClubDto from '@/domain/dtos/club.dto';
 import Club from '@/domain/entities/club/club';
 
+import InMemoryDatabase from '@/infraestructure/database/in-memory.database';
+
 import ClubMapper from '@/shared/mappers/club.mapper';
 
 export default class ClubRepositoryMemory implements ClubRepository {
-  private clubs: Club[];
+  private db: InMemoryDatabase;
 
-  constructor({ clubs, options }: { clubs?: Club[]; options?: Options }) {
-    this.clubs = clubs ?? this.populate(options?.totalClubs);
+  public constructor({ clubs, options }: { clubs?: Club[]; options?: Options } ) {
+    this.db = InMemoryDatabase.getInstance();
+    const initialClubs = clubs ?? this.populate(options?.totalClubs);
+    this.db.clubs.push(...initialClubs);
   }
 
   async search(query: SearchClubsQueryDto): Promise<PaginatedOutputDto<ClubDto>> {
     const { page = 1, limit = 10 } = query?.pagination ?? {};
     const filters = query?.filter;
-    let filteredClubs = this.clubs;
+    let filteredClubs = this.db.clubs;
     if (filters) {
       if (filters.name) {
         const name = filters.name.toLocaleLowerCase();
@@ -44,19 +48,19 @@ export default class ClubRepositoryMemory implements ClubRepository {
   }
 
   async save(club: Club): Promise<Club> {
-    const index = this.clubs.findIndex((p) => p.id === club.id);
-    index === -1 ? this.clubs.push(club) : (this.clubs[index] = club);
+    const index = this.db.clubs.findIndex((p) => p.id === club.id);
+    index === -1 ? this.db.clubs.push(club) : (this.db.clubs[index] = club);
     const updatedClub = await this.find(club.id);
     if (!updatedClub) throw new Error('CLUB_NOT_UPDATED');
     return updatedClub;
   }
 
   async findByOwnerId(ownerId: string): Promise<Club | null> {
-    return this.clubs.find((p) => p.ownerId === ownerId) ?? null;
+    return this.db.clubs.find((p) => p.ownerId === ownerId) ?? null;
   }
 
   async find(id: string): Promise<Club | null> {
-    return this.clubs.find((c) => c.id === id) ?? null;
+    return this.db.clubs.find((c) => c.id === id) ?? null;
   }
 
   private populate(totalClubs: number = 10): Club[] {

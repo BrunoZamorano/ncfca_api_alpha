@@ -14,6 +14,9 @@ import UuidGenerator from '@/infraestructure/services/uuid-generator';
 
 import { HASHING_SERVICE, ID_GENERATOR, TOKEN_SERVICE } from '@/shared/constants/service-constants';
 import { FAMILY_REPOSITORY, USER_REPOSITORY } from '@/shared/constants/repository-constants';
+import User from '@/domain/entities/user/user';
+import { USER_FACTORY } from '@/shared/constants/factories-constants';
+import UserFactory from '@/domain/factories/user.factory';
 
 describe('AccountController', function () {
   let accountController: AccountController;
@@ -26,10 +29,11 @@ describe('AccountController', function () {
       controllers: [AccountController],
       providers: [
         { provide: FAMILY_REPOSITORY, useValue: new FamilyRepositoryMemory() },
-        { provide: USER_REPOSITORY, useValue: new UserRepositoryMemory() },
+        { provide: USER_REPOSITORY, useClass: UserRepositoryMemory },
         { provide: HASHING_SERVICE, useClass: AnemicHashingService },
         { provide: TOKEN_SERVICE, useClass: AnemicTokenService },
         { provide: ID_GENERATOR, useClass: UuidGenerator },
+        { provide: USER_FACTORY, useClass: UserFactory },
         RegisterUser,
       ],
     }).compile();
@@ -43,9 +47,10 @@ describe('AccountController', function () {
   describe('RegisterUser', function () {
     it('Deve registrar um novo usuário, retornar os dados corretos e persistir o estado no sistema', async function () {
       const input: RegisterUserInputDto = {
+        password: User.DEFAULT_PASSWORD,
         firstName: 'joao',
         lastName: 'silva',
-        password: '123123',
+        phone: '95991724765',
         email: 'test@email.com',
         cpf: Cpf.VALID_CPF,
       };

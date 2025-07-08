@@ -7,7 +7,7 @@ import Login from '@/application/use-cases/login/login';
 
 import AuthController from '@/infraestructure/controllers/auth/auth.controller';
 
-import SharedModule from '@/shared/modules/shared-module';
+import SharedModule from '@/shared/modules/shared.module';
 
 @Module({
   imports: [SharedModule],

@@ -12,6 +12,7 @@ import UserRepositoryMemory from '@/infraestructure/repositories/user-repository
 import { USER_REPOSITORY } from '@/shared/constants/repository-constants';
 
 import { AppModule } from '@/app.module';
+import User from '@/domain/entities/user/user';
 
 describe('AccountController (e2e)', () => {
   let app: INestApplication<App>;
@@ -29,7 +30,8 @@ describe('AccountController (e2e)', () => {
     const input: RegisterUserInputDto = {
       firstName: 'joao',
       lastName: 'silva',
-      password: '123123',
+      password: User.DEFAULT_PASSWORD,
+      phone: User.DEFAULT_PHONE,
       email: 'test@email.com',
       cpf: Cpf.VALID_CPF,
     };

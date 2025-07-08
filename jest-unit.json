@@ -1,0 +1,12 @@
+{
+  "displayName": "unit",
+  "rootDir": ".",
+  "moduleNameMapper": {
+    "^@/(.*)$": "<rootDir>/src/$1"
+  },
+  "testRegex": ".*\\.spec.ts$",
+  "testEnvironment": "node",
+  "transform": {
+    "^.+\\.(t|j)s$": "ts-jest"
+  }
+}

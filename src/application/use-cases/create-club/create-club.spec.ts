@@ -6,6 +6,8 @@ import FamilyRepositoryMemory from '@/infraestructure/repositories/family.reposi
 import ClubRepositoryMemory from '@/infraestructure/repositories/club-repository-memory';
 import UserRepositoryMemory from '@/infraestructure/repositories/user-repository-memory';
 import CreateClub from '@/application/use-cases/create-club/create-club';
+import UserFactory from '@/domain/factories/user.factory';
+import HashingService from '@/domain/services/hashing-service';
 
 describe('Create Club', () => {
   const DEFAULT_ID = '1';
@@ -16,8 +18,11 @@ describe('Create Club', () => {
 
   beforeEach(() => {
     const idGenerator = { generate: () => DEFAULT_ID };
+    const hashingService = { hash: () => DEFAULT_ID } as unknown as HashingService;
+    const userFactory = new UserFactory(hashingService, idGenerator);
     familyRepository = new FamilyRepositoryMemory([new Family({ id: DEFAULT_ID, holderId: DEFAULT_ID })]);
-    userRepository = new UserRepositoryMemory([new User({ id: DEFAULT_ID })]);
+    userRepository = new UserRepositoryMemory();
+    userRepository.populate(userFactory, { id: DEFAULT_ID }, 1);
     clubRepository = new ClubRepositoryMemory({ clubs: [] });
     createClub = new CreateClub(familyRepository, clubRepository, userRepository, idGenerator);
   });

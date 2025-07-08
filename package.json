@@ -15,6 +15,8 @@
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",
+    "test:unit": "jest --config jest-unit.json",
+    "test:unit:watch": "jest --config jest-unit.json --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json"
@@ -57,23 +59,25 @@
     "typescript-eslint": "^8.20.0"
   },
   "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "ts"
+    "coverageDirectory": "./coverage",
+    "coverageProvider": "v8",
+    "rootDir": ".",
+    "projects": [
+      "<rootDir>/jest-unit.json",
+      "<rootDir>/test/jest-e2e.json"
     ],
-    "moduleNameMapper": {
-      "^@/(.*)$": "<rootDir>/$1"
-    },
-    "rootDir": "src",
-    "testRegex": ".*\\.spec\\.ts$",
-    "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
-    },
     "collectCoverageFrom": [
-      "**/*.(t|j)s"
-    ],
-    "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+      "src/**/*.ts",
+      "!src/main.ts",
+      "!**/*spec.ts",
+      "!**/*.dto.ts",
+      "!**/*.module.ts",
+      "!**/*.interface.ts",
+      "!src/domain/services/*.ts",
+      "!src/domain/exceptions/*.ts",
+      "!src/domain/repositories/*.ts",
+      "!src/application/services/*.ts",      
+      "!src/infraestructure/filters/*.ts"
+    ]
   }
 }

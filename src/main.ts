@@ -7,7 +7,9 @@ import GlobalExceptionFilter from '@/infraestructure/filters/global-exception-fi
 import { AppModule } from '@/app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    rawBody: true,
+  });
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
   app.useGlobalFilters(new GlobalExceptionFilter());
   app.set('query parser', 'extended');

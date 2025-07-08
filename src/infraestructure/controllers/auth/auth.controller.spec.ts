@@ -16,20 +16,29 @@ import { LoginInputDto } from '@/infraestructure/dtos/login.dto';
 import AuthController from '@/infraestructure/controllers/auth/auth.controller';
 
 import { FAMILY_REPOSITORY, USER_REPOSITORY } from '@/shared/constants/repository-constants';
-import { HASHING_SERVICE, TOKEN_SERVICE } from '@/shared/constants/service-constants';
+import { HASHING_SERVICE, ID_GENERATOR, TOKEN_SERVICE } from '@/shared/constants/service-constants';
 import Logout from '@/application/use-cases/logout/logout';
+import { USER_FACTORY } from '@/shared/constants/factories-constants';
+import UserFactory from '@/domain/factories/user.factory';
+import UuidGenerator from '@/infraestructure/services/uuid-generator';
+import Family from '@/domain/entities/family/family';
 
 describe('AuthController', function () {
   let authController: AuthController;
+  let userFactory: UserFactory;
+  let userRepository: UserRepositoryMemory;
+  let familyRepository: FamilyRepositoryMemory;
 
   beforeEach(async function () {
     const app: TestingModule = await Test.createTestingModule({
       controllers: [AuthController],
       providers: [
         { provide: FAMILY_REPOSITORY, useValue: new FamilyRepositoryMemory() },
-        { provide: USER_REPOSITORY, useValue: new UserRepositoryMemory() },
+        { provide: USER_REPOSITORY, useClass: UserRepositoryMemory },
         { provide: HASHING_SERVICE, useClass: AnemicHashingService },
         { provide: TOKEN_SERVICE, useClass: AnemicTokenService },
+        { provide: ID_GENERATOR, useClass: UuidGenerator },
+        { provide: USER_FACTORY, useClass: UserFactory },
         ValidateToken,
         RefreshToken,
         Logout,
@@ -37,6 +46,9 @@ describe('AuthController', function () {
       ],
     }).compile();
     authController = app.get<AuthController>(AuthController);
+    userRepository = app.get<UserRepositoryMemory>(USER_REPOSITORY);
+    familyRepository = app.get<FamilyRepositoryMemory>(FAMILY_REPOSITORY);
+    userFactory = app.get<UserFactory>(USER_FACTORY);
   });
 
   describe('Login', function () {
@@ -45,6 +57,8 @@ describe('AuthController', function () {
         email: User.DEFAULT_EMAIL,
         password: User.DEFAULT_PASSWORD,
       };
+      userRepository.populate(userFactory, { id: '1' }, 1);
+      await familyRepository.create(new Family({ id: '1', holderId: '1' }));
       const output = await authController.login(input);
       expect(output.accessToken).toBe(AnemicTokenService.ACCESS_TOKEN);
       expect(output.refreshToken).toBe(AnemicTokenService.REFRESH_TOKEN);

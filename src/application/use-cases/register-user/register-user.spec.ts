@@ -1,7 +1,8 @@
-import HashingService from '@/application/services/hashing-service';
+import HashingService from '@/domain/services/hashing-service';
 import TokenService from '@/application/services/token-service';
 import IdGenerator from '@/application/services/id-generator';
 
+import User from '@/domain/entities/user/user';
 import Cpf from '@/domain/value-objects/cpf/cpf';
 
 import FamilyRepositoryMemory from '@/infraestructure/repositories/family.repository-memory';
@@ -9,8 +10,12 @@ import UserRepositoryMemory from '@/infraestructure/repositories/user-repository
 import AnemicTokenService from '@/infraestructure/services/anemic-token-service';
 
 import RegisterUser from './register-user';
+import UserFactory from '@/domain/factories/user.factory';
+import UuidGenerator from '@/infraestructure/services/uuid-generator';
+import InMemoryDatabase from '@/infraestructure/database/in-memory.database';
 
 describe('Register User', function () {
+  const db = InMemoryDatabase.getInstance();
   let familyRepository: FamilyRepositoryMemory;
   let userRepository: UserRepositoryMemory;
   let hashingService: HashingService;
@@ -19,23 +24,27 @@ describe('Register User', function () {
   let idGenerator: IdGenerator;
 
   beforeEach(() => {
+    db.beginTransaction();
     familyRepository = new FamilyRepositoryMemory([]);
-    userRepository = new UserRepositoryMemory([]);
     hashingService = { hash: () => '<hashed-pwd>', compare: () => true };
     tokenService = new AnemicTokenService();
-    idGenerator = (() => {
-      let id = 999;
-      return { generate: () => `${id++}` };
-    })();
-    registerUser = new RegisterUser(familyRepository, userRepository, hashingService, tokenService, idGenerator);
+    idGenerator = new UuidGenerator();
+    const userFactory = new UserFactory(hashingService, idGenerator);
+    userRepository = new UserRepositoryMemory();
+    registerUser = new RegisterUser(familyRepository, userRepository, tokenService, userFactory, idGenerator);
+  });
+
+  afterEach(() => {
+    db.rollback();
   });
 
   it('Deve registrar um usuário', async function () {
     const props = {
       firstName: 'Jose',
       lastName: 'silva',
-      password: '123123',
-      email: 'jose.silva@test.com',
+      password: '142B@l908',
+      phone: '95991724765',
+      email: 'user_rest12i2',
       cpf: Cpf.VALID_CPF,
     };
     await registerUser.execute(props);
@@ -52,8 +61,9 @@ describe('Register User', function () {
     const props = {
       firstName: 'Jose',
       lastName: 'silva',
-      password: '123123',
-      email: 'eg@email.com',
+      password: User.DEFAULT_PASSWORD,
+      phone: User.DEFAULT_PHONE,
+      email: User.DEFAULT_EMAIL,
       cpf: Cpf.VALID_CPF,
     };
     await registerUser.execute(props);
@@ -64,8 +74,9 @@ describe('Register User', function () {
     const props = {
       firstName: 'Jose',
       lastName: 'silva',
-      password: '123123',
-      email: 'eg@email.com',
+      password: User.DEFAULT_PASSWORD,
+      phone: User.DEFAULT_PHONE,
+      email: User.DEFAULT_EMAIL,
       cpf: Cpf.VALID_CPF,
     };
     await registerUser.execute(props);
@@ -78,8 +89,9 @@ describe('Register User', function () {
     const props = {
       firstName: 'Jose',
       lastName: 'silva',
-      password: '123123',
-      email: 'eg@email.com',
+      password: User.DEFAULT_PASSWORD,
+      phone: User.DEFAULT_PHONE,
+      email: User.DEFAULT_EMAIL,
       cpf: '<invalid-cpf>',
     };
     await expect(registerUser.execute(props)).rejects.toThrowError(RegisterUser.errorCodes.INVALID_CPF);
@@ -89,8 +101,9 @@ describe('Register User', function () {
     const props = {
       firstName: 'Jose',
       lastName: 'silva',
-      password: '123123',
-      email: 'eg@email.com',
+      password: User.DEFAULT_PASSWORD,
+      phone: User.DEFAULT_PHONE,
+      email: User.DEFAULT_EMAIL,
       cpf: Cpf.VALID_CPF,
     };
     const tokens = await registerUser.execute(props);

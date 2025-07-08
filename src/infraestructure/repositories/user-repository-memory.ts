@@ -1,41 +1,62 @@
+import { Injectable } from '@nestjs/common';
+
+import UserFactory, { CreateUserProps } from '@/domain/factories/user.factory';
 import UserRepository from '@/domain/repositories/user-repository';
 import User from '@/domain/entities/user/user';
 
-export default class UserRepositoryMemory implements UserRepository {
-  private users: User[];
+import InMemoryDatabase from '@/infraestructure/database/in-memory.database';
 
-  constructor(users?: User[]) {
-    this.users = users ?? this.populate();
+@Injectable()
+export default class UserRepositoryMemory implements UserRepository {
+  private readonly db: InMemoryDatabase;
+
+  constructor() {
+    this.db = InMemoryDatabase.getInstance();
   }
+
   async find(id: string): Promise<User | null> {
-    return this.users.find((p) => p.id === id) ?? null;
+    return this.db.users.find((p) => p.id === id) ?? null;
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    if (this.users.length === 0) return null;
-    return this.users.find((p) => p.email === email) ?? null;
-  }
-
-  async create(user: User): Promise<User> {
-    this.users.push(user);
-    const createdUser = this.users.find((p) => p.id === user.id);
-    if (!createdUser) throw new Error('USER_NOT_CREATED');
-    return createdUser;
+    return this.db.users.find((p) => p.email === email) ?? null;
   }
 
   async save(user: User): Promise<User> {
-    const existingUser = await this.findByEmail(user.email);
-    return existingUser ?? (await this.create(user));
+    const existingIndex = this.db.users.findIndex((p) => p.id === user.id);
+    if (existingIndex !== -1) {
+      this.db.users[existingIndex] = user;
+    } else {
+      this.db.users.push(user);
+    }
+    return user;
   }
 
-  async update(user: User): Promise<User> {
-    this.users.push(user);
-    const createdUser = this.users.find((p) => p.id === user.id);
-    if (!createdUser) throw new Error('USER_NOT_CREATED');
-    return createdUser;
-  }
-
-  private populate(): User[] {
-    return Array.from({ length: 10 }, (_, i) => new User({ id: `${++i}` }));
+  public populate(userFactory: UserFactory): void;
+  public populate(userFactory: UserFactory, length: number): void;
+  public populate(userFactory: UserFactory, props: CreateUserProps[]): void;
+  public populate(userFactory: UserFactory, props: CreateUserProps, length: number): void;
+  public populate(userFactory: UserFactory, arg1?: number | CreateUserProps | CreateUserProps[], arg2?: number): void {
+    if (typeof arg1 === 'undefined' || typeof arg1 === 'number') {
+      const length = arg1 ?? 10;
+      for (let i = 0; i < length; i++) {
+        this.db.users.push(userFactory.create());
+      }
+      return;
+    }
+    if (Array.isArray(arg1)) {
+      for (const userProps of arg1) {
+        this.db.users.push(userFactory.create(userProps));
+      }
+      return;
+    }
+    if (typeof arg1 === 'object' && arg1 !== null) {
+      const templateProps = arg1;
+      const length = arg2 ?? 1;
+      for (let i = 0; i < length; i++) {
+        this.db.users.push(userFactory.create(templateProps));
+      }
+      return;
+    }
   }
 }
