@@ -5,6 +5,7 @@ export default interface EnrollmentRequestRepository {
   findById(id: string): Promise<EnrollmentRequest | null>;
   findByClubId(clubId: string): Promise<EnrollmentRequest[]>;
   findByFamilyId(familyId: string): Promise<EnrollmentRequest[]>;
+  findByDependantAndClub(dependantId: string, clubId: string): Promise<EnrollmentRequest[]>;
 }
 
 export const ENROLLMENT_REQUEST_REPOSITORY = Symbol('ENROLLMENT_REQUEST_REPOSITORY');

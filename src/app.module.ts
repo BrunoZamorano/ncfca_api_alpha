@@ -10,9 +10,19 @@ import CheckoutModule from '@/shared/modules/checkout.module';
 import { AppService } from '@/app.service';
 import { AppController } from '@/app.controller';
 import DependantModule from '@/shared/modules/dependant.module';
+import EnrollmentModule from '@/shared/modules/enrollment.module';
 
 @Module({
-  imports: [AccountModule, AuthModule, SharedModule, ClubModule, CheckoutModule, WebhookModule, DependantModule],
+  imports: [
+    AccountModule,
+    AuthModule,
+    SharedModule,
+    ClubModule,
+    CheckoutModule,
+    WebhookModule,
+    DependantModule,
+    EnrollmentModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

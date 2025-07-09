@@ -1,7 +1,9 @@
-import EnrollmentRequest from '@/domain/entities/enrollment-request/enrollment-request';
-import InMemoryDatabase from '@/infraestructure/database/in-memory.database';
-import EnrollmentRequestRepository from '@/domain/repositories/enrollment-request-repository';
 import { Injectable } from '@nestjs/common';
+
+import EnrollmentRequestRepository from '@/domain/repositories/enrollment-request-repository';
+import EnrollmentRequest from '@/domain/entities/enrollment-request/enrollment-request';
+
+import InMemoryDatabase from '@/infraestructure/database/in-memory.database';
 
 @Injectable()
 export default class EnrollmentRequestRepositoryMemory implements EnrollmentRequestRepository {
@@ -31,5 +33,9 @@ export default class EnrollmentRequestRepositoryMemory implements EnrollmentRequ
 
   async findByFamilyId(familyId: string): Promise<EnrollmentRequest[]> {
     return this.db.enrollmentRequests.filter((r) => r.familyId === familyId);
+  }
+
+  async findByDependantAndClub(dependantId: string, clubId: string): Promise<EnrollmentRequest[]> {
+    return this.db.enrollmentRequests.filter((p) => p.clubId === clubId && p.dependantId === dependantId) ?? [];
   }
 }
