@@ -23,12 +23,15 @@ import {
 } from '@/shared/constants/repository-constants';
 import { USER_FACTORY } from '@/shared/constants/factories-constants';
 import { HASHING_SERVICE, ID_GENERATOR, PAYMENT_GATEWAY, TOKEN_SERVICE } from '@/shared/constants/service-constants';
+import { ENROLLMENT_REQUEST_REPOSITORY } from '@/domain/repositories/enrollment-request-repository';
+import EnrollmentRequestRepositoryMemory from '@/infraestructure/repositories/enrollment-request.repository.memory';
 
 const repositories = [
   { provide: FAMILY_REPOSITORY, useFactory: () => new FamilyRepositoryMemory([]) },
   { provide: TRANSACTION_REPOSITORY, useClass: TransactionRepositoryMemory },
   { provide: CLUB_REPOSITORY, useFactory: () => new ClubRepositoryMemory({ options: { totalClubs: 250 } }) },
   { provide: USER_REPOSITORY, useClass: UserRepositoryMemory },
+  { provide: ENROLLMENT_REQUEST_REPOSITORY, useClass: EnrollmentRequestRepositoryMemory },
 ];
 
 const services = [

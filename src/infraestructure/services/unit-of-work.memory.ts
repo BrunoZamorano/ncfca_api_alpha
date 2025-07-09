@@ -4,10 +4,6 @@ import UserRepository from '@/domain/repositories/user-repository';
 import FamilyRepository from '@/domain/repositories/family-repository';
 import TransactionRepository from '@/domain/repositories/transaction.repository';
 import InMemoryDatabase from '@/infraestructure/database/in-memory.database';
-import UserRepositoryMemory from '@/infraestructure/repositories/user-repository-memory';
-import ClubRepositoryMemory from '@/infraestructure/repositories/club-repository-memory';
-import FamilyRepositoryMemory from '@/infraestructure/repositories/family.repository-memory';
-import TransactionRepositoryMemory from '@/infraestructure/repositories/transaction.memory-repository';
 import { Inject } from '@nestjs/common';
 import {
   CLUB_REPOSITORY,
@@ -15,6 +11,9 @@ import {
   TRANSACTION_REPOSITORY,
   USER_REPOSITORY,
 } from '@/shared/constants/repository-constants';
+import EnrollmentRequestRepository, {
+  ENROLLMENT_REQUEST_REPOSITORY,
+} from '@/domain/repositories/enrollment-request-repository';
 
 export class UnitOfWorkMemory implements UnitOfWork {
   private readonly db: InMemoryDatabase;
@@ -24,6 +23,7 @@ export class UnitOfWorkMemory implements UnitOfWork {
     @Inject(CLUB_REPOSITORY) public readonly clubRepository: ClubRepository,
     @Inject(FAMILY_REPOSITORY) public readonly familyRepository: FamilyRepository,
     @Inject(TRANSACTION_REPOSITORY) public readonly transactionRepository: TransactionRepository,
+    @Inject(ENROLLMENT_REQUEST_REPOSITORY) public readonly enrollmentRequestRepository: EnrollmentRequestRepository,
   ) {
     this.db = InMemoryDatabase.getInstance();
   }

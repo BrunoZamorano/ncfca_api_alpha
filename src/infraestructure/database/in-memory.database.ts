@@ -2,12 +2,14 @@ import Transaction from '@/domain/entities/transaction/transaction';
 import Family from '@/domain/entities/family/family';
 import Club from '@/domain/entities/club/club';
 import User from '@/domain/entities/user/user';
+import EnrollmentRequest from '@/domain/entities/enrollment-request/enrollment-request';
 
 export default class InMemoryDatabase {
   public readonly users: User[] = [];
   public readonly clubs: Club[] = [];
   public readonly families: Family[] = [];
   public readonly transactions: Transaction[] = [];
+  public readonly enrollmentRequests: EnrollmentRequest[] = [];
   private isTransactionActive = false;
   private transactionBackup: string | null = null;
   private static instance: InMemoryDatabase;
@@ -24,6 +26,7 @@ export default class InMemoryDatabase {
     this.clubs.length = 0;
     this.families.length = 0;
     this.transactions.length = 0;
+    this.enrollmentRequests.length = 0;
     this.isTransactionActive = false;
     this.transactionBackup = null;
   }
@@ -36,6 +39,7 @@ export default class InMemoryDatabase {
       clubs: this.clubs,
       families: this.families,
       transactions: this.transactions,
+      enrollmentRequests: this.enrollmentRequests,
     });
     return void 0;
   }
@@ -54,6 +58,7 @@ export default class InMemoryDatabase {
     this.clubs.splice(0, this.clubs.length, ...restoredState.clubs);
     this.families.splice(0, this.families.length, ...restoredState.families);
     this.transactions.splice(0, this.transactions.length, ...restoredState.transactions);
+    this.enrollmentRequests.splice(0, this.enrollmentRequests.length, ...restoredState.enrollmentRequests);
     this.isTransactionActive = false;
     this.transactionBackup = null;
     return void 0;
