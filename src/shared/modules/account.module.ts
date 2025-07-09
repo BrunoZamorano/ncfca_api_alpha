@@ -5,11 +5,13 @@ import RegisterUser from '@/application/use-cases/register-user/register-user';
 import AccountController from '@/infraestructure/controllers/account/account.controller';
 
 import SharedModule from '@/shared/modules/shared.module';
+import EditUserProfile from '@/application/use-cases/edit-user-profile/edit-user-profile';
+import ChangeUserPassword from '@/application/use-cases/change-user-password/change-user-password';
 
 @Module({
   imports: [SharedModule],
   controllers: [AccountController],
-  providers: [RegisterUser],
+  providers: [RegisterUser, EditUserProfile, ChangeUserPassword],
   exports: [],
 })
 export default class AccountModule {}
