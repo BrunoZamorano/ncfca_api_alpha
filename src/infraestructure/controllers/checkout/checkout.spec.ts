@@ -40,7 +40,7 @@ describe('CheckoutController', () => {
       const mockUserId = 'user-id-123';
       const mockRequest = {
         user: {
-          sub: mockUserId,
+          id: mockUserId,
         },
       };
       const expectedTransactionResult: PaymentTransaction = {

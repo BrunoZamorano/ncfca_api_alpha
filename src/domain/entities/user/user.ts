@@ -4,19 +4,20 @@ import HashingService from '@/domain/services/hashing-service';
 import Password from '@/domain/value-objects/password/password';
 import Cpf from '@/domain/value-objects/cpf/cpf';
 import Address, { AddressProps } from '@/domain/value-objects/address/address';
+import Email from '@/domain/value-objects/email/email';
 
 export default class User {
-  private readonly _address: Address;
   private readonly _roles: UserRoles[] = [];
   private readonly _cpf: Cpf;
   private readonly _id: string;
   private _firstName: string;
   private _password: Password;
   private _lastName: string;
-  private _email: string;
+  private _address: Address;
+  private _email: Email;
   private _phone: string;
 
-  public constructor(props: Props) {
+  public constructor(props: UserProps) {
     this._address = new Address(props.address ?? {});
     this._firstName = props.firstName;
     this._lastName = props.lastName;
@@ -44,7 +45,7 @@ export default class User {
   }
 
   get email() {
-    return this._email;
+    return this._email.value;
   }
 
   get phone() {
@@ -71,10 +72,11 @@ export default class User {
     return void 0;
   }
 
-  public updateProfile(input: Partial<Omit<Props, 'cpf' | 'id' | 'password' | 'roles'>>): void {
+  public updateProfile(input: UpdateProps): void {
     if (input.firstName) this._firstName = input.firstName;
     if (input.lastName) this._lastName = input.lastName;
-    if (input.email) this._email = input.email;
+    if (input.address) this._address = new Address(input.address);
+    if (input.email) this._email = new Email(input.email);
     if (input.phone) this._phone = input.phone;
     return void 0;
   }
@@ -100,13 +102,21 @@ export default class User {
   static readonly DEFAULT_FIRST_NAME = '<DEFAULT_FIRST_NAME>';
 }
 
-interface Props {
-  address?: AddressProps;
+interface UserProps {
   firstName: string;
   lastName: string;
   password: Password;
-  email: string;
+  address?: AddressProps;
+  email: Email;
   phone: string;
   cpf: Cpf;
   id: string;
+}
+
+interface UpdateProps {
+  firstName?: string;
+  lastName?: string;
+  address?: AddressProps;
+  phone?: string;
+  email?: string;
 }

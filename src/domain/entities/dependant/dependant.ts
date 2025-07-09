@@ -9,8 +9,8 @@ export default class Dependant {
   private _birthdate: Birthdate;
   private _firstName: string;
   private _lastName: string;
-  private _phone: string;
-  private _email: Email;
+  private _phone?: string;
+  private _email?: Email;
   private _sex: Sex;
   private readonly _id: string;
 
@@ -46,10 +46,10 @@ export default class Dependant {
   get sex(): Sex {
     return this._sex;
   }
-  get email(): string {
-    return this._email.value;
+  get email(): string | undefined {
+    return this._email?.value;
   }
-  get phone(): string {
+  get phone(): string | undefined {
     return this._phone;
   }
 
@@ -83,8 +83,8 @@ interface DependantProps {
   birthdate: Birthdate;
   relationship: DependantRelationship;
   sex: Sex;
-  email: Email;
-  phone: string;
+  email?: Email;
+  phone?: string;
 }
 
 interface UpdateProps {

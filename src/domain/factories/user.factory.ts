@@ -9,6 +9,7 @@ import User from '@/domain/entities/user/user';
 import Cpf from '@/domain/value-objects/cpf/cpf';
 
 import { HASHING_SERVICE, ID_GENERATOR } from '@/shared/constants/service-constants';
+import Email from '@/domain/value-objects/email/email';
 
 @Injectable()
 export default class UserFactory {
@@ -23,7 +24,7 @@ export default class UserFactory {
       firstName: props?.firstName ?? User.DEFAULT_FIRST_NAME,
       lastName: props?.lastName ?? User.DEFAULT_LAST_NAME,
       password: password ?? Password.fromHash(User.DEFAULT_PASSWORD),
-      email: props?.email ?? User.DEFAULT_EMAIL,
+      email: props?.email ? new Email(props.email) : new Email(User.DEFAULT_EMAIL),
       phone: props?.phone ?? User.DEFAULT_PHONE,
       cpf: props?.cpf ? new Cpf(props?.cpf) : new Cpf(),
       id: props?.id ?? this.idGenerator.generate(),

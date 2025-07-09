@@ -44,7 +44,7 @@ describe('Register User', function () {
       lastName: 'silva',
       password: '142B@l908',
       phone: '95991724765',
-      email: 'user_rest12i2',
+      email: User.DEFAULT_EMAIL,
       cpf: Cpf.VALID_CPF,
     };
     await registerUser.execute(props);

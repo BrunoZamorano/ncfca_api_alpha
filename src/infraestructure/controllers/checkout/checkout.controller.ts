@@ -17,12 +17,9 @@ export default class CheckoutController {
   @HttpCode(HttpStatus.OK)
   async createCheckout(
     @Body() checkoutInputDto: CheckoutInputDto,
-    @Request() req: { user: { sub: string } },
+    @Request() req: { user: { id: string } },
   ): Promise<PaymentTransaction> {
-    const userId = req.user.sub;
-    return this.checkout.execute({
-      ...checkoutInputDto,
-      userId,
-    });
+    const userId = req.user.id;
+    return this.checkout.execute({ ...checkoutInputDto, userId });
   }
 }

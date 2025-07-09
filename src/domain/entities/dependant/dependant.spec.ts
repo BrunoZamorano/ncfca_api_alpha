@@ -11,8 +11,8 @@ describe('Dependant Entity', () => {
     firstName: 'John',
     lastName: 'Doe',
     birthdate: new Birthdate('2010-05-15'),
-    relationship: DependantRelationship.SON,
-    sex: Sex.MALE,
+    relationship: DependantRelationship.Son,
+    sex: Sex.Male,
     email: new Email('john.jr@example.com'),
     phone: '11999998888',
   };
@@ -23,7 +23,7 @@ describe('Dependant Entity', () => {
     expect(dependant).toBeInstanceOf(Dependant);
     expect(dependant.firstName).toBe('John');
     expect(dependant.lastName).toBe('Doe');
-    expect(dependant.sex).toBe(Sex.MALE);
+    expect(dependant.sex).toBe(Sex.Male);
     expect(dependant.email).toBe('john.jr@example.com');
   });
 
@@ -43,8 +43,8 @@ describe('Dependant Entity', () => {
         firstName: 'Jane',
         lastName: 'Smith',
         birthdate: '2012-10-20',
-        relationship: DependantRelationship.DAUGHTER,
-        sex: Sex.FEMALE,
+        relationship: DependantRelationship.Daugter,
+        sex: Sex.Female,
         email: 'jane.smith@example.com',
         phone: '11777776666',
       };

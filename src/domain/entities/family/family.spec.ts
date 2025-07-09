@@ -14,8 +14,8 @@ describe('Família', function () {
       firstName: name,
       lastName: 'Doe',
       birthdate: new Birthdate('2010-01-01'),
-      relationship: DependantRelationship.SON,
-      sex: Sex.MALE,
+      relationship: DependantRelationship.Son,
+      sex: Sex.Male,
       email: new Email('john.jr@example.com'),
       phone: '11999998888',
     });

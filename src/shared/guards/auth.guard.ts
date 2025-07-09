@@ -15,7 +15,8 @@ export default class AuthGuard implements CanActivate {
     const token = this.extractTokenFromRequest(request);
     if (!token) throw new UnauthorizedException();
     try {
-      request['user'] = await this._tokenService.verifyAccessToken(token);
+      const { sub: id, ...decoded } = await this._tokenService.verifyAccessToken(token);
+      request['user'] = { id, ...decoded };
     } catch {
       throw new UnauthorizedException();
     }

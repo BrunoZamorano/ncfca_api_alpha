@@ -9,9 +9,10 @@ import CheckoutModule from '@/shared/modules/checkout.module';
 
 import { AppService } from '@/app.service';
 import { AppController } from '@/app.controller';
+import DependantModule from '@/shared/modules/dependant.module';
 
 @Module({
-  imports: [AccountModule, AuthModule, SharedModule, ClubModule, CheckoutModule, WebhookModule],
+  imports: [AccountModule, AuthModule, SharedModule, ClubModule, CheckoutModule, WebhookModule, DependantModule],
   controllers: [AppController],
   providers: [AppService],
 })

@@ -5,6 +5,7 @@ import Password from '@/domain/value-objects/password/password';
 import Cpf from '@/domain/value-objects/cpf/cpf';
 
 import User from './user';
+import Email from '@/domain/value-objects/email/email';
 
 describe('User Entity', () => {
   const mockHashingService: HashingService = {
@@ -18,7 +19,7 @@ describe('User Entity', () => {
       id: 'user-1',
       firstName: 'John',
       lastName: 'Doe',
-      email: 'john.doe@example.com',
+      email: new Email('john.doe@example.com'),
       phone: '11999998888',
       cpf: new Cpf(),
       password: Password.create('Password123', mockHashingService),
