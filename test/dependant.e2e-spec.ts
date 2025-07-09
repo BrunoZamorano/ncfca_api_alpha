@@ -8,12 +8,17 @@ import { DependantRelationship } from '@/domain/enums/dependant-relationship';
 import { Sex } from '@/domain/enums/sex';
 import { AddDependantDto } from '@/infraestructure/dtos/add-dependant.dto';
 import GlobalExceptionFilter from '@/infraestructure/filters/global-exception-filter';
+import Family from '@/domain/entities/family/family';
+import Dependant from '@/domain/entities/dependant/dependant';
+import Birthdate from '@/domain/value-objects/birthdate/birthdate';
+import { UpdateDependantDto } from '@/infraestructure/dtos/update-dependant.dto';
 
 describe('DependantController (e2e)', () => {
   let app: INestApplication;
   let db: InMemoryDatabase;
   let accessToken: string;
   let familyId: string;
+  let dependantId: string;
 
   const testUser = {
     firstName: 'Holder',
@@ -46,7 +51,7 @@ describe('DependantController (e2e)', () => {
     if (!createdUser) throw new Error('Test setup failed: User not found');
     const createdFamily = db.families.find((f) => f.holderId === createdUser.id);
     if (!createdFamily) throw new Error('Test setup failed: Family not found');
-    createdFamily.activateAffiliation()
+    createdFamily.activateAffiliation();
     familyId = createdFamily.id;
   });
 
@@ -94,6 +99,78 @@ describe('DependantController (e2e)', () => {
         .expect((res) => {
           expect(res.body.message).toContain('First name must be at least 2 characters long.');
         });
+    });
+    describe('Fluxo de Gerenciamento de Dependentes', () => {
+      it('deve (1) Adicionar, (2) Listar, (3) Atualizar e (4) Remover um dependente com sucesso', async () => {
+        // 1. Adicionar o dependente
+        const addDto = {
+          firstName: 'John',
+          lastName: 'Doe',
+          birthdate: '2010-01-01',
+          relationship: DependantRelationship.Son,
+          sex: Sex.Male,
+          email: 'john.doe.jr@example.com',
+        };
+        await request(app.getHttpServer())
+          .post('/dependants')
+          .set('Authorization', `Bearer ${accessToken}`)
+          .send(addDto)
+          .expect(HttpStatus.CREATED);
+
+        const familyInDb = db.families.find((f) => f.id === familyId)!;
+        expect(familyInDb.dependants).toHaveLength(1);
+        dependantId = familyInDb.dependants[0].id;
+
+        // 2. Listar e verificar
+        const listResponse = await request(app.getHttpServer())
+          .get('/dependants')
+          .set('Authorization', `Bearer ${accessToken}`)
+          .expect(HttpStatus.OK);
+        expect(listResponse.body).toHaveLength(1);
+        expect(listResponse.body[0]._firstName).toBe('John');
+
+        // 3. Atualizar
+        const updateDto: UpdateDependantDto = { firstName: 'Jonathan' };
+        await request(app.getHttpServer())
+          .patch(`/dependants/${dependantId}`)
+          .set('Authorization', `Bearer ${accessToken}`)
+          .send(updateDto)
+          .expect(HttpStatus.NO_CONTENT);
+
+        const updatedFamilyInDb = db.families.find((f) => f.id === familyId)!;
+        expect(updatedFamilyInDb.dependants[0].firstName).toBe('Jonathan');
+
+        // 4. Remover
+        await request(app.getHttpServer())
+          .delete(`/dependants/${dependantId}`)
+          .set('Authorization', `Bearer ${accessToken}`)
+          .expect(HttpStatus.NO_CONTENT);
+
+        const finalFamilyInDb = db.families.find((f) => f.id === familyId)!;
+        expect(finalFamilyInDb.dependants).toHaveLength(0);
+      });
+
+      it('NÃO deve permitir que um usuário edite um dependente que não lhe pertence', async () => {
+        // Setup: cria uma segunda família com um dependente
+        const anotherFamily = new Family({ id: 'another-family', holderId: 'another-user' });
+        const anotherDependant = new Dependant({
+          id: 'another-dep-id',
+          firstName: 'Stranger',
+          lastName: 'Danger',
+          birthdate: new Birthdate('2011-11-11'),
+          relationship: DependantRelationship.Son,
+          sex: Sex.Male,
+        });
+        anotherFamily.addDependant(anotherDependant);
+        db.families.push(anotherFamily);
+
+        // Act & Assert: Tenta atualizar o dependente da outra família
+        await request(app.getHttpServer())
+          .patch(`/dependants/another-dep-id`)
+          .set('Authorization', `Bearer ${accessToken}`)
+          .send({ firstName: 'Hacker' })
+          .expect(HttpStatus.NOT_FOUND); // Lança NotFound porque o use case não encontra o dependente na família do usuário logado.
+      });
     });
   });
 });

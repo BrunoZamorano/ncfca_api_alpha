@@ -2,24 +2,38 @@ import Family from './family';
 import { FamilyStatus } from '@/domain/enums/family-status';
 import Dependant from '@/domain/entities/dependant/dependant';
 import Birthdate from '@/domain/value-objects/birthdate/birthdate';
-import { DomainException } from '@/domain/exceptions/domain-exception';
+import { DomainException, EntityNotFoundException } from '@/domain/exceptions/domain-exception';
 import { DependantRelationship } from '@/domain/enums/dependant-relationship';
 import { Sex } from '@/domain/enums/sex';
-import Email from '@/domain/value-objects/email/email';
 
 describe('Família', function () {
-  const createValidDependant = (id: string, name: string) => {
-    return new Dependant({
+  const createValidDependant = (id: string) =>
+    new Dependant({
       id,
-      firstName: name,
+      firstName: 'John',
       lastName: 'Doe',
       birthdate: new Birthdate('2010-01-01'),
       relationship: DependantRelationship.Son,
       sex: Sex.Male,
-      email: new Email('john.jr@example.com'),
-      phone: '11999998888',
     });
-  };
+
+  it('Deve atualizar os dados de um dependente existente', () => {
+    const dependant = createValidDependant('dep-1');
+    const family = new Family({ id: '1', holderId: '1', dependants: [dependant] });
+    const updatePayload = { firstName: 'Jonathan' };
+
+    family.updateDependantInfo('dep-1', updatePayload);
+
+    expect(family.dependants[0].firstName).toBe('Jonathan');
+  });
+
+  it('Deve lançar EntityNotFoundException se o dependente não pertencer à família', () => {
+    const family = new Family({ id: '1', holderId: '1' });
+
+    expect(() => {
+      family.updateDependantInfo('non-existent-id', { firstName: 'test' });
+    }).toThrow(new EntityNotFoundException('Dependant', 'non-existent-id'));
+  });
 
   it('Deve criar uma nova Família', function () {
     const props = { holderId: '1', id: '1' };
@@ -30,7 +44,7 @@ describe('Família', function () {
 
   it('Deve adicionar um dependente à família', () => {
     const family = new Family({ holderId: '1', id: '1' });
-    const dependant = createValidDependant('dep-1', 'Filho');
+    const dependant = createValidDependant('dep-1');
     family.addDependant(dependant);
     expect(family.dependants).toHaveLength(1);
     expect(family.dependants[0].id).toBe('dep-1');
@@ -38,7 +52,7 @@ describe('Família', function () {
 
   it('Não deve adicionar o mesmo dependente duas vezes', () => {
     const family = new Family({ holderId: '1', id: '1' });
-    const dependant = createValidDependant('dep-1', 'Filho');
+    const dependant = createValidDependant('dep-1');
     family.addDependant(dependant);
     expect(() => family.addDependant(dependant)).toThrow(
       new DomainException('Dependant is already a member of this family.'),
@@ -48,7 +62,7 @@ describe('Família', function () {
   it('Deve remover um dependente da família', () => {
     const props = { holderId: '1', id: '1' };
     const family = new Family(props);
-    const dependant = createValidDependant('dep-1', 'Filho');
+    const dependant = createValidDependant('dep-1');
     family.addDependant(dependant);
 
     expect(family.dependants).toHaveLength(1);

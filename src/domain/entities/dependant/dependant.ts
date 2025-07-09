@@ -53,7 +53,7 @@ export default class Dependant {
     return this._phone;
   }
 
-  public updateInfo(input: UpdateProps): void {
+  public updateInfo(input: UpdateDependantProps): void {
     if (input.firstName) {
       this.validateName(input.firstName, 'First name');
       this._firstName = input.firstName;
@@ -87,7 +87,7 @@ interface DependantProps {
   phone?: string;
 }
 
-interface UpdateProps {
+export interface UpdateDependantProps {
   firstName?: string;
   lastName?: string;
   birthdate?: string;

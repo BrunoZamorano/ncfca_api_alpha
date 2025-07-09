@@ -1,6 +1,8 @@
 import { FamilyStatus } from '@/domain/enums/family-status';
 import Dependant from '@/domain/entities/dependant/dependant';
-import { DomainException } from '@/domain/exceptions/domain-exception';
+import { DomainException, EntityNotFoundException } from '@/domain/exceptions/domain-exception';
+import { DependantRelationship } from '@/domain/enums/dependant-relationship';
+import { Sex } from '@/domain/enums/sex';
 
 export default class Family {
   private _status: FamilyStatus;
@@ -8,7 +10,7 @@ export default class Family {
   private readonly _holderId: string;
   private readonly _id: string;
 
-  constructor(props: Props) {
+  public constructor(props: FamilyProps) {
     this._dependants = props.dependants ?? [];
     this._holderId = props.holderId;
     this._status = props.status ?? FamilyStatus.NOT_AFFILIATED;
@@ -31,11 +33,11 @@ export default class Family {
     return this._id;
   }
 
-  activateAffiliation(): void {
+  public activateAffiliation(): void {
     this._status = FamilyStatus.AFFILIATED;
   }
 
-  addDependant(dependant: Dependant): void {
+  public addDependant(dependant: Dependant): void {
     if (this._dependants.some((p) => p.id === dependant.id)) throw new Error(Family.errorCodes.ALREADY_MEMBER);
     this._dependants.push(dependant);
   }
@@ -49,14 +51,31 @@ export default class Family {
     return void 0;
   }
 
+  public updateDependantInfo(dependantId: string, info: UpdateInfoInput): void {
+    const dependant = this._dependants.find((d) => d.id === dependantId);
+    if (!dependant) throw new EntityNotFoundException('Dependant', dependantId);
+    dependant.updateInfo(info);
+    return void 0;
+  }
+
   static errorCodes = {
     ALREADY_MEMBER: 'Dependant is already a member of this family.',
   };
 }
 
-interface Props {
+interface FamilyProps {
   dependants?: Dependant[];
   holderId: string;
   status?: FamilyStatus;
   id: string;
+}
+
+interface UpdateInfoInput {
+  relationship?: DependantRelationship;
+  birthdate?: string;
+  firstName?: string;
+  lastName?: string;
+  phone?: string;
+  email?: string;
+  sex?: Sex;
 }
