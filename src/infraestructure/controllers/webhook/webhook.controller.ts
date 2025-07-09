@@ -2,18 +2,15 @@ import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs
 
 import ProcessPaymentUpdate from '@/application/use-cases/process-payment-update/process-payment-update';
 
-import { WebhookPayload } from '@/domain/types/payment';
+import { PaymentUpdateInputDto } from '@/infraestructure/dtos/payment-update.dto';
 
-import { WebhookGuard } from '@/shared/guards/webhook/webhook.guard';
-
-@Controller('webhooks')
+@Controller('webhook')
 export default class WebhookController {
   constructor(private readonly _processPaymentUpdate: ProcessPaymentUpdate) {}
 
   @Post('payment-updates')
-  @UseGuards(WebhookGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
-  async processPaymentUpdate(@Body() payload: WebhookPayload): Promise<void> {
+  async processPaymentUpdate(@Body() payload: PaymentUpdateInputDto): Promise<void> {
     await this._processPaymentUpdate.execute(payload);
   }
 }

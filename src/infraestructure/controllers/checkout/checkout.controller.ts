@@ -1,8 +1,12 @@
 import { Body, Controller, HttpCode, HttpStatus, Post, Request, UseGuards } from '@nestjs/common';
-import AuthGuard from '@/shared/guards/auth.guard';
+
 import Checkout from '@/application/use-cases/checkout/checkout';
-import { CheckoutInputDto } from '@/infraestructure/dtos/checkout.dto';
+
 import { PaymentTransaction } from '@/domain/types/payment';
+
+import { CheckoutInputDto } from '@/infraestructure/dtos/checkout.dto';
+
+import AuthGuard from '@/shared/guards/auth.guard';
 
 @Controller('checkout')
 export default class CheckoutController {

@@ -14,7 +14,6 @@ export default class ProcessPaymentUpdate {
 
   async execute(payload: WebhookPayload): Promise<void> {
     await this.uow.beginTransaction();
-    let commited = false;
     try {
       const gatewayTransactionId = payload.data.id;
       const newStatus = payload.data.status as PaymentStatus;
@@ -23,13 +22,11 @@ export default class ProcessPaymentUpdate {
       if (!transaction) {
         this.logger.warn(`Transação com gateway ID ${gatewayTransactionId} não encontrada. Ignorando webhook.`);
         await this.uow.commit();
-        commited = true;
         return void 0;
       }
       if (transaction.status === newStatus) {
         this.logger.log(`Transação ${transaction.id} já está com o status ${newStatus}. Nenhuma ação necessária.`);
         await this.uow.commit();
-        commited = true;
         return void 0;
       }
       transaction.changeStatus(newStatus);
@@ -37,7 +34,6 @@ export default class ProcessPaymentUpdate {
         await this.uow.transactionRepository.save(transaction);
         this.logger.log(`Transação ${transaction.id} atualizada para o status: ${newStatus}. Nenhuma ação na família.`);
         await this.uow.commit();
-        commited = true;
         return void 0;
       }
       const family = await this.uow.familyRepository.find(transaction.familyId);
@@ -47,7 +43,6 @@ export default class ProcessPaymentUpdate {
           `Família ${transaction.familyId} já está com o status ${family.status}. Transação Salva. Nenhuma ação necessária.`,
         );
         await this.uow.commit();
-        commited = true;
         return void 0;
       }
       family.activateAffiliation();
@@ -57,12 +52,11 @@ export default class ProcessPaymentUpdate {
       this.logger.log(
         `Afiliação da família ${family.id} ativada. Transação ${transaction.id} atualizada para ${newStatus}.`,
       );
+      return void 0;
     } catch (error) {
+      await this.uow.rollback();
       this.logger.error(`Erro ao processar webhook: ${error.message}`);
       throw error;
-    } finally {
-      if (!commited) await this.uow.rollback();
-      this.logger.log('Transação revertida devido a um erro ou fluxo inesperado.');
     }
   }
 }

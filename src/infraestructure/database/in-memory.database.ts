@@ -9,7 +9,7 @@ export default class InMemoryDatabase {
   public readonly families: Family[] = [];
   public readonly transactions: Transaction[] = [];
   private isTransactionActive = false;
-  private transactionBackup: any = null;
+  private transactionBackup: string | null = null;
   private static instance: InMemoryDatabase;
 
   private constructor() {}
@@ -19,8 +19,18 @@ export default class InMemoryDatabase {
     return InMemoryDatabase.instance;
   }
 
+  public reset(): void {
+    this.users.length = 0;
+    this.clubs.length = 0;
+    this.families.length = 0;
+    this.transactions.length = 0;
+    this.isTransactionActive = false;
+    this.transactionBackup = null;
+  }
+
   public beginTransaction(): void {
     if (this.isTransactionActive) throw new Error('Transaction already active');
+    this.isTransactionActive = true;
     this.transactionBackup = JSON.stringify({
       users: this.users,
       clubs: this.clubs,
@@ -38,7 +48,8 @@ export default class InMemoryDatabase {
   }
 
   public rollback(): void {
-    const restoredState = JSON.parse(this.transactionBackup);
+    if (!this.isTransactionActive) return void 0;
+    const restoredState = JSON.parse(this.transactionBackup!);
     this.users.splice(0, this.users.length, ...restoredState.users);
     this.clubs.splice(0, this.clubs.length, ...restoredState.clubs);
     this.families.splice(0, this.families.length, ...restoredState.families);

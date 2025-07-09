@@ -62,7 +62,6 @@ export interface WebhookPayload {
   data: {
     id: string; 
     status: string; 
-    // todo: verificar outros campos do iugu
   };
   timestamp: string;
 }
