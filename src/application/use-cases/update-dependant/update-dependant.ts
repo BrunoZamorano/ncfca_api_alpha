@@ -8,8 +8,7 @@ export default class UpdateDependant {
   constructor(@Inject(UNIT_OF_WORK) private readonly uow: UnitOfWork) {}
 
   async execute(input: UpdateDependantInput): Promise<void> {
-    await this.uow.beginTransaction();
-    try {
+    return this.uow.executeInTransaction(async () => {
       const family = await this.uow.familyRepository.findByHolderId(input.loggedInUserId);
       if (!family) throw new EntityNotFoundException('Family', `for user ${input.loggedInUserId}`);
       family.updateDependantInfo(input.dependantId, {
@@ -22,11 +21,7 @@ export default class UpdateDependant {
         phone: input.phone,
       });
       await this.uow.familyRepository.save(family);
-      await this.uow.commit();
-    } catch (error) {
-      await this.uow.rollback();
-      throw error;
-    }
+    });
   }
 }
 

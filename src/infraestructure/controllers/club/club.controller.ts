@@ -28,8 +28,8 @@ export default class ClubController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async createClub(@Request() req: any, @Body() body: CreateClubDto): Promise<ClubDto> {
-    const ownerId = req.user.id;
-    const club = await this._createClub.execute({ ...body, ownerId });
+    const loggedInUserId = req.user.id;
+    const club = await this._createClub.execute({ ...body, loggedInUserId });
     return ClubMapper.entityToDto(club);
   }
 }

@@ -18,20 +18,25 @@ export default class CreateClub {
 
   async execute(input: Input): Promise<Club> {
     return this.uow.executeInTransaction(async () => {
-      const existingClub = await this.uow.clubRepository.findByOwnerId(input.ownerId);
+      const existingClub = await this.uow.clubRepository.findByOwnerId(input.loggedInUserId);
       if (existingClub) throw new InvalidOperationException('User can only own one club.');
-      const user = await this.uow.userRepository.find(input.ownerId);
-      if (!user) throw new EntityNotFoundException('User', input.ownerId);
+      const user = await this.uow.userRepository.find(input.loggedInUserId);
+      if (!user) throw new EntityNotFoundException('User', input.loggedInUserId);
       user.addRoles([UserRoles.DONO_DE_CLUBE]);
       await this.uow.userRepository.save(user);
-      const clubInstance = new Club({ ...input, id: this._idGenerator.generate() });
+      const clubInstance = new Club({
+        ownerId: input.loggedInUserId,
+        name: input.name,
+        city: input.city,
+        id: this._idGenerator.generate()
+      });
       return await this.uow.clubRepository.save(clubInstance);
     });
   }
 }
 
 interface Input {
-  ownerId: string;
+  loggedInUserId: string;
   city: string;
   name: string;
 }
