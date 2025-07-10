@@ -35,7 +35,7 @@ export default class GlobalExceptionFilter implements ExceptionFilter {
       body = exception.getResponse();
     } else {
       status = HttpStatus.INTERNAL_SERVER_ERROR;
-      body = { message: 'INTERNAL_SERVER_ERROR' };
+      body = { message: exception.message, stack: exception.stack };
     }
     response.status(status).json({
       statusCode: status,

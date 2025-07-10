@@ -25,6 +25,10 @@ export default class FamilyRepositoryMemory implements FamilyRepository {
     return this.db.families.find((p) => p.id === id) ?? null;
   }
 
+  async findAll(): Promise<Family[]> {
+    return this.db.families;
+  }
+
   async save(family: Family): Promise<Family> {
     const existingIndex = this.db.families.findIndex((p) => p.id === family.id);
     if (existingIndex === -1) return this.create(family);

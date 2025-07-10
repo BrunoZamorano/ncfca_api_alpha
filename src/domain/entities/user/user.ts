@@ -7,13 +7,13 @@ import Address, { AddressProps } from '@/domain/value-objects/address/address';
 import Email from '@/domain/value-objects/email/email';
 
 export default class User {
-  private readonly _roles: UserRoles[] = [];
   private readonly _cpf: Cpf;
   private readonly _id: string;
   private _firstName: string;
   private _password: Password;
   private _lastName: string;
   private _address: Address;
+  private _roles: UserRoles[] = [];
   private _email: Email;
   private _phone: string;
 
@@ -87,6 +87,10 @@ export default class User {
       this._roles.push(role);
     }
     return void 0;
+  }
+
+  public revokeRole(role: UserRoles): void {
+    this._roles = this._roles.filter((r) => r !== role);
   }
 
   static errorCodes = {

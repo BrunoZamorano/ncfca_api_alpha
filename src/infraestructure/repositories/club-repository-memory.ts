@@ -11,7 +11,7 @@ import ClubMapper from '@/shared/mappers/club.mapper';
 export default class ClubRepositoryMemory implements ClubRepository {
   private db: InMemoryDatabase;
 
-  public constructor({ clubs, options }: { clubs?: Club[]; options?: Options } ) {
+  public constructor({ clubs, options }: { clubs?: Club[]; options?: Options }) {
     this.db = InMemoryDatabase.getInstance();
     const initialClubs = clubs ?? this.populate(options?.totalClubs);
     this.db.clubs.push(...initialClubs);
@@ -63,8 +63,15 @@ export default class ClubRepositoryMemory implements ClubRepository {
     return this.db.clubs.find((c) => c.id === id) ?? null;
   }
 
+  async findAll(): Promise<Club[]> {
+    return this.db.clubs ?? [];
+  }
+
   public populate(totalClubs: number = 10): Club[] {
-    return Array.from({ length: totalClubs }, (_, i) => new Club({ ownerId: `${++i}`, id: `${i}` }));
+    return Array.from(
+      { length: totalClubs },
+      (_, i) => new Club({ ownerId: crypto.randomUUID(), id: crypto.randomUUID() }),
+    );
   }
 }
 

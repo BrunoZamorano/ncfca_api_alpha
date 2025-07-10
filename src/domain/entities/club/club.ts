@@ -1,7 +1,10 @@
+import { DomainException } from '@/domain/exceptions/domain-exception';
+import { UserRoles } from '@/domain/enums/user-roles';
+
 export default class Club {
   private readonly _affiliatedFamilies: string[] = [];
-  private readonly _ownerId: string;
   private readonly _id: string;
+  private _ownerId: string;
   private _city: string;
   private _name: string;
 
@@ -38,6 +41,12 @@ export default class Club {
     this._affiliatedFamilies.push(familyId);
   }
 
+  public changeOwner(newOwnerId: string): void {
+    if (this._ownerId === newOwnerId) throw new DomainException('Owner cannot be the same');
+    this._ownerId = newOwnerId;
+  }
+  
+  
   updateInfo(props: { name?: string; city?: string }): void {
     if (props.name) {
       this._name = props.name;

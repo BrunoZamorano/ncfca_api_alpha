@@ -12,9 +12,11 @@ import { AppController } from '@/app.controller';
 import DependantModule from '@/shared/modules/dependant.module';
 import EnrollmentModule from '@/shared/modules/enrollment.module';
 import ClubManagementModule from '@/shared/modules/club-management.module';
+import AdminModule from '@/shared/modules/admin.module';
 
 @Module({
   imports: [
+    AdminModule,
     AccountModule,
     AuthModule,
     SharedModule,

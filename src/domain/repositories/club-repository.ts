@@ -7,5 +7,6 @@ export default interface ClubRepository {
   search(query: SearchClubsQueryDto): Promise<PaginatedOutputDto<ClubDto>>;
   save(club: Club): Promise<Club>;
   find(id: string): Promise<Club | null>;
+  findAll(): Promise<Club[]>;
   findByOwnerId(ownerId: string): Promise<Club | null>;
 }
