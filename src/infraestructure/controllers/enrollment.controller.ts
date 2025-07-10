@@ -1,12 +1,16 @@
-import { Controller, Post, Body, UseGuards, Request, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Request, HttpCode, HttpStatus, Get } from '@nestjs/common';
 import { RequestEnrollmentDto } from '../dtos/request-enrollment.dto';
-import RequestEnrollmentUseCase from '@/application/use-cases/request-enrollment/request-enrollment';
+import RequestEnrollment from '@/application/use-cases/request-enrollment/request-enrollment';
 import AuthGuard from '@/shared/guards/auth.guard';
+import ListMyEnrollmentRequests from '@/application/use-cases/list-my-enrollment-requests/list-my-enrollment-requests';
 
 @Controller('enrollments')
 @UseGuards(AuthGuard)
 export default class EnrollmentController {
-  constructor(private readonly requestEnrollmentUseCase: RequestEnrollmentUseCase) {}
+  constructor(
+    private readonly requestEnrollmentUseCase: RequestEnrollment,
+    private readonly listMyEnrollmentRequests: ListMyEnrollmentRequests,
+  ) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -17,5 +21,12 @@ export default class EnrollmentController {
       dependantId: body.dependantId,
       clubId: body.clubId,
     });
+  }
+
+  @Get('my-requests')
+  @HttpCode(HttpStatus.OK)
+  async listMyRequests(@Request() req: any) {
+    const loggedInUserId = req.user.id;
+    return this.listMyEnrollmentRequests.execute(loggedInUserId);
   }
 }

@@ -6,6 +6,7 @@ import RejectEnrollment from '@/application/use-cases/reject-enrollment/reject-e
 import ListClubMembers from '@/application/use-cases/list-club-members/list-club-members';
 import RemoveClubMember from '@/application/use-cases/remove-club-member/remove-club-member';
 import ClubManagementController from '@/infraestructure/controllers/club-management/club-management.controller';
+import UpdateClubInfo from '@/application/use-cases/update-club-info/update-club-info';
 
 @Module({
   imports: [SharedModule],
@@ -16,6 +17,7 @@ import ClubManagementController from '@/infraestructure/controllers/club-managem
     RejectEnrollment,
     ListClubMembers,
     RemoveClubMember,
+    UpdateClubInfo,
   ],
 })
 export default class ClubManagementModule {}

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Delete, Param, Body, UseGuards, Request, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Param, Body, UseGuards, Request, HttpCode, HttpStatus, Patch } from '@nestjs/common';
 import AuthGuard from '@/shared/guards/auth.guard';
 import ListPendingEnrollments from '@/application/use-cases/list-pending-enrollments/list-pending-enrollments';
 import ApproveEnrollment from '@/application/use-cases/approve-enrollment/approve-enrollment';
@@ -6,6 +6,8 @@ import RejectEnrollment from '@/application/use-cases/reject-enrollment/reject-e
 import ListClubMembers from '@/application/use-cases/list-club-members/list-club-members';
 import RemoveClubMember from '@/application/use-cases/remove-club-member/remove-club-member';
 import { RejectEnrollmentDto } from '@/infraestructure/dtos/reject-enrollment.dto';
+import UpdateClubInfo from '@/application/use-cases/update-club-info/update-club-info';
+import { UpdateClubDto } from '@/infraestructure/dtos/update-club.dto';
 
 @Controller('club-management')
 @UseGuards(AuthGuard)
@@ -16,7 +18,22 @@ export default class ClubManagementController {
     private readonly _rejectEnrollment: RejectEnrollment,
     private readonly _listClubMembers: ListClubMembers,
     private readonly _removeClubMember: RemoveClubMember,
+    private readonly _updateClubInfo: UpdateClubInfo,
   ) {}
+
+  @Patch(':clubId')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async updateClub(
+    @Request() req: any,
+    @Param('clubId') clubId: string,
+    @Body() body: UpdateClubDto,
+  ): Promise<void> {
+    await this._updateClubInfo.execute({
+      loggedInUserId: req.user.id,
+      clubId,
+      ...body,
+    });
+  }
 
   @Get(':clubId/enrollments/pending')
   async listPending(@Request() req: any, @Param('clubId') clubId: string) {
@@ -48,7 +65,7 @@ export default class ClubManagementController {
     return this._listClubMembers.execute({ loggedInUserId: req.user.id, clubId });
   }
 
-  @Delete('/enrollments/:enrollmentId')
+  @Post('/enrollments/:enrollmentId/revoke')
   @HttpCode(HttpStatus.NO_CONTENT)
   async removeMember(@Request() req: any, @Param('enrollmentId') enrollmentId: string) {
     await this._removeClubMember.execute({ loggedInUserId: req.user.id, enrollmentRequestId: enrollmentId });

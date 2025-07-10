@@ -21,7 +21,6 @@ export default class RemoveClubMember {
       request.status = EnrollmentStatus.Revoked;
       request.resolvedAt = new Date();
       await this.uow.enrollmentRequestRepository.save(request);
-      await this.uow.commit();
     });
   }
 }

@@ -1,9 +1,9 @@
 export default class Club {
   private readonly _affiliatedFamilies: string[] = [];
   private readonly _ownerId: string;
-  private readonly _city: string;
-  private readonly _name: string;
   private readonly _id: string;
+  private _city: string;
+  private _name: string;
 
   constructor(props: Props) {
     this.addAffiliatedFamilies(props.ownerId);
@@ -36,6 +36,15 @@ export default class Club {
   addAffiliatedFamilies(familyId: string): void {
     if (this._affiliatedFamilies.includes(familyId)) throw new Error(Club.errorCodes.ALREADY_AFFILIATED);
     this._affiliatedFamilies.push(familyId);
+  }
+
+  updateInfo(props: { name?: string; city?: string }): void {
+    if (props.name) {
+      this._name = props.name;
+    }
+    if (props.city) {
+      this._city = props.city;
+    }
   }
 
   static errorCodes = {

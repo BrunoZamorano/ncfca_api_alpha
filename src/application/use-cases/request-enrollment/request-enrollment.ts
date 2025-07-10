@@ -7,15 +7,14 @@ import { ID_GENERATOR } from '@/shared/constants/service-constants';
 import { FamilyStatus } from '@/domain/enums/family-status';
 
 @Injectable()
-export default class RequestEnrollmentUseCase {
+export default class RequestEnrollment {
   constructor(
     @Inject(UNIT_OF_WORK) private readonly uow: UnitOfWork,
     @Inject(ID_GENERATOR) private readonly idGenerator: IdGenerator,
   ) {}
 
   async execute(input: RequestEnrollmentInput): Promise<EnrollmentRequest> {
-    await this.uow.beginTransaction();
-    try {
+    return await this.uow.executeInTransaction(async () => {
       const family = await this.uow.familyRepository.findByHolderId(input.loggedInUserId);
       if (!family) throw new EntityNotFoundException('Family', `for user ${input.loggedInUserId}`);
       const dependant = family.dependants.find((d) => d.id === input.dependantId);
@@ -35,13 +34,8 @@ export default class RequestEnrollmentUseCase {
         familyId: family.id,
         dependantId: dependant.id,
       });
-      const savedRequest = await this.uow.enrollmentRequestRepository.save(request);
-      await this.uow.commit();
-      return savedRequest;
-    } catch (error) {
-      await this.uow.rollback();
-      throw error;
-    }
+      return await this.uow.enrollmentRequestRepository.save(request);
+    });
   }
 }
 
