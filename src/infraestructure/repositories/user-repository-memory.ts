@@ -19,7 +19,7 @@ export default class UserRepositoryMemory implements UserRepository {
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    return this.db.users.find((p) => p.email === email) ?? null;
+    return this.db.users.find((p) => p['_email'].value === email) ?? null;
   }
 
   async save(user: User): Promise<User> {
@@ -27,6 +27,7 @@ export default class UserRepositoryMemory implements UserRepository {
     if (existingIndex !== -1) {
       this.db.users[existingIndex] = user;
     } else {
+      if (this.db.users.some((p) => p['_email'].value === user.email)) throw new Error('EMAIL_ALREADY_IN_USE');
       this.db.users.push(user);
     }
     return user;

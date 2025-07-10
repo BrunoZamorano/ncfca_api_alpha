@@ -15,10 +15,12 @@ import { CheckoutInputDto } from '@/infraestructure/dtos/checkout.dto';
 import { PaymentMethod } from '@/domain/enums/payment-method';
 import { PaymentStatus } from '@/domain/enums/payment-status';
 import { PaymentGatewayMemory } from '@/infraestructure/services/payment-gateway.memory';
+import InMemoryDatabase from '@/infraestructure/database/in-memory.database';
 
 describe('CheckoutController (e2e)', () => {
   let app: INestApplication<App>;
   let paymentGateway: PaymentGatewayMemory;
+  let db: InMemoryDatabase;
 
   const testUser: RegisterUserInputDto = {
     firstName: 'Checkout',
@@ -33,10 +35,11 @@ describe('CheckoutController (e2e)', () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     })
-      .overrideProvider(PAYMENT_GATEWAY) // 1. Sobrescreve o provedor do gateway
-      .useClass(PaymentGatewayMemory)    //    com a nossa implementação em memória
+      .overrideProvider(PAYMENT_GATEWAY)
+      .useClass(PaymentGatewayMemory)
       .compile();
-
+    db = InMemoryDatabase.getInstance();
+    db.reset();
     app = moduleFixture.createNestApplication();
     app.useGlobalFilters(new GlobalExceptionFilter());
     app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
@@ -106,10 +109,7 @@ describe('CheckoutController (e2e)', () => {
         paymentMethod: PaymentMethod.PIX,
       };
 
-      return request(app.getHttpServer())
-        .post('/checkout')
-        .send(checkoutDto)
-        .expect(HttpStatus.UNAUTHORIZED); // 5. Verifica se o acesso não autorizado é bloqueado
+      return request(app.getHttpServer()).post('/checkout').send(checkoutDto).expect(HttpStatus.UNAUTHORIZED); // 5. Verifica se o acesso não autorizado é bloqueado
     });
 
     it('deve retornar 400 Bad Request se o corpo da requisição for inválido', () => {
@@ -120,7 +120,9 @@ describe('CheckoutController (e2e)', () => {
         .expect(HttpStatus.BAD_REQUEST)
         .expect((res) => {
           expect(res.body.message).toEqual(expect.any(Array));
-          expect(res.body.message).toContain('O método de pagamento deve ser um dos seguintes: credit_card, pix, bank_slip');
+          expect(res.body.message).toContain(
+            'O método de pagamento deve ser um dos seguintes: credit_card, pix, bank_slip',
+          );
         });
     });
   });

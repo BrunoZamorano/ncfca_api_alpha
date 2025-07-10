@@ -5,7 +5,7 @@ import { AppModule } from '@/app.module';
 import InMemoryDatabase from '@/infraestructure/database/in-memory.database';
 import Cpf from '@/domain/value-objects/cpf/cpf';
 import Club from '@/domain/entities/club/club';
-import { EnrollmentStatus } from '@/domain/enums/enrollment-status/enrollment-status';
+import { EnrollmentStatus } from '@/domain/enums/enrollment-status';
 import { AddDependantDto } from '@/infraestructure/dtos/add-dependant.dto';
 import { DependantRelationship } from '@/domain/enums/dependant-relationship';
 import { Sex } from '@/domain/enums/sex';
@@ -95,7 +95,7 @@ describe('Enrollment Journey (e2e)', () => {
     // ---- ASSERT FINAL: Verificar se a solicitação foi criada corretamente ----
     expect(db.enrollmentRequests).toHaveLength(1);
     const requestInDb = db.enrollmentRequests[0];
-    expect(requestInDb.status).toBe(EnrollmentStatus.PENDING);
+    expect(requestInDb.status).toBe(EnrollmentStatus.Pending);
     expect(requestInDb.dependantId).toBe(createdDependant.id);
     expect(requestInDb.clubId).toBe(clubId);
   });

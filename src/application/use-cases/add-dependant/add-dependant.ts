@@ -1,5 +1,5 @@
 import { EntityNotFoundException } from '@/domain/exceptions/domain-exception';
-import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
+import { ForbiddenException, Inject, Injectable, Logger } from '@nestjs/common';
 import Dependant from '@/domain/entities/dependant/dependant';
 import Birthdate from '@/domain/value-objects/birthdate/birthdate';
 import Email from '@/domain/value-objects/email/email';
@@ -23,23 +23,26 @@ export interface AddDependantInput {
 
 @Injectable()
 export default class AddDependant {
+  private readonly logger = new Logger(AddDependant.name); // Instância do Logger
+
   constructor(
     @Inject(ID_GENERATOR) private readonly idGenerator: IdGenerator,
     @Inject(UNIT_OF_WORK) private readonly uow: UnitOfWork,
   ) {}
 
   async execute(input: AddDependantInput): Promise<Dependant> {
-    await this.uow.beginTransaction();
-    try {
+    return this.uow.executeInTransaction(async () => {
+      this.logger.log(`Iniciando transação para adicionar dependente para o usuário ${input.loggedInUserId}.`);
       const family = await this.uow.familyRepository.findByHolderId(input.loggedInUserId);
-      if (!family) throw new EntityNotFoundException('Family', `for user ${input.loggedInUserId}`);
-      if (family.status !== FamilyStatus.AFFILIATED){
+      if (!family) {
+        throw new EntityNotFoundException('Family', `for user ${input.loggedInUserId}`);
+      }
+      if (family.status !== FamilyStatus.AFFILIATED) {
         throw new ForbiddenException('Family must be affiliated to add dependants');
       }
-      const holder = await this.uow.userRepository.find(input.loggedInUserId);
-      if (!holder) throw new EntityNotFoundException('User', input.loggedInUserId);
+      const dependantId = this.idGenerator.generate();
       const dependant = new Dependant({
-        id: this.idGenerator.generate(),
+        id: dependantId,
         sex: input.sex,
         phone: input.phone,
         email: input.email ? new Email(input.email) : undefined,
@@ -50,11 +53,8 @@ export default class AddDependant {
       });
       family.addDependant(dependant);
       await this.uow.familyRepository.save(family);
-      await this.uow.commit();
+      this.logger.log(`Dependente ${dependant.id} adicionado com sucesso à família ${family.id}.`);
       return dependant;
-    } catch (error) {
-      await this.uow.rollback();
-      throw error;
-    }
+    });
   }
 }

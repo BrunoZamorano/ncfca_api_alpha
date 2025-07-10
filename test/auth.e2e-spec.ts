@@ -27,7 +27,7 @@ describe('AuthController (e2e)', () => {
   let tokenService: TokenService;
 
   beforeEach(async () => {
-    db.beginTransaction();
+    db.reset();
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -40,7 +40,6 @@ describe('AuthController (e2e)', () => {
   });
 
   afterEach(async () => {
-    db.rollback();
     await app.close();
   });
 

@@ -14,6 +14,7 @@ export interface UnitOfWork {
   commit(): Promise<void>;
   rollback(): Promise<void>;
   beginTransaction(): Promise<void>;
+  executeInTransaction<T>(work: () => Promise<T>): Promise<T>;
 }
 
 export const UNIT_OF_WORK = Symbol('UNIT_OF_WORK');

@@ -2,23 +2,22 @@ import { Inject } from '@nestjs/common';
 
 import HashingService from '@/domain/services/hashing-service';
 
-import UserRepository from '@/domain/repositories/user-repository';
-import { EntityNotFoundException, UnauthorizedException } from '@/domain/exceptions/domain-exception';
+import { EntityNotFoundException } from '@/domain/exceptions/domain-exception';
 
-import { USER_REPOSITORY } from '@/shared/constants/repository-constants';
 import { HASHING_SERVICE } from '@/shared/constants/service-constants';
+import { UNIT_OF_WORK, UnitOfWork } from '@/domain/services/unit-of-work';
 
 export default class ChangeUserPassword {
   constructor(
-    @Inject(USER_REPOSITORY) private readonly _userRepository: UserRepository,
+    @Inject(UNIT_OF_WORK) private readonly uow: UnitOfWork,
     @Inject(HASHING_SERVICE) private readonly _hashingService: HashingService,
   ) {}
 
   async execute(input: Input): Promise<void> {
-    const user = await this._userRepository.find(input.id);
+    const user = await this.uow.userRepository.find(input.id);
     if (!user) throw new EntityNotFoundException('User', input.id);
     user.changePassword(input.password, input.newPassword, this._hashingService);
-    await this._userRepository.save(user);
+    await this.uow.userRepository.save(user);
   }
 
   static errorCodes = {

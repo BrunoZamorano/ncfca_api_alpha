@@ -44,4 +44,16 @@ export class UnitOfWorkMemory implements UnitOfWork {
       throw error;
     }
   }
+
+  async executeInTransaction<T>(work: () => Promise<T>): Promise<T> {
+    await this.beginTransaction();
+    try {
+      const result = await work();
+      await this.commit();
+      return result;
+    } catch (error) {
+      await this.rollback();
+      throw error;
+    }
+  }
 }

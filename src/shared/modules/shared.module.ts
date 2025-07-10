@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, Scope } from '@nestjs/common';
 
 import { JwtModule } from '@nestjs/jwt';
 
@@ -37,7 +37,7 @@ const repositories = [
 const services = [
   { provide: HASHING_SERVICE, useClass: AnemicHashingService },
   { provide: PAYMENT_GATEWAY, useClass: PaymentGatewayMemory },
-  { provide: UNIT_OF_WORK, useClass: UnitOfWorkMemory },
+  { provide: UNIT_OF_WORK, useClass: UnitOfWorkMemory, scope: Scope.REQUEST },
   { provide: TOKEN_SERVICE, useClass: TokenServiceJwt },
   { provide: ID_GENERATOR, useClass: UuidGenerator },
 ];
