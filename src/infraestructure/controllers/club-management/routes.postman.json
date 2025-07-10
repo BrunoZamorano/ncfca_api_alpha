@@ -1,0 +1,334 @@
+{
+  "info": {
+    "_postman_id": "a1b2c3d4-e5f6-7890-1234-abcdef123456",
+    "name": "NCFCA API - Novas Rotas",
+    "description": "Coleção com as novas rotas implementadas para gerenciamento de clubes e matrículas, incluindo proteção por perfil de usuário (Role).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Enrollments (Responsável Familiar)",
+      "item": [
+        {
+          "name": "List My Enrollment Requests",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/enrollments/my-requests",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "enrollments",
+                "my-requests"
+              ]
+            },
+            "description": "Lista todas as solicitações de matrícula para a família do usuário logado e seus respectivos status."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Club Management (Diretor de Clube)",
+      "description": "Endpoints para diretores de clube gerenciarem seus clubes e matrículas. Requer o perfil 'DONO_DE_CLUBE'.",
+      "item": [
+        {
+          "name": "Update Club Info",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Oradores do Amanhã\",\n    \"city\": \"Brasília\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/club-management/:clubId",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "club-management",
+                ":clubId"
+              ],
+              "variable": [
+                {
+                  "key": "clubId",
+                  "value": "seu-club-id-aqui"
+                }
+              ]
+            },
+            "description": "Atualiza as informações de um clube específico. Requer que o usuário seja o dono do clube."
+          },
+          "response": []
+        },
+        {
+          "name": "List Pending Enrollments for Club",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/club-management/:clubId/enrollments/pending",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "club-management",
+                ":clubId",
+                "enrollments",
+                "pending"
+              ],
+              "variable": [
+                {
+                  "key": "clubId",
+                  "value": "seu-club-id-aqui"
+                }
+              ]
+            },
+            "description": "Lista todas as solicitações de matrícula pendentes para um clube específico."
+          },
+          "response": []
+        },
+        {
+          "name": "Approve Enrollment Request",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/club-management/enrollments/:enrollmentId/approve",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "club-management",
+                "enrollments",
+                ":enrollmentId",
+                "approve"
+              ],
+              "variable": [
+                {
+                  "key": "enrollmentId",
+                  "value": "seu-enrollment-id-aqui"
+                }
+              ]
+            },
+            "description": "Aprova uma solicitação de matrícula pendente."
+          },
+          "response": []
+        },
+        {
+          "name": "Reject Enrollment Request",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"reason\": \"Infelizmente, todas as vagas para esta faixa etária já foram preenchidas.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/club-management/enrollments/:enrollmentId/reject",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "club-management",
+                "enrollments",
+                ":enrollmentId",
+                "reject"
+              ],
+              "variable": [
+                {
+                  "key": "enrollmentId",
+                  "value": "seu-enrollment-id-aqui"
+                }
+              ]
+            },
+            "description": "Rejeita uma solicitação de matrícula pendente. O motivo é obrigatório."
+          },
+          "response": []
+        },
+        {
+          "name": "List Club Members",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/club-management/:clubId/members",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "club-management",
+                ":clubId",
+                "members"
+              ],
+              "variable": [
+                {
+                  "key": "clubId",
+                  "value": "seu-club-id-aqui"
+                }
+              ]
+            },
+            "description": "Lista todos os membros com matrícula 'Aprovada' em um clube específico."
+          },
+          "response": []
+        },
+        {
+          "name": "Revoke Club Membership",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/club-management/enrollments/:enrollmentId/revoke",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "club-management",
+                "enrollments",
+                ":enrollmentId",
+                "revoke"
+              ],
+              "variable": [
+                {
+                  "key": "enrollmentId",
+                  "value": "seu-enrollment-id-aqui"
+                }
+              ]
+            },
+            "description": "Revoga a matrícula de um membro (status muda para 'Revoked'). A matrícula não é excluída."
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    }
+  ]
+}

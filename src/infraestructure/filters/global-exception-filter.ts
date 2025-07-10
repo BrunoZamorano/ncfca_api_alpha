@@ -1,4 +1,4 @@
-import { ArgumentsHost, BadRequestException, ExceptionFilter, HttpStatus } from '@nestjs/common';
+import { ArgumentsHost, BadRequestException, ExceptionFilter, ForbiddenException, HttpStatus } from '@nestjs/common';
 import { JsonWebTokenError } from '@nestjs/jwt';
 import { Request, Response } from 'express';
 
@@ -26,6 +26,9 @@ export default class GlobalExceptionFilter implements ExceptionFilter {
       body = { message: exception.message };
     } else if (exception instanceof UnauthorizedException) {
       status = HttpStatus.UNAUTHORIZED;
+      body = { message: exception.message };
+    } else if (exception instanceof ForbiddenException) {
+      status = HttpStatus.FORBIDDEN;
       body = { message: exception.message };
     } else if (exception instanceof BadRequestException) {
       status = HttpStatus.BAD_REQUEST;

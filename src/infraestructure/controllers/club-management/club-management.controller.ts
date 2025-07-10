@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Param, Body, UseGuards, Request, HttpCode, HttpStatus, Patch } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Patch, Post, Request, UseGuards } from '@nestjs/common';
 import AuthGuard from '@/shared/guards/auth.guard';
 import ListPendingEnrollments from '@/application/use-cases/list-pending-enrollments/list-pending-enrollments';
 import ApproveEnrollment from '@/application/use-cases/approve-enrollment/approve-enrollment';
@@ -8,9 +8,13 @@ import RemoveClubMember from '@/application/use-cases/remove-club-member/remove-
 import { RejectEnrollmentDto } from '@/infraestructure/dtos/reject-enrollment.dto';
 import UpdateClubInfo from '@/application/use-cases/update-club-info/update-club-info';
 import { UpdateClubDto } from '@/infraestructure/dtos/update-club.dto';
+import { RolesGuard } from '@/shared/guards/roles.guard';
+import { Roles } from '@/shared/decorators/role.decorator';
+import { UserRoles } from '@/domain/enums/user-roles';
 
 @Controller('club-management')
-@UseGuards(AuthGuard)
+@UseGuards(AuthGuard, RolesGuard)
+@Roles(UserRoles.DONO_DE_CLUBE)
 export default class ClubManagementController {
   constructor(
     private readonly _listPendingEnrollments: ListPendingEnrollments,
@@ -23,11 +27,7 @@ export default class ClubManagementController {
 
   @Patch(':clubId')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async updateClub(
-    @Request() req: any,
-    @Param('clubId') clubId: string,
-    @Body() body: UpdateClubDto,
-  ): Promise<void> {
+  async updateClub(@Request() req: any, @Param('clubId') clubId: string, @Body() body: UpdateClubDto): Promise<void> {
     await this._updateClubInfo.execute({
       loggedInUserId: req.user.id,
       clubId,
@@ -48,11 +48,7 @@ export default class ClubManagementController {
 
   @Post('/enrollments/:enrollmentId/reject')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async reject(
-    @Request() req: any,
-    @Param('enrollmentId') enrollmentId: string,
-    @Body() body: RejectEnrollmentDto,
-  ) {
+  async reject(@Request() req: any, @Param('enrollmentId') enrollmentId: string, @Body() body: RejectEnrollmentDto) {
     await this._rejectEnrollment.execute({
       loggedInUserId: req.user.id,
       enrollmentRequestId: enrollmentId,
