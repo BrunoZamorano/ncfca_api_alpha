@@ -8,6 +8,9 @@ import UserRepositoryMemory from '@/infraestructure/repositories/user-repository
 import CreateClub from '@/application/use-cases/create-club/create-club';
 import UserFactory from '@/domain/factories/user.factory';
 import HashingService from '@/domain/services/hashing-service';
+import { UnitOfWorkMemory } from '@/infraestructure/services/unit-of-work.memory';
+import TransactionRepository from '@/domain/repositories/transaction.repository';
+import EnrollmentRequestRepository from '@/domain/repositories/enrollment-request-repository';
 
 describe('Create Club', () => {
   const DEFAULT_ID = '1';
@@ -24,25 +27,32 @@ describe('Create Club', () => {
     userRepository = new UserRepositoryMemory();
     userRepository.populate(userFactory, { id: DEFAULT_ID }, 1);
     clubRepository = new ClubRepositoryMemory({ clubs: [] });
-    createClub = new CreateClub(familyRepository, clubRepository, userRepository, idGenerator);
+    const uow = new UnitOfWorkMemory(
+      userRepository,
+      clubRepository,
+      familyRepository,
+      {} as TransactionRepository,
+      {} as EnrollmentRequestRepository,
+    );
+    createClub = new CreateClub(idGenerator, uow);
   });
 
   it('Deve criar um clube', async function () {
     const input = {
       afiliatedFamilies: [DEFAULT_ID],
-      ownerId: DEFAULT_ID,
+      loggedInUserId: DEFAULT_ID,
       name: Club.DEFAULT_NAME,
       city: Club.DEFAULT_CITY,
     };
     const output = await createClub.execute(input);
-    expect(output.ownerId).toBe(input.ownerId);
+    expect(output.ownerId).toBe(input.loggedInUserId);
     expect(output.name).toBe(input.name);
     expect(output.city).toBe(input.city);
     expect(output.id).toBe(DEFAULT_ID);
     const club = await clubRepository.find(DEFAULT_ID);
     if (!club) throw new Error('CLUB_NOT_CREATED');
     expect(club.affiliatedFamilies).toContain(DEFAULT_ID);
-    expect(club.ownerId).toBe(input.ownerId);
+    expect(club.ownerId).toBe(input.loggedInUserId);
     expect(club.name).toBe(input.name);
     expect(club.city).toBe(input.city);
     expect(club.id).toBe(DEFAULT_ID);
