@@ -1,5 +1,5 @@
 import { DomainException, InvalidOperationException } from '@/domain/exceptions/domain-exception';
-import { EnrollmentStatus } from '@/domain/enums/enrollment-status/enrollment-status';
+import { EnrollmentStatus } from '@/domain/enums/enrollment-status';
 import EnrollmentRequest from '@/domain/entities/enrollment-request/enrollment-request';
 
 describe('EnrollmentRequest Entity', () => {
