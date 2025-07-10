@@ -63,7 +63,7 @@ export default class ClubRepositoryMemory implements ClubRepository {
     return this.db.clubs.find((c) => c.id === id) ?? null;
   }
 
-  private populate(totalClubs: number = 10): Club[] {
+  public populate(totalClubs: number = 10): Club[] {
     return Array.from({ length: totalClubs }, (_, i) => new Club({ ownerId: `${++i}`, id: `${i}` }));
   }
 }
