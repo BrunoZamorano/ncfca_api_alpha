@@ -1,6 +1,5 @@
 export enum EnrollmentStatus {
-  Rejected = 'rejected',
-  Approved = 'approved',
-  Revoked = 'revoked',
-  Pending = 'pending',
+  REJECTED = 'REJECTED',
+  APPROVED = 'APPROVED',
+  PENDING = 'PENDING',
 }

@@ -17,6 +17,7 @@ describe('User Entity', () => {
   beforeEach(() => {
     user = new User({
       id: 'user-1',
+      rg: User.DEFAULT_RG,
       firstName: 'John',
       lastName: 'Doe',
       email: new Email('john.doe@example.com'),

@@ -1,10 +1,8 @@
 export enum DependantRelationship {
-  Daugter = 'daugter',
-  Husband = 'husband',
-  Father = 'father',
-  Mother = 'mother',
-  Child = 'child',
-  Wife = 'wife',
-  Son = 'son',
-  Other = 'other',
+  DAUGHTER = 'DAUGHTER',
+  HUSBAND = 'HUSBAND',
+  CHILD = 'CHILD',
+  WIFE = 'WIFE',
+  SON = 'SON',
+  OTHER = 'OTHER',
 }

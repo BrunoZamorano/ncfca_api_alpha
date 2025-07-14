@@ -25,19 +25,27 @@ import { USER_FACTORY } from '@/shared/constants/factories-constants';
 import { HASHING_SERVICE, ID_GENERATOR, PAYMENT_GATEWAY, TOKEN_SERVICE } from '@/shared/constants/service-constants';
 import { ENROLLMENT_REQUEST_REPOSITORY } from '@/domain/repositories/enrollment-request-repository';
 import EnrollmentRequestRepositoryMemory from '@/infraestructure/repositories/enrollment-request.repository.memory';
+import { UnitOfWorkPrisma } from '@/infraestructure/services/unit-of-work.prisma';
+import { PrismaService } from '@/infraestructure/database/prisma.service';
+import { FamilyRepositoryPrisma } from '@/infraestructure/repositories/prisma/family.repository.prisma';
+import { TransactionRepositoryPrisma } from '@/infraestructure/repositories/prisma/transaction.repository.prisma';
+import { ClubRepositoryPrisma } from '@/infraestructure/repositories/prisma/club.repository.prisma';
+import { UserRepositoryPrisma } from '@/infraestructure/repositories/prisma/user.repository.prisma';
+import { EnrollmentRequestRepositoryPrisma } from '@/infraestructure/repositories/prisma/enrollment-request.repository.prisma';
 
 const repositories = [
-  { provide: FAMILY_REPOSITORY, useFactory: () => new FamilyRepositoryMemory([]) },
-  { provide: TRANSACTION_REPOSITORY, useClass: TransactionRepositoryMemory },
-  { provide: CLUB_REPOSITORY, useFactory: () => new ClubRepositoryMemory({ options: { totalClubs: 250 } }) },
-  { provide: USER_REPOSITORY, useClass: UserRepositoryMemory },
-  { provide: ENROLLMENT_REQUEST_REPOSITORY, useClass: EnrollmentRequestRepositoryMemory },
+  { provide: FAMILY_REPOSITORY, useClass: FamilyRepositoryPrisma },
+  { provide: TRANSACTION_REPOSITORY, useClass: TransactionRepositoryPrisma },
+  { provide: CLUB_REPOSITORY, useClass: ClubRepositoryPrisma },
+  { provide: USER_REPOSITORY, useClass: UserRepositoryPrisma },
+  { provide: ENROLLMENT_REQUEST_REPOSITORY, useClass: EnrollmentRequestRepositoryPrisma },
 ];
 
 const services = [
+  PrismaService,
   { provide: HASHING_SERVICE, useClass: AnemicHashingService },
   { provide: PAYMENT_GATEWAY, useClass: PaymentGatewayMemory },
-  { provide: UNIT_OF_WORK, useClass: UnitOfWorkMemory, scope: Scope.REQUEST },
+  { provide: UNIT_OF_WORK, useClass: UnitOfWorkPrisma, scope: Scope.REQUEST },
   { provide: TOKEN_SERVICE, useClass: TokenServiceJwt },
   { provide: ID_GENERATOR, useClass: UuidGenerator },
 ];

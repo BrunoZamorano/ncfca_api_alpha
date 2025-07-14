@@ -1,16 +1,22 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Param, Patch, Post, Request, UseGuards } from '@nestjs/common';
-import AuthGuard from '@/shared/guards/auth.guard';
+
 import ListPendingEnrollments from '@/application/use-cases/list-pending-enrollments/list-pending-enrollments';
 import ApproveEnrollment from '@/application/use-cases/approve-enrollment/approve-enrollment';
 import RejectEnrollment from '@/application/use-cases/reject-enrollment/reject-enrollment';
-import ListClubMembers from '@/application/use-cases/list-club-members/list-club-members';
 import RemoveClubMember from '@/application/use-cases/remove-club-member/remove-club-member';
-import { RejectEnrollmentDto } from '@/infraestructure/dtos/reject-enrollment.dto';
+import ListClubMembers from '@/application/use-cases/list-club-members/list-club-members';
 import UpdateClubInfo from '@/application/use-cases/update-club-info/update-club-info';
+
+import { UserRoles } from '@/domain/enums/user-roles';
+
+import { RejectEnrollmentDto } from '@/infraestructure/dtos/reject-enrollment.dto';
 import { UpdateClubDto } from '@/infraestructure/dtos/update-club.dto';
+
 import { RolesGuard } from '@/shared/guards/roles.guard';
 import { Roles } from '@/shared/decorators/role.decorator';
-import { UserRoles } from '@/domain/enums/user-roles';
+import AuthGuard from '@/shared/guards/auth.guard';
+import GetClubInfo from '@/application/use-cases/get-club-info/get-club-info';
+import GetMyClubInfo from '@/application/use-cases/get-my-club-info/get-my-club-info';
 
 @Controller('club-management')
 @UseGuards(AuthGuard, RolesGuard)
@@ -23,7 +29,14 @@ export default class ClubManagementController {
     private readonly _listClubMembers: ListClubMembers,
     private readonly _removeClubMember: RemoveClubMember,
     private readonly _updateClubInfo: UpdateClubInfo,
+    private readonly _getMyClubInfo: GetMyClubInfo,
   ) {}
+
+  @Get('my-club')
+  async getMyClubInfo(@Request() req: any) {
+    const input = { loggedInUserId: req.user.id };
+    return this._getMyClubInfo.execute(input);
+  }
 
   @Patch(':clubId')
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -60,10 +73,15 @@ export default class ClubManagementController {
   async listMembers(@Request() req: any, @Param('clubId') clubId: string) {
     return this._listClubMembers.execute({ loggedInUserId: req.user.id, clubId });
   }
+  
+  @Get('/my-club/members')
+  async listMembersOfMyClub(@Request() req: any, @Param('clubId') clubId: string) {
+    return this._listClubMembers.execute({ loggedInUserId: req.user.id, clubId });
+  }
 
   @Post('/enrollments/:enrollmentId/revoke')
   @HttpCode(HttpStatus.NO_CONTENT)
   async removeMember(@Request() req: any, @Param('enrollmentId') enrollmentId: string) {
-    await this._removeClubMember.execute({ loggedInUserId: req.user.id, enrollmentRequestId: enrollmentId });
+    await this._removeClubMember.execute({ loggedInUserId: req.user.id, memberId: enrollmentId });
   }
 }

@@ -24,13 +24,11 @@ describe('ClubController (e2e)', () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
-
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(new ValidationPipe({ transform: true }));
     app.useGlobalFilters(new GlobalExceptionFilter());
     app.set('query parser', 'extended');
     await app.init();
-
     db = InMemoryDatabase.getInstance();
     db.reset();
     userRepository = app.get<UserRepository>(USER_REPOSITORY);
@@ -56,25 +54,23 @@ describe('ClubController (e2e)', () => {
     };
 
     beforeEach(async () => {
-      // Setup específico para os testes de POST
       await request(app.getHttpServer()).post('/account/user').send(testUser);
       const loginResponse = await request(app.getHttpServer())
         .post('/auth/login')
         .send({ email: testUser.email, password: testUser.password });
       accessToken = loginResponse.body.accessToken;
+      await request(app.getHttpServer()).post('/checkout').send({ token: 'valid-token' });
     });
 
-    it('deve criar um clube com sucesso para um usuário autenticado', async () => {
+    it('Deve criar um clube com sucesso para um usuário autenticado', async () => {
       const response = await request(app.getHttpServer())
         .post('/club')
         .set('Authorization', `Bearer ${accessToken}`)
         .send(createClubDto)
         .expect(HttpStatus.CREATED);
-
       expect(response.body.name).toBe(createClubDto.name);
       expect(response.body.city).toBe(createClubDto.city);
       expect(response.body.id).toBeDefined();
-
       const owner = await userRepository.findByEmail(testUser.email);
       expect(owner?.roles).toContain(UserRoles.DONO_DE_CLUBE);
     });
@@ -84,7 +80,6 @@ describe('ClubController (e2e)', () => {
         .post('/club')
         .set('Authorization', `Bearer ${accessToken}`)
         .send(createClubDto);
-
       await request(app.getHttpServer())
         .post('/club')
         .set('Authorization', `Bearer ${accessToken}`)
@@ -104,7 +99,6 @@ describe('ClubController (e2e)', () => {
     let accessToken: string;
 
     beforeEach(async () => {
-      // Setup específico para os testes de GET
       const user: RegisterUserInputDto = {
         firstName: 'Get',
         lastName: 'User',

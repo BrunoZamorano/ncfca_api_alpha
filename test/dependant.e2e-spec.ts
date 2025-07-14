@@ -64,8 +64,8 @@ describe('DependantController (e2e)', () => {
       firstName: 'John',
       lastName: 'Doe',
       birthdate: '2010-01-01',
-      relationship: DependantRelationship.Son,
-      sex: Sex.Male,
+      relationship: DependantRelationship.SON,
+      sex: Sex.MALE,
       email: 'john.doe.jr@example.com',
     };
 
@@ -107,8 +107,8 @@ describe('DependantController (e2e)', () => {
           firstName: 'John',
           lastName: 'Doe',
           birthdate: '2010-01-01',
-          relationship: DependantRelationship.Son,
-          sex: Sex.Male,
+          relationship: DependantRelationship.SON,
+          sex: Sex.MALE,
           email: 'john.doe.jr@example.com',
         };
         await request(app.getHttpServer())
@@ -158,8 +158,8 @@ describe('DependantController (e2e)', () => {
           firstName: 'Stranger',
           lastName: 'Danger',
           birthdate: new Birthdate('2011-11-11'),
-          relationship: DependantRelationship.Son,
-          sex: Sex.Male,
+          relationship: DependantRelationship.SON,
+          sex: Sex.MALE,
         });
         anotherFamily.addDependant(anotherDependant);
         db.families.push(anotherFamily);

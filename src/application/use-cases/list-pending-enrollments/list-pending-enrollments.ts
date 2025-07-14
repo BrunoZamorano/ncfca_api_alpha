@@ -15,6 +15,6 @@ export default class ListPendingEnrollments {
       throw new ForbiddenException('User is not the owner of this club.');
     }
     const allRequests = await this.uow.enrollmentRequestRepository.findByClubId(input.clubId);
-    return allRequests.filter((request) => request.status === EnrollmentStatus.Pending);
+    return allRequests.filter((request) => request.status === EnrollmentStatus.PENDING);
   }
 }

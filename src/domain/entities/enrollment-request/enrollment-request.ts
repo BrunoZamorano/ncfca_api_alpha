@@ -17,24 +17,24 @@ export default class EnrollmentRequest {
     this.requestedAt = props.requestedAt ?? new Date();
     this.resolvedAt = props.resolvedAt ?? null;
     this.familyId = props.familyId;
-    this.status = props.status ?? EnrollmentStatus.Pending;
+    this.status = props.status ?? EnrollmentStatus.PENDING;
     this.clubId = props.clubId;
     this.id = props.id;
   }
 
   public approve(): void {
-    if (this.status !== EnrollmentStatus.Pending)
+    if (this.status !== EnrollmentStatus.PENDING)
       throw new InvalidOperationException(
         `Cannot approve an enrollment request that is already in status ${this.status}.`,
       );
-    this.status = EnrollmentStatus.Approved;
+    this.status = EnrollmentStatus.APPROVED;
     this.resolvedAt = new Date();
     this.rejectionReason = null;
     return void 0;
   }
 
   public reject(reason: string): void {
-    if (this.status !== EnrollmentStatus.Pending) {
+    if (this.status !== EnrollmentStatus.PENDING) {
       throw new InvalidOperationException(
         `Cannot reject an enrollment request that is already in status ${this.status}.`,
       );
@@ -42,7 +42,7 @@ export default class EnrollmentRequest {
     if (!reason || reason.length < 10) {
       throw new DomainException('A rejection reason with at least 10 characters is required.');
     }
-    this.status = EnrollmentStatus.Rejected;
+    this.status = EnrollmentStatus.REJECTED;
     this.resolvedAt = new Date();
     this.rejectionReason = reason;
     return void 0;

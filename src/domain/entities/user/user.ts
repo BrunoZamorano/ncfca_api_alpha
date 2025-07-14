@@ -9,6 +9,7 @@ import Email from '@/domain/value-objects/email/email';
 export default class User {
   private readonly _cpf: Cpf;
   private readonly _id: string;
+  private readonly _rg: string;
   private _firstName: string;
   private _password: Password;
   private _lastName: string;
@@ -19,6 +20,7 @@ export default class User {
 
   public constructor(props: UserProps) {
     this._address = new Address(props.address ?? {});
+    this._rg = props.rg;
     this._firstName = props.firstName;
     this._lastName = props.lastName;
     this._password = props.password;
@@ -60,6 +62,10 @@ export default class User {
     return this._cpf.value;
   }
 
+  get rg(): string {
+    return this._rg;
+  }
+
   get id(): string {
     return this._id;
   }
@@ -98,7 +104,8 @@ export default class User {
     DUPLICATED_ROLES: 'DUPLICATED_ROLES',
     SAME_PASSWORD: 'SAME_PASSWORD',
   };
-
+  
+  static readonly DEFAULT_RG = '<DEFAULT_RG>';
   static readonly DEFAULT_PHONE = '99 99999-9999';
   static readonly DEFAULT_EMAIL = 'default@email.com';
   static readonly DEFAULT_PASSWORD = '<P@ssw0rd>';
@@ -114,6 +121,7 @@ interface UserProps {
   email: Email;
   phone: string;
   cpf: Cpf;
+  rg: string;
   id: string;
 }
 

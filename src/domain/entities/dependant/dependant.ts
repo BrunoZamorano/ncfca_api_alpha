@@ -9,6 +9,7 @@ export default class Dependant {
   private _birthdate: Birthdate;
   private _firstName: string;
   private _lastName: string;
+  private _familyId: string;
   private _phone?: string;
   private _email?: Email;
   private _sex: Sex;
@@ -26,6 +27,7 @@ export default class Dependant {
     this._sex = props.sex;
     this._email = props.email;
     this._phone = props.phone;
+    this._familyId = props.familyId ?? 'id_family';
   }
 
   get id(): string {
@@ -51,6 +53,10 @@ export default class Dependant {
   }
   get phone(): string | undefined {
     return this._phone;
+  }
+
+  get familyId() {
+    return this._familyId;
   }
 
   public updateInfo(input: UpdateDependantProps): void {
@@ -85,6 +91,7 @@ interface DependantProps {
   sex: Sex;
   email?: Email;
   phone?: string;
+  familyId?: string;
 }
 
 export interface UpdateDependantProps {

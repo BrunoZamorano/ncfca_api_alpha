@@ -7,6 +7,7 @@ export default interface DependantDto {
   email?: string;
   phone?: string;
   firstName: string;
+  familyId: string;
   lastName: string;
   birthdate: Date;
   relationship: DependantRelationship;

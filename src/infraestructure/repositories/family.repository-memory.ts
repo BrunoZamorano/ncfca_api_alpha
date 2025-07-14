@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import FamilyRepository from '@/domain/repositories/family-repository';
 import Family from '@/domain/entities/family/family';
 import InMemoryDatabase from '@/infraestructure/database/in-memory.database';
+import { FamilyStatus } from '@/domain/enums/family-status';
 
 @Injectable()
 export default class FamilyRepositoryMemory implements FamilyRepository {
@@ -41,6 +42,8 @@ export default class FamilyRepositoryMemory implements FamilyRepository {
   }
 
   private populate(): Family[] {
-    return new Array(10).fill(0).map((_, i) => new Family({ id: `${++i}`, holderId: `${i}` }));
+    return new Array(10)
+      .fill(0)
+      .map((_, i) => new Family({ id: `${++i}`, holderId: `${i}`, status: FamilyStatus.NOT_AFFILIATED }));
   }
 }

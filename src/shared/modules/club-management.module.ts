@@ -7,6 +7,7 @@ import ListClubMembers from '@/application/use-cases/list-club-members/list-club
 import RemoveClubMember from '@/application/use-cases/remove-club-member/remove-club-member';
 import ClubManagementController from '@/infraestructure/controllers/club-management/club-management.controller';
 import UpdateClubInfo from '@/application/use-cases/update-club-info/update-club-info';
+import GetMyClubInfo from '@/application/use-cases/get-my-club-info/get-my-club-info';
 
 @Module({
   imports: [SharedModule],
@@ -18,6 +19,7 @@ import UpdateClubInfo from '@/application/use-cases/update-club-info/update-club
     ListClubMembers,
     RemoveClubMember,
     UpdateClubInfo,
+    GetMyClubInfo,
   ],
 })
 export default class ClubManagementModule {}

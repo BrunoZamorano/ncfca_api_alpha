@@ -74,7 +74,7 @@ describe('Enrollment Journey (e2e)', () => {
     // ---- PASSO 2: Adicionar um dependente à família afiliada ----
     const addDependantDto: AddDependantDto = {
       firstName: 'Test', lastName: 'Child', birthdate: '2010-01-01',
-      relationship: DependantRelationship.Son, sex: Sex.Male
+      relationship: DependantRelationship.SON, sex: Sex.MALE
     };
     const dependantResponse = await request(app.getHttpServer())
       .post('/dependants')
@@ -95,7 +95,7 @@ describe('Enrollment Journey (e2e)', () => {
     // ---- ASSERT FINAL: Verificar se a solicitação foi criada corretamente ----
     expect(db.enrollmentRequests).toHaveLength(1);
     const requestInDb = db.enrollmentRequests[0];
-    expect(requestInDb.status).toBe(EnrollmentStatus.Pending);
+    expect(requestInDb.status).toBe(EnrollmentStatus.PENDING);
     expect(requestInDb.dependantId).toBe(createdDependant.id);
     expect(requestInDb.clubId).toBe(clubId);
   });

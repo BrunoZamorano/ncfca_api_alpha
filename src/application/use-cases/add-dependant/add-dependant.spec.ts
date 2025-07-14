@@ -64,6 +64,7 @@ describe('AddDependantUseCase (Integration)', () => {
     db.users.push(
       new User({
         id: holderId,
+        rg: User.DEFAULT_RG,
         firstName: 'John',
         lastName: 'Doe',
         email: new Email('john.doe@example.com'),
@@ -79,8 +80,8 @@ describe('AddDependantUseCase (Integration)', () => {
     firstName: 'John',
     lastName: 'Doe',
     birthdate: '2010-01-01',
-    relationship: DependantRelationship.Son,
-    sex: Sex.Male,
+    relationship: DependantRelationship.SON,
+    sex: Sex.MALE,
   };
 
   it('Deve adicionar um dependente a uma família com sucesso', async () => {
@@ -98,14 +99,17 @@ describe('AddDependantUseCase (Integration)', () => {
   it('Deve lançar ForbiddenException se a família não estiver afiliada', async () => {
     const notAffiliatedFamilyId = 'not-affiliated-family';
     const notAffiliatedHolderId = 'not-affiliated-user';
-    db.families.push(new Family({
-      id: notAffiliatedFamilyId,
-      holderId: notAffiliatedHolderId,
-      status: FamilyStatus.NOT_AFFILIATED
-    }));
+    db.families.push(
+      new Family({
+        id: notAffiliatedFamilyId,
+        holderId: notAffiliatedHolderId,
+        status: FamilyStatus.NOT_AFFILIATED,
+      }),
+    );
     db.users.push(
       new User({
         id: notAffiliatedHolderId,
+        rg: User.DEFAULT_RG,
         firstName: 'Jane',
         lastName: 'Smith',
         email: new Email('jane.smith@example.com'),
@@ -122,12 +126,11 @@ describe('AddDependantUseCase (Integration)', () => {
   });
 
   it('Deve permitir adicionar dependente apenas para família afiliada', async () => {
-    const family = db.families.find(f => f.id === familyId);
+    const family = db.families.find((f) => f.id === familyId);
     expect(family?.status).toBe(FamilyStatus.AFFILIATED);
     await useCase.execute(validInput);
-    const updatedFamily = db.families.find(f => f.id === familyId);
+    const updatedFamily = db.families.find((f) => f.id === familyId);
     expect(updatedFamily?.dependants).toHaveLength(1);
     expect(updatedFamily?.dependants[0].firstName).toBe('John');
   });
-
 });

@@ -12,16 +12,16 @@ export default class Address {
   public readonly complement?: string;
 
   public constructor(props: AddressProps) {
-    if (!this.isValidZipCode(props)) throw new DomainException('Invalid zip code format.');
+    if (props.zipCode && !this.isValidZipCode(props) ) throw new DomainException('Invalid zip code format.');
     if (!this.isValidState(props)) throw new DomainException('State must be a 2-character abbreviation.');
     if (!this.isValidStreet(props)) throw new DomainException('Street is required.');
     this.country = props.country ?? 'Country';
-    this.zipCode = props.zipCode ? props.zipCode.replace(/\D/g, '') : '1231231';
+    this.zipCode = props.zipCode ? props.zipCode.replace(/\D/g, '') : '12312312';
     this.street = props.street ?? 'Street';
     this.number = props.number ?? '123';
     this.district = props.district ?? 'District';
     this.city = props.city ?? 'City';
-    this.state = props.state ?? 'State';
+    this.state = props.state ?? 'RR';
     this.complement = props.complement;
   }
 

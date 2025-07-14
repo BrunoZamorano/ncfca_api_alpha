@@ -9,6 +9,7 @@ import Family from '@/domain/entities/family/family';
 import { USER_FACTORY } from '@/shared/constants/factories-constants';
 import { ID_GENERATOR, TOKEN_SERVICE } from '@/shared/constants/service-constants';
 import { UNIT_OF_WORK, UnitOfWork } from '@/domain/services/unit-of-work';
+import { FamilyStatus } from '@/domain/enums/family-status';
 
 export default class RegisterUser {
   private readonly logger = new Logger(RegisterUser.name);
@@ -30,7 +31,7 @@ export default class RegisterUser {
       const user = this.userFactory.create(input);
       const createdUser = await this.uow.userRepository.save(user);
       const familyId = this.idGenerator.generate();
-      const familyProps = { holderId: createdUser.id, id: familyId };
+      const familyProps = { holderId: createdUser.id, id: familyId, status: FamilyStatus.NOT_AFFILIATED };
       const family = await this.uow.familyRepository.save(new Family(familyProps));
       this.logger.debug(`Family criada e salva com ID: ${family.id} para o holder: ${createdUser.id}`);
       const payload: Payload = {

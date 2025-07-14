@@ -14,7 +14,7 @@ export default class Transaction {
   private constructor(props: TransactionProps) {
     this.gatewayTransactionId = props.gatewayTransactionId;
     this.gatewayPayload = props.gatewayPayload;
-    this.paymentMethod = props.paymentMethod;
+    this.paymentMethod = props.paymentMethod
     this.amountCents = props.amountCents;
     this.createdAt = props.createdAt;
     this.familyId = props.familyId;
@@ -23,10 +23,10 @@ export default class Transaction {
     this.id = props.id;
   }
 
-  public static create(props: Omit<TransactionProps, 'createdAt'>): Transaction {
+  public static create(props: Omit<TransactionProps, 'createdAt'> & { createdAt?: Date }): Transaction {
     return new Transaction({
       ...props,
-      createdAt: new Date(),
+      createdAt: props.createdAt ?? new Date(),
     });
   }
 

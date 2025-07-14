@@ -13,8 +13,8 @@ describe('Família', function () {
       firstName: 'John',
       lastName: 'Doe',
       birthdate: new Birthdate('2010-01-01'),
-      relationship: DependantRelationship.Son,
-      sex: Sex.Male,
+      relationship: DependantRelationship.SON,
+      sex: Sex.MALE,
     });
 
   it('Deve atualizar os dados de um dependente existente', () => {
