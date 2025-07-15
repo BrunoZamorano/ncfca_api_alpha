@@ -7,11 +7,12 @@ import CreateClub from '@/application/use-cases/create-club/create-club';
 import ClubController from '@/infraestructure/controllers/club/club.controller';
 
 import SharedModule from '@/shared/modules/shared.module';
+import ListClubMembers from '@/application/use-cases/list-club-members/list-club-members';
 
 @Module({
   imports: [SharedModule],
   controllers: [ClubController],
-  providers: [SearchClubs, CreateClub, GetClubInfo],
+  providers: [SearchClubs, CreateClub, GetClubInfo, ListClubMembers],
   exports: [],
 })
 export default class ClubModule {}

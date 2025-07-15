@@ -23,7 +23,7 @@ export interface AddDependantInput {
 
 @Injectable()
 export default class AddDependant {
-  private readonly logger = new Logger(AddDependant.name); // Instância do Logger
+  private readonly logger = new Logger(AddDependant.name);
 
   constructor(
     @Inject(ID_GENERATOR) private readonly idGenerator: IdGenerator,
@@ -45,6 +45,7 @@ export default class AddDependant {
         id: dependantId,
         sex: input.sex,
         phone: input.phone,
+        familyId: family.id,
         email: input.email ? new Email(input.email) : undefined,
         firstName: input.firstName,
         lastName: input.lastName,

@@ -5,6 +5,7 @@ import EnrollmentRequest from '@/domain/entities/enrollment-request/enrollment-r
 import IdGenerator from '@/application/services/id-generator';
 import { ID_GENERATOR } from '@/shared/constants/service-constants';
 import { FamilyStatus } from '@/domain/enums/family-status';
+import { EnrollmentStatus } from '@/domain/enums/enrollment-status';
 
 @Injectable()
 export default class RequestEnrollment {
@@ -25,8 +26,13 @@ export default class RequestEnrollment {
         throw new ForbiddenException('Family must be affiliated to request enrollment.');
       }
       const existingRequests = await this.uow.enrollmentRequestRepository.findByDependantAndClub(dependant.id, club.id);
-      if (existingRequests.length > 0) {
-        throw new InvalidOperationException('An enrollment request for this dependant and club already exists.');
+      const pendingRequests = existingRequests.filter((p) => p.status === EnrollmentStatus.PENDING);
+      if (pendingRequests.length > 0) {
+        throw new InvalidOperationException('A pending enrollment request for this dependant and club already exists.');
+      }
+      const existingMembership = await this.uow.clubMembershipRepository.findByMemberAndClub(dependant.id, club.id);
+      if (existingMembership) {
+        throw new InvalidOperationException('Dependant is already a member of this club.');
       }
       const request = new EnrollmentRequest({
         id: this.idGenerator.generate(),

@@ -4,7 +4,6 @@ import ListPendingEnrollments from '@/application/use-cases/list-pending-enrollm
 import ApproveEnrollment from '@/application/use-cases/approve-enrollment/approve-enrollment';
 import RejectEnrollment from '@/application/use-cases/reject-enrollment/reject-enrollment';
 import RemoveClubMember from '@/application/use-cases/remove-club-member/remove-club-member';
-import ListClubMembers from '@/application/use-cases/list-club-members/list-club-members';
 import UpdateClubInfo from '@/application/use-cases/update-club-info/update-club-info';
 import GetMyClubInfo from '@/application/use-cases/get-my-club-info/get-my-club-info';
 
@@ -16,6 +15,7 @@ import { UpdateClubDto } from '@/infraestructure/dtos/update-club.dto';
 import { RolesGuard } from '@/shared/guards/roles.guard';
 import { Roles } from '@/shared/decorators/role.decorator';
 import AuthGuard from '@/shared/guards/auth.guard';
+import ListMembersOfMyClub from '@/application/use-cases/list-members-of-my-club/list-members-of-my-club';
 
 @Controller('club-management')
 @UseGuards(AuthGuard, RolesGuard)
@@ -25,7 +25,7 @@ export default class ClubManagementController {
     private readonly _listPendingEnrollments: ListPendingEnrollments,
     private readonly _approveEnrollment: ApproveEnrollment,
     private readonly _rejectEnrollment: RejectEnrollment,
-    private readonly _listClubMembers: ListClubMembers,
+    private readonly _listMembersOfMyClub: ListMembersOfMyClub,
     private readonly _removeClubMember: RemoveClubMember,
     private readonly _updateClubInfo: UpdateClubInfo,
     private readonly _getMyClubInfo: GetMyClubInfo,
@@ -68,14 +68,9 @@ export default class ClubManagementController {
     });
   }
 
-  @Get(':clubId/members')
-  async listMembers(@Request() req: any, @Param('clubId') clubId: string) {
-    return this._listClubMembers.execute({ loggedInUserId: req.user.id, clubId });
-  }
-
   @Get('/my-club/members')
-  async listMembersOfMyClub(@Request() req: any, @Param('clubId') clubId: string) {
-    return this._listClubMembers.execute({ loggedInUserId: req.user.id, clubId });
+  async listMembersOfMyClub(@Request() req: any) {
+    return this._listMembersOfMyClub.execute({ loggedInUserId: req.user.id });
   }
 
   @Post('/membership/:membershipId/revoke')

@@ -12,11 +12,13 @@ import { CreateClubDto } from '@/infraestructure/dtos/create-club.dto';
 
 import ClubMapper from '@/shared/mappers/club.mapper';
 import AuthGuard from '@/shared/guards/auth.guard';
+import ListClubMembers from '@/application/use-cases/list-club-members/list-club-members';
 
 @Controller('club')
 @UseGuards(AuthGuard)
 export default class ClubController {
   constructor(
+    private readonly _listClubMembers: ListClubMembers,
     private readonly _searchClubs: SearchClubs,
     private readonly _getClubInfo: GetClubInfo,
     private readonly _createClub: CreateClub,
@@ -41,5 +43,10 @@ export default class ClubController {
     const loggedInUserId = req.user.id;
     const club = await this._createClub.execute({ ...body, loggedInUserId });
     return ClubMapper.entityToDto(club);
+  }
+
+  @Get(':clubId/members')
+  async listMembers(@Request() req: any, @Param('clubId') clubId: string) {
+    return this._listClubMembers.execute({ loggedInUserId: req.user.id, clubId });
   }
 }
