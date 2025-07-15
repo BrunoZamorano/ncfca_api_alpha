@@ -43,7 +43,7 @@ export default class CreateClub {
       user.assignRoles([UserRoles.DONO_DE_CLUBE]);
       await this.uow.userRepository.save(user);
       const clubInstance = new Club({
-        ownerId: input.loggedInUserId,
+        principalId: input.loggedInUserId,
         name: input.name,
         city: input.city,
         id: this._idGenerator.generate(),

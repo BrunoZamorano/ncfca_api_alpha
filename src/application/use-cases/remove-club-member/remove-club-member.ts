@@ -12,7 +12,7 @@ export default class RemoveClubMember {
       const membership = await this.uow.clubMembershipRepository.findById(input.membershipId);
       if (!membership) throw new EntityNotFoundException('Membership', 'for member id: ' + input.membershipId);
       const club = await this.uow.clubRepository.find(membership.clubId);
-      if (!club || club.ownerId !== input.loggedInUserId) {
+      if (!club || club.principalId !== input.loggedInUserId) {
         throw new ForbiddenException('User is not authorized to manage this enrollment request.');
       }
       if (!membership.isActive()) {

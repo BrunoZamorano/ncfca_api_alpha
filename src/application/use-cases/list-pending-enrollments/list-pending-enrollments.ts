@@ -11,7 +11,7 @@ export default class ListPendingEnrollments {
   async execute(input: { loggedInUserId: string; clubId: string }): Promise<EnrollmentRequest[]> {
     const club = await this.uow.clubRepository.find(input.clubId);
     if (!club) throw new EntityNotFoundException('Club', input.clubId);
-    if (club.ownerId !== input.loggedInUserId) {
+    if (club.principalId !== input.loggedInUserId) {
       throw new ForbiddenException('User is not the owner of this club.');
     }
     const allRequests = await this.uow.enrollmentRequestRepository.findByClubId(input.clubId);

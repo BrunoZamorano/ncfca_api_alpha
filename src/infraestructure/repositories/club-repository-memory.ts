@@ -56,7 +56,7 @@ export default class ClubRepositoryMemory implements ClubRepository {
   }
 
   async findByOwnerId(ownerId: string): Promise<Club | null> {
-    return this.db.clubs.find((p) => p.ownerId === ownerId) ?? null;
+    return this.db.clubs.find((p) => p.principalId === ownerId) ?? null;
   }
 
   async find(id: string): Promise<Club | null> {
@@ -68,9 +68,11 @@ export default class ClubRepositoryMemory implements ClubRepository {
   }
 
   public populate(totalClubs: number = 10): Club[] {
-    return Array.from(
-      { length: totalClubs },
-      (_, i) => new Club({ ownerId: crypto.randomUUID(), id: crypto.randomUUID() }),
+    return Array.from({ length: totalClubs }, () =>
+      Club.create(
+        { principalId: crypto.randomUUID(), city: 'city', name: 'name' },
+        { generate: () => crypto.randomUUID() },
+      ),
     );
   }
 }

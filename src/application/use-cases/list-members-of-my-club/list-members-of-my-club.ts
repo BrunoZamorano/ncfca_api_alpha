@@ -11,7 +11,7 @@ export default class ListMembersOfMyClub {
   async execute(input: { loggedInUserId: string }): Promise<ClubMembership[]> {
     const club = await this.uow.clubRepository.findByOwnerId(input.loggedInUserId);
     if (!club) throw new EntityNotFoundException('Club', 'for user: ' + input.loggedInUserId);
-    if (club.ownerId !== input.loggedInUserId) throw new ForbiddenException('User is not the owner of this club.');
+    if (club.principalId !== input.loggedInUserId) throw new ForbiddenException('User is not the owner of this club.');
     const memberships = await this.uow.clubMembershipRepository.findByClub(club.id);
     return memberships.filter((p) => p.status === MembershipStatus.ACTIVE);
   }

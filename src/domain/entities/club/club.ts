@@ -1,73 +1,118 @@
-import { DomainException } from '@/domain/exceptions/domain-exception';
-import { UserRoles } from '@/domain/enums/user-roles';
+import {
+  DomainException,
+  EntityNotFoundException,
+  InvalidOperationException,
+} from '@/domain/exceptions/domain-exception';
+import IdGenerator from '@/application/services/id-generator';
+import ClubMembership from '@/domain/entities/club-membership/club-membership.entity';
 
 export default class Club {
-  private readonly _affiliatedFamilies: string[] = [];
+  private readonly _members: ClubMembership[];
   private readonly _id: string;
-  private _ownerId: string;
+  private _principalId: string;
   private _city: string;
   private _name: string;
 
-  constructor(props: Props) {
-    this.addAffiliatedFamilies(props.ownerId);
-    this._ownerId = props.ownerId;
-    this._city = props.city ?? Club.DEFAULT_CITY;
-    this._name = props.name ?? Club.DEFAULT_NAME;
+  constructor(props: ClubConstructorProps) {
     this._id = props.id;
+    this._city = props.city;
+    this._name = props.name;
+    this._members = props.members ?? [];
+    this._principalId = props.principalId;
   }
 
-  get affiliatedFamilies(): string[] {
-    return [...this._affiliatedFamilies];
+  public static create(props: CreateClubProps, idGenerator: IdGenerator): Club {
+    if (!props.name || props.name.trim().length < 3) {
+      throw new DomainException('Club name is required and must have at least 3 characters.');
+    }
+    if (!props.city || props.city.trim().length < 3) {
+      throw new DomainException('City is required and must have at least 3 characters.');
+    }
+    return new Club({
+      id: idGenerator.generate(),
+      name: props.name,
+      city: props.city,
+      members: [],
+      principalId: props.principalId,
+    });
   }
 
-  get ownerId(): string {
-    return this._ownerId;
+  public addMember(memberId: string, familyId: string, idGenerator: IdGenerator): void {
+    let membership = this.findMembershipByDependantId(memberId);
+    if (membership?.isActive()) {
+      throw new InvalidOperationException(`Dependant ${memberId} is already an active member of this club.`);
+    }
+    if (membership) {
+      membership.reinstate();
+    } else {
+      const newMembership = ClubMembership.create(
+        {
+          clubId: this._id,
+          memberId: memberId,
+          familyId,
+        },
+        idGenerator,
+      );
+      this._members.push(newMembership);
+    }
   }
 
-  get city(): string {
-    return this._city;
+  public removeMember(memberId: string): void {
+    const membership = this.findMembershipByDependantId(memberId);
+    if (!membership || !membership.isActive()) {
+      throw new EntityNotFoundException('ClubMembership', `${memberId} is not an active member of this club.`);
+    }
+    membership.revoke();
   }
 
-  get name(): string {
-    return this._name;
+  public updateInfo(props: { name?: string; city?: string }): void {
+    if (props.name && props.name.trim().length >= 3) {
+      this._name = props.name;
+    }
+    if (props.city && props.city.trim().length >= 3) {
+      this._city = props.city;
+    }
+  }
+
+  public changeOwner(newOwnerId: string): void {
+    if (!newOwnerId) {
+      throw new DomainException('New owner ID cannot be empty.');
+    }
+    if (this._principalId === newOwnerId) {
+      throw new InvalidOperationException('New director cannot be the same as the current one.');
+    }
+    this._principalId = newOwnerId;
+  }
+
+  private findMembershipByDependantId(dependantId: string): ClubMembership | undefined {
+    return this._members.find((m) => m.memberId === dependantId);
+  }
+
+  get members(): Readonly<ClubMembership[]> {
+    return this._members;
   }
 
   get id(): string {
     return this._id;
   }
-
-  addAffiliatedFamilies(familyId: string): void {
-    if (this._affiliatedFamilies.includes(familyId)) throw new Error(Club.errorCodes.ALREADY_AFFILIATED);
-    this._affiliatedFamilies.push(familyId);
+  get principalId(): string {
+    return this._principalId;
   }
-
-  public changeOwner(newOwnerId: string): void {
-    if (this._ownerId === newOwnerId) throw new DomainException('Owner cannot be the same');
-    this._ownerId = newOwnerId;
+  get name(): string {
+    return this._name;
   }
-  
-  
-  updateInfo(props: { name?: string; city?: string }): void {
-    if (props.name) {
-      this._name = props.name;
-    }
-    if (props.city) {
-      this._city = props.city;
-    }
+  get city(): string {
+    return this._city;
   }
-
-  static errorCodes = {
-    ALREADY_AFFILIATED: 'ALREADY_AFFILIATED',
-  };
-
-  static readonly DEFAULT_CITY = 'Boa Vista';
-  static readonly DEFAULT_NAME = 'Club';
 }
 
-interface Props {
-  affiliatedFamilies?: string[];
-  ownerId: string;
-  city?: string;
-  name?: string;
+interface CreateClubProps {
+  principalId: string;
+  name: string;
+  city: string;
+}
+
+interface ClubConstructorProps extends CreateClubProps {
   id: string;
+  members?: ClubMembership[];
 }

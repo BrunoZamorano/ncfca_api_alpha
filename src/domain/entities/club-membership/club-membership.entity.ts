@@ -1,6 +1,7 @@
-import { InvalidOperationException } from '@/domain/exceptions/domain-exception';
-import { MembershipStatus } from '@/domain/enums/membership-status';
 import IdGenerator from '@/application/services/id-generator';
+
+import { MembershipStatus } from '@/domain/enums/membership-status';
+import { InvalidOperationException } from '@/domain/exceptions/domain-exception';
 
 export default class ClubMembership {
   public status: MembershipStatus;
@@ -9,32 +10,39 @@ export default class ClubMembership {
   public readonly clubId: string;
   public readonly id: string;
 
-  public constructor(props: ClubMembershipConstructorProps) {
+  constructor(props: ClubMembershipConstructorProps) {
     this.id = props.id;
     this.clubId = props.clubId;
+    this.status = props.status;
     this.familyId = props.familyId;
     this.memberId = props.memberId;
-    this.status = props.status;
   }
 
   public static create(props: CreateMembershipProps, idGenerator: IdGenerator): ClubMembership {
     return new ClubMembership({
       id: idGenerator.generate(),
       clubId: props.clubId,
+      status: MembershipStatus.ACTIVE,
       familyId: props.familyId,
       memberId: props.memberId,
-      status: MembershipStatus.ACTIVE,
     });
   }
 
   public revoke(): void {
-    if (this.status === MembershipStatus.REVOKED) {
-      throw new InvalidOperationException('Membership is already revoked.');
+    if (this.status !== MembershipStatus.ACTIVE) {
+      throw new InvalidOperationException('Cannot revoke a membership that is not active.');
     }
     this.status = MembershipStatus.REVOKED;
   }
 
-  isActive(): boolean {
+  public reinstate(): void {
+    if (this.status !== MembershipStatus.REVOKED) {
+      throw new InvalidOperationException('Cannot reinstate a membership that is not revoked.');
+    }
+    this.status = MembershipStatus.ACTIVE;
+  }
+
+  public isActive(): boolean {
     return this.status === MembershipStatus.ACTIVE;
   }
 }
@@ -42,9 +50,9 @@ export default class ClubMembership {
 interface ClubMembershipConstructorProps {
   id: string;
   clubId: string;
+  status: MembershipStatus;
   familyId: string;
   memberId: string;
-  status: MembershipStatus;
 }
 
 interface CreateMembershipProps {

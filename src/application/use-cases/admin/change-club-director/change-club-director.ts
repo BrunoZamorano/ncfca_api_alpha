@@ -10,15 +10,15 @@ export default class AdminChangeClubDirector {
     return this.uow.executeInTransaction(async () => {
       const club = await this.uow.clubRepository.find(input.clubId);
       if (!club) throw new EntityNotFoundException('Club', input.clubId);
-      if (club.ownerId === input.newDirectorId)
+      if (club.principalId === input.newDirectorId)
         throw new InvalidOperationException('New director is the same as the current director.');
       const newDirector = await this.uow.userRepository.find(input.newDirectorId);
       if (!newDirector) throw new EntityNotFoundException('User', input.newDirectorId);
       if (!newDirector.roles.includes(UserRoles.DONO_DE_CLUBE)) newDirector.assignRoles([UserRoles.DONO_DE_CLUBE]);
       const prevClub = await this.uow.clubRepository.findByOwnerId(newDirector.id);
       if (prevClub) throw new InvalidOperationException('User can only own one club.');
-      const prevDirector = await this.uow.userRepository.find(club.ownerId);
-      if (!prevDirector) throw new EntityNotFoundException('User', club.ownerId);
+      const prevDirector = await this.uow.userRepository.find(club.principalId);
+      if (!prevDirector) throw new EntityNotFoundException('User', club.principalId);
       if (prevDirector.roles.includes(UserRoles.DONO_DE_CLUBE)) prevDirector.revokeRole(UserRoles.DONO_DE_CLUBE);
       club.changeOwner(input.newDirectorId);
       await this.uow.userRepository.save(newDirector);

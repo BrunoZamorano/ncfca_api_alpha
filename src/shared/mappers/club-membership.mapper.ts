@@ -3,7 +3,7 @@ import { MembershipStatus } from '@/domain/enums/membership-status';
 import ClubMembership from '@/domain/entities/club-membership/club-membership.entity';
 
 export default class ClubMembershipMapper {
-  public static toDomain(data: ClubMembershipData): ClubMembership {
+  public static toEntity(data: ClubMembershipData): ClubMembership {
     return new ClubMembership({
       id: data.id,
       clubId: data.club_id,

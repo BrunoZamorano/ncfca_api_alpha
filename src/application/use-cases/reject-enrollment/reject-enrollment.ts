@@ -11,7 +11,7 @@ export default class RejectEnrollment {
       const request = await this.uow.enrollmentRequestRepository.findById(input.enrollmentRequestId);
       if (!request) throw new EntityNotFoundException('EnrollmentRequest', input.enrollmentRequestId);
       const club = await this.uow.clubRepository.find(request.clubId);
-      if (!club || club.ownerId !== input.loggedInUserId) {
+      if (!club || club.principalId !== input.loggedInUserId) {
         throw new ForbiddenException('User is not authorized to manage this enrollment request.');
       }
       request.reject(input.reason);

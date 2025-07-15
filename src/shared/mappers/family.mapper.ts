@@ -10,9 +10,11 @@ export default class FamilyMapper {
     const dependants = data.dependants ? data.dependants.map(DependantMapper.toEntity) : [];
     return new Entity({
       id: data.id,
-      holderId: data.holder_id,
       status: data.status as FamilyStatus,
+      holderId: data.holder_id,
       dependants: dependants,
+      affiliatedAt: data.affiliated_at,
+      affiliationExpiresAt: data.affiliation_expires_at,
     });
   }
 

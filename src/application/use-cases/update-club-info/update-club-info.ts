@@ -13,7 +13,7 @@ export default class UpdateClubInfo {
         throw new EntityNotFoundException('Club', input.clubId);
       }
 
-      if (club.ownerId !== input.loggedInUserId) {
+      if (club.principalId !== input.loggedInUserId) {
         throw new ForbiddenException('User is not authorized to edit this club.');
       }
 

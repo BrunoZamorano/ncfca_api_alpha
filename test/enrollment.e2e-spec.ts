@@ -42,7 +42,7 @@ describe('Enrollment Journey (e2e)', () => {
     const regResponse = await request(app.getHttpServer()).post('/account/user').send(testUser);
     accessToken = regResponse.body.accessToken;
 
-    const club = new Club({ id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22', ownerId: 'owner', name: 'E2E Debate Club' });
+    const club = new Club({ id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22', principalId: 'owner', name: 'E2E Debate Club' });
     db.clubs.push(club);
     clubId = club.id;
 

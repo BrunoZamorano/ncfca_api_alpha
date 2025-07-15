@@ -6,6 +6,7 @@ import ClubMapper from '@/shared/mappers/club.mapper';
 import SearchClubsQueryDto from '@/domain/dtos/search-clubs-query.dto';
 import PaginatedOutputDto from '@/domain/dtos/paginated-output.dto';
 import ClubDto from '@/domain/dtos/club.dto';
+import ClubMembershipMapper from '@/shared/mappers/club-membership.mapper';
 
 @Injectable()
 export class ClubRepositoryPrisma implements ClubRepository {
@@ -13,29 +14,42 @@ export class ClubRepositoryPrisma implements ClubRepository {
 
   async find(id: string): Promise<Club | null> {
     if (!id) return null;
-    const club = await this.prisma.club.findUnique({ where: { id } });
-    return club ? ClubMapper.toEntity(club) : null;
+    const club = await this.prisma.club.findUnique({ where: { id }, include: { memberships: true } });
+    return club ? ClubMapper.modelToEntity(club) : null;
   }
 
   async findByOwnerId(ownerId: string): Promise<Club | null> {
     if (!ownerId) return null;
     const club = await this.prisma.club.findUnique({ where: { principal_id: ownerId } });
-    return club ? ClubMapper.toEntity(club) : null;
+    return club ? ClubMapper.modelToEntity(club) : null;
   }
 
   async findAll(): Promise<Club[]> {
     const clubs = await this.prisma.club.findMany();
-    return clubs.map(ClubMapper.toEntity);
+    return clubs.map(ClubMapper.modelToEntity);
   }
 
   async save(club: Club): Promise<Club> {
-    const clubData = ClubMapper.toModel(club);
-    const savedClub = await this.prisma.club.upsert({
-      where: { id: club.id },
-      update: clubData,
-      create: clubData,
+    const clubData = ClubMapper.entityToModel(club);
+    const memberOperations = club.members.map((p) => {
+      const membershipData = ClubMembershipMapper.toPersistence(p);
+      return this.prisma.clubMembership.upsert({
+        where: { id: p.id },
+        update: membershipData,
+        create: membershipData,
+      });
     });
-    return ClubMapper.toEntity(savedClub);
+
+    let upsertedClub;
+    await this.prisma.$transaction([
+      (upsertedClub = this.prisma.club.upsert({
+        where: { id: club.id },
+        update: clubData,
+        create: clubData,
+      })),
+      ...memberOperations,
+    ]);
+    return ClubMapper.modelToEntity(upsertedClub);
   }
 
   async search(query: SearchClubsQueryDto): Promise<PaginatedOutputDto<ClubDto>> {
@@ -54,8 +68,7 @@ export class ClubRepositoryPrisma implements ClubRepository {
       id: c.id,
       name: c.name,
       city: c.city,
-      ownerId: c.principal_id,
-      affiliatedFamilies: [],
+      principalId: c.principal_id,
     }));
 
     return {

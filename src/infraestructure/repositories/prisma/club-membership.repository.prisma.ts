@@ -13,7 +13,7 @@ export class ClubMembershipRepositoryPrisma implements ClubMembershipRepository 
     const membershipData = await this.prisma.clubMembership.findUnique({
       where: { id },
     });
-    return membershipData ? ClubMembershipMapper.toDomain(membershipData) : null;
+    return membershipData ? ClubMembershipMapper.toEntity(membershipData) : null;
   }
 
   public async findByMemberAndClub(memberId: string, clubId: string): Promise<ClubMembership | null> {
@@ -23,7 +23,7 @@ export class ClubMembershipRepositoryPrisma implements ClubMembershipRepository 
         club_id: clubId,
       },
     });
-    return membershipData ? ClubMembershipMapper.toDomain(membershipData) : null;
+    return membershipData ? ClubMembershipMapper.toEntity(membershipData) : null;
   }
 
   public async findActiveByMemberAndClub(memberId: string, clubId: string): Promise<ClubMembership | null> {
@@ -34,21 +34,21 @@ export class ClubMembershipRepositoryPrisma implements ClubMembershipRepository 
         status: MembershipStatus.ACTIVE,
       },
     });
-    return membershipData ? ClubMembershipMapper.toDomain(membershipData) : null;
+    return membershipData ? ClubMembershipMapper.toEntity(membershipData) : null;
   }
 
   public async findByClub(clubId: string): Promise<ClubMembership[]> {
     const membershipsData = await this.prisma.clubMembership.findMany({
       where: { club_id: clubId },
     });
-    return membershipsData.map(ClubMembershipMapper.toDomain);
+    return membershipsData.map(ClubMembershipMapper.toEntity);
   }
 
   public async findAllByFamily(familyId: string): Promise<ClubMembership[]> {
     const membershipsData = await this.prisma.clubMembership.findMany({
       where: { family_id: familyId },
     });
-    return membershipsData.map(ClubMembershipMapper.toDomain);
+    return membershipsData.map(ClubMembershipMapper.toEntity);
   }
 
   public async save(membership: ClubMembership): Promise<ClubMembership> {
@@ -60,6 +60,6 @@ export class ClubMembershipRepositoryPrisma implements ClubMembershipRepository 
       create: membershipData,
     });
 
-    return ClubMembershipMapper.toDomain(savedData);
+    return ClubMembershipMapper.toEntity(savedData);
   }
 }
