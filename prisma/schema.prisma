@@ -1,0 +1,190 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  DONO_DE_CLUBE
+  SEM_FUNCAO
+  ADMIN
+}
+
+enum FamilyStatus {
+  NOT_AFFILIATED
+  AFFILIATED
+  EXPIRED
+  PENDING_PAYMENT
+}
+
+enum DependantRelationship {
+  DAUGHTER
+  HUSBAND
+  CHILD
+  WIFE
+  SON
+  OTHER
+}
+
+enum Sex {
+  FEMALE
+  MALE
+}
+
+enum MembershipStatus {
+  ACTIVE
+  REVOKED
+}
+
+enum EnrollmentStatus {
+  REJECTED
+  APPROVED
+  PENDING
+}
+
+enum PaymentStatus {
+  CANCELLED
+  REFUNDED
+  EXPIRED
+  PENDING
+  FAILED
+  PAID
+}
+
+enum PaymentMethod {
+  CREDIT_CARD
+  PIX
+}
+
+enum TransactionContextType {
+  FAMILY_AFFILIATION
+  FAMILY_RENEWAL
+}
+
+model User {
+  id           String  @id @default(uuid())
+  email        String  @unique
+  first_name   String
+  last_name    String
+  rg           String
+  cpf          String  @unique
+  phone        String
+  roles        String
+  password     String
+  street       String
+  number       String
+  neighborhood String
+  city         String
+  state        String
+  complement   String?
+  zip_code     String
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  club        Club?         @relation("club_principal")
+  family      Family?       @relation("holder")
+  Transaction Transaction[]
+}
+
+model Family {
+  id                     String       @id @default(uuid())
+  status                 FamilyStatus
+  holder_id              String       @unique
+  created_at             DateTime     @default(now())
+  updated_at             DateTime     @updatedAt
+  affiliated_at          DateTime?
+  affiliation_expires_at DateTime?
+
+  holder             User                @relation("holder", fields: [holder_id], references: [id])
+  dependants         Dependant[]
+  memberships        ClubMembership[]
+  transactions       Transaction[]
+  enrollmentRequests EnrollmentRequest[]
+}
+
+model Dependant {
+  id           String                @id @default(uuid())
+  last_name    String
+  first_name   String
+  family_id    String
+  relationship DependantRelationship
+  sex          Sex
+  email        String?
+  phone        String?
+  birthdate    DateTime
+  created_at   DateTime              @default(now())
+  updated_at   DateTime              @updatedAt
+
+  family             Family              @relation(fields: [family_id], references: [id])
+  memberships        ClubMembership[]
+  enrollmentRequests EnrollmentRequest[]
+}
+
+model Club {
+  id           String   @id @default(uuid())
+  name         String
+  city         String
+  state        String
+  status       Boolean  @default(true)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+  principal_id String   @unique
+
+  principal          User                @relation("club_principal", fields: [principal_id], references: [id])
+  memberships        ClubMembership[]
+  enrollmentRequests EnrollmentRequest[]
+}
+
+model ClubMembership {
+  id        String           @id @default(uuid())
+  club_id   String
+  member_id String
+  family_id String
+  status    MembershipStatus
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  club      Club      @relation(fields: [club_id], references: [id])
+  family    Family    @relation(fields: [family_id], references: [id])
+  dependant Dependant @relation(fields: [member_id], references: [id])
+}
+
+model EnrollmentRequest {
+  id               String           @id @default(uuid())
+  club_id          String
+  member_id        String
+  family_id        String
+  status           EnrollmentStatus
+  resolved_at      DateTime?
+  requested_at     DateTime         @default(now())
+  rejection_reason String?
+
+  club      Club      @relation(fields: [club_id], references: [id])
+  family    Family    @relation(fields: [family_id], references: [id])
+  dependant Dependant @relation(fields: [member_id], references: [id])
+}
+
+model Transaction {
+  id                     String                 @id @default(uuid())
+  status                 PaymentStatus
+  user_id                String
+  gateway                String
+  family_id              String
+  created_at             DateTime               @default(now())
+  amount_cents           Int
+  context_type           TransactionContextType
+  payment_method         PaymentMethod
+  gateway_payload        Json?
+  gateway_transaction_id String                 @unique
+
+  user   User   @relation(fields: [user_id], references: [id])
+  family Family @relation(fields: [family_id], references: [id])
+}
