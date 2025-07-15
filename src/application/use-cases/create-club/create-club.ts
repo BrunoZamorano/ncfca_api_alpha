@@ -40,7 +40,7 @@ export default class CreateClub {
         this.logger.debug(`Family is not affiliated: ${family.id}`);
         throw new InvalidOperationException('Family must be affiliated to create a club.');
       }
-      user.addRoles([UserRoles.DONO_DE_CLUBE]);
+      user.assignRoles([UserRoles.DONO_DE_CLUBE]);
       await this.uow.userRepository.save(user);
       const clubInstance = new Club({
         ownerId: input.loggedInUserId,

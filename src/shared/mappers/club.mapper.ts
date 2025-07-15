@@ -8,7 +8,7 @@ export default class ClubMapper {
       id: data.id,
       name: data.name,
       city: data.city,
-      ownerId: data.owner_id,
+      ownerId: data.principal_id,
     });
   }
 
@@ -19,7 +19,7 @@ export default class ClubMapper {
       city: entity.city,
       state: 'RR',
       status: true,
-      owner_id: entity.ownerId,
+      principal_id: entity.ownerId,
     };
   }
 

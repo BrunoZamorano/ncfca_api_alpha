@@ -25,7 +25,7 @@ export class EnrollmentRequestRepositoryPrisma implements EnrollmentRequestRepos
 
   async findByDependantAndClub(dependantId: string, clubId: string): Promise<EnrollmentRequest[]> {
     const requests = await this.prisma.enrollmentRequest.findMany({
-      where: { dependant_id: dependantId, club_id: clubId },
+      where: { member_id: dependantId, club_id: clubId },
     });
     return requests.map(EnrollmentRequestMapper.toDomain);
   }

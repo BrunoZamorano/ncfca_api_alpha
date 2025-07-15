@@ -13,6 +13,7 @@ export default class UserMapper {
       firstName: data.first_name,
       lastName: data.last_name,
       password: Password.fromHash(data.password),
+      roles: data.roles.split(',') as UserRoles[],
       phone: data.phone,
       email: new Email(data.email),
       cpf: new Cpf(data.cpf),
@@ -31,7 +32,7 @@ export default class UserMapper {
 
     if (data.roles && data.roles.length > 0) {
       const roles = data.roles.split(',') as UserRoles[];
-      user.addRoles(roles);
+      user.assignRoles(roles);
     }
 
     return user;

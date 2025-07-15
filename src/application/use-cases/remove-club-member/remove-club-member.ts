@@ -1,6 +1,7 @@
 import { Inject, Injectable, ForbiddenException } from '@nestjs/common';
-import { UNIT_OF_WORK, UnitOfWork } from '@/domain/services/unit-of-work';
+
 import { EntityNotFoundException, InvalidOperationException } from '@/domain/exceptions/domain-exception';
+import { UNIT_OF_WORK, UnitOfWork } from '@/domain/services/unit-of-work';
 
 @Injectable()
 export default class RemoveClubMember {
@@ -8,8 +9,8 @@ export default class RemoveClubMember {
 
   async execute(input: Input): Promise<void> {
     return await this.uow.executeInTransaction(async () => {
-      const membership = await this.uow.membershipRepository.findByMemberAndClub(input.memberId, input.clubId);
-      if (!membership) throw new EntityNotFoundException('Membership', 'for member id: ' + input.memberId);
+      const membership = await this.uow.clubMembershipRepository.findById(input.membershipId);
+      if (!membership) throw new EntityNotFoundException('Membership', 'for member id: ' + input.membershipId);
       const club = await this.uow.clubRepository.find(membership.clubId);
       if (!club || club.ownerId !== input.loggedInUserId) {
         throw new ForbiddenException('User is not authorized to manage this enrollment request.');
@@ -17,14 +18,13 @@ export default class RemoveClubMember {
       if (!membership.isActive()) {
         throw new InvalidOperationException('Cannot remove a member whose enrollment is not approved.');
       }
-      membership.isActive = false;
-      await this.uow.membershipRepository.save(membership);
+      membership.revoke();
+      await this.uow.clubMembershipRepository.save(membership);
     });
   }
 }
 
 interface Input {
   loggedInUserId: string;
-  memberId: string;
-  clubId: string;
+  membershipId: string;
 }

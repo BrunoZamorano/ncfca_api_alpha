@@ -14,6 +14,8 @@ import {
 import EnrollmentRequestRepository, {
   ENROLLMENT_REQUEST_REPOSITORY,
 } from '@/domain/repositories/enrollment-request-repository';
+import { CLUB_MEMBERSHIP_REPOSITORY } from '@/domain/repositories/club-membership.repository';
+import { ClubMembershipRepositoryPrisma } from '@/infraestructure/repositories/prisma/club-membership.repository.prisma';
 
 export class UnitOfWorkMemory implements UnitOfWork {
   private readonly db: InMemoryDatabase;
@@ -23,6 +25,7 @@ export class UnitOfWorkMemory implements UnitOfWork {
     @Inject(CLUB_REPOSITORY) public readonly clubRepository: ClubRepository,
     @Inject(FAMILY_REPOSITORY) public readonly familyRepository: FamilyRepository,
     @Inject(TRANSACTION_REPOSITORY) public readonly transactionRepository: TransactionRepository,
+    @Inject(CLUB_MEMBERSHIP_REPOSITORY) public readonly clubMembershipRepository: ClubMembershipRepositoryPrisma,
     @Inject(ENROLLMENT_REQUEST_REPOSITORY) public readonly enrollmentRequestRepository: EnrollmentRequestRepository,
   ) {
     this.db = InMemoryDatabase.getInstance();

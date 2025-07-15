@@ -6,6 +6,7 @@ import RejectEnrollment from '@/application/use-cases/reject-enrollment/reject-e
 import RemoveClubMember from '@/application/use-cases/remove-club-member/remove-club-member';
 import ListClubMembers from '@/application/use-cases/list-club-members/list-club-members';
 import UpdateClubInfo from '@/application/use-cases/update-club-info/update-club-info';
+import GetMyClubInfo from '@/application/use-cases/get-my-club-info/get-my-club-info';
 
 import { UserRoles } from '@/domain/enums/user-roles';
 
@@ -15,8 +16,6 @@ import { UpdateClubDto } from '@/infraestructure/dtos/update-club.dto';
 import { RolesGuard } from '@/shared/guards/roles.guard';
 import { Roles } from '@/shared/decorators/role.decorator';
 import AuthGuard from '@/shared/guards/auth.guard';
-import GetClubInfo from '@/application/use-cases/get-club-info/get-club-info';
-import GetMyClubInfo from '@/application/use-cases/get-my-club-info/get-my-club-info';
 
 @Controller('club-management')
 @UseGuards(AuthGuard, RolesGuard)
@@ -73,15 +72,15 @@ export default class ClubManagementController {
   async listMembers(@Request() req: any, @Param('clubId') clubId: string) {
     return this._listClubMembers.execute({ loggedInUserId: req.user.id, clubId });
   }
-  
+
   @Get('/my-club/members')
   async listMembersOfMyClub(@Request() req: any, @Param('clubId') clubId: string) {
     return this._listClubMembers.execute({ loggedInUserId: req.user.id, clubId });
   }
 
-  @Post('/enrollments/:enrollmentId/revoke')
+  @Post('/membership/:membershipId/revoke')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async removeMember(@Request() req: any, @Param('enrollmentId') enrollmentId: string) {
-    await this._removeClubMember.execute({ loggedInUserId: req.user.id, memberId: enrollmentId });
+  async removeMember(@Request() req: any, @Param('membershipId') membershipId: string) {
+    await this._removeClubMember.execute({ loggedInUserId: req.user.id, membershipId: membershipId });
   }
 }

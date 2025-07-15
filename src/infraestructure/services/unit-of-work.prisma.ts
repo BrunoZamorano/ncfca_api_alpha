@@ -16,6 +16,7 @@ import ClubRepository from '@/domain/repositories/club-repository';
 import FamilyRepository from '@/domain/repositories/family-repository';
 import TransactionRepository from '@/domain/repositories/transaction.repository';
 import UserRepository from '@/domain/repositories/user-repository';
+import ClubMembershipRepository, { CLUB_MEMBERSHIP_REPOSITORY } from '@/domain/repositories/club-membership.repository';
 
 @Injectable()
 export class UnitOfWorkPrisma implements UnitOfWork {
@@ -27,6 +28,7 @@ export class UnitOfWorkPrisma implements UnitOfWork {
     @Inject(CLUB_REPOSITORY) public readonly clubRepository: ClubRepository,
     @Inject(FAMILY_REPOSITORY) public readonly familyRepository: FamilyRepository,
     @Inject(TRANSACTION_REPOSITORY) public readonly transactionRepository: TransactionRepository,
+    @Inject(CLUB_MEMBERSHIP_REPOSITORY) public readonly clubMembershipRepository: ClubMembershipRepository,
     @Inject(ENROLLMENT_REQUEST_REPOSITORY) public readonly enrollmentRequestRepository: EnrollmentRequestRepository,
   ) {
     this.prisma = this.prismaService;
@@ -45,7 +47,13 @@ export class UnitOfWorkPrisma implements UnitOfWork {
   // Para o Prisma, begin, commit e rollback são gerenciados pelo $transaction.
   // Estes métodos podem ser mantidos para compatibilidade de interface, mas
   // o uso principal deve ser através do executeInTransaction.
-  async beginTransaction(): Promise<void> { /* No-op */ }
-  async commit(): Promise<void> { /* No-op */ }
-  async rollback(): Promise<void> { /* No-op */ }
+  async beginTransaction(): Promise<void> {
+    /* No-op */
+  }
+  async commit(): Promise<void> {
+    /* No-op */
+  }
+  async rollback(): Promise<void> {
+    /* No-op */
+  }
 }

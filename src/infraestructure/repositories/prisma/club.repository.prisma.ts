@@ -19,7 +19,7 @@ export class ClubRepositoryPrisma implements ClubRepository {
 
   async findByOwnerId(ownerId: string): Promise<Club | null> {
     if (!ownerId) return null;
-    const club = await this.prisma.club.findUnique({ where: { owner_id: ownerId } });
+    const club = await this.prisma.club.findUnique({ where: { principal_id: ownerId } });
     return club ? ClubMapper.toEntity(club) : null;
   }
 
@@ -54,7 +54,7 @@ export class ClubRepositoryPrisma implements ClubRepository {
       id: c.id,
       name: c.name,
       city: c.city,
-      ownerId: c.owner_id,
+      ownerId: c.principal_id,
       affiliatedFamilies: [],
     }));
 

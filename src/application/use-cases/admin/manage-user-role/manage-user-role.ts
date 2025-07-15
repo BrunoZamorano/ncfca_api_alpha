@@ -11,7 +11,7 @@ export default class AdminManageUserRole {
       const user = await this.uow.userRepository.find(input.userId);
       if (!user) throw new EntityNotFoundException('User', input.userId);
       user.roles.length = 0;
-      user.addRoles(input.roles);
+      user.assignRoles(input.roles);
       await this.uow.userRepository.save(user);
     });
   }

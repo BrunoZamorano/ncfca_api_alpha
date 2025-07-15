@@ -1,0 +1,4 @@
+export enum TransactionContextType {
+  FAMILY_AFFILIATION = 'FAMILY_AFFILIATION',
+  FAMILY_RENEWAL = 'FAMILY_RENEWAL',
+}

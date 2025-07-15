@@ -3,20 +3,20 @@ import { Inject, Logger } from '@nestjs/common';
 import TokenService, { Payload } from '@/application/services/token-service';
 import IdGenerator from '@/application/services/id-generator';
 
-import UserFactory from '@/domain/factories/user.factory';
 import Family from '@/domain/entities/family/family';
 
-import { USER_FACTORY } from '@/shared/constants/factories-constants';
-import { ID_GENERATOR, TOKEN_SERVICE } from '@/shared/constants/service-constants';
+import { HASHING_SERVICE, ID_GENERATOR, TOKEN_SERVICE } from '@/shared/constants/service-constants';
 import { UNIT_OF_WORK, UnitOfWork } from '@/domain/services/unit-of-work';
 import { FamilyStatus } from '@/domain/enums/family-status';
+import HashingService from '@/domain/services/hashing-service';
+import User from '@/domain/entities/user/user';
 
 export default class RegisterUser {
   private readonly logger = new Logger(RegisterUser.name);
 
   constructor(
+    @Inject(HASHING_SERVICE) private readonly hashingService: HashingService,
     @Inject(TOKEN_SERVICE) private readonly tokenService: TokenService,
-    @Inject(USER_FACTORY) private readonly userFactory: UserFactory,
     @Inject(ID_GENERATOR) private readonly idGenerator: IdGenerator,
     @Inject(UNIT_OF_WORK) private readonly uow: UnitOfWork,
   ) {}
@@ -28,7 +28,7 @@ export default class RegisterUser {
         this.logger.debug(`Tentativa de registro com email já em uso: ${input.email}`);
         throw new Error(RegisterUser.errorCodes.EMAIL_ALREADY_IN_USE);
       }
-      const user = this.userFactory.create(input);
+      const user = User.create(input, this.idGenerator, this.hashingService);
       const createdUser = await this.uow.userRepository.save(user);
       const familyId = this.idGenerator.generate();
       const familyProps = { holderId: createdUser.id, id: familyId, status: FamilyStatus.NOT_AFFILIATED };

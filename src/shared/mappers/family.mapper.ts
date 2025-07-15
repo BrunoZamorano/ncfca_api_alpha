@@ -21,6 +21,8 @@ export default class FamilyMapper {
       id: entity.id,
       holder_id: entity.holderId,
       status: entity.status,
+      affiliated_at: entity.affiliatedAt,
+      affiliation_expires_at: entity.affiliationExpiresAt,
     };
   }
 }

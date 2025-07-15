@@ -11,6 +11,7 @@ import { PaymentMethod } from '@/domain/enums/payment-method';
 import { DomainException, EntityNotFoundException } from '@/domain/exceptions/domain-exception';
 import Transaction from '@/domain/entities/transaction/transaction';
 import { FamilyStatus } from '@/domain/enums/family-status';
+import { TransactionContextType } from '@/domain/enums/transaction-context-type';
 
 @Injectable()
 export default class Checkout {
@@ -61,10 +62,12 @@ export default class Checkout {
       gatewayTransactionId: gatewayTransaction.id,
       gatewayPayload: gatewayTransaction.metadata,
       paymentMethod: input.paymentMethod,
+      contextType: TransactionContextType.FAMILY_AFFILIATION,
       amountCents: gatewayTransaction.amount,
       familyId: family.id,
       gateway: this.paymentGateway.name,
       status: gatewayTransaction.status,
+      userId: input.userId,
       id: this.idGenerator.generate(),
     });
     await this.transactionRepository.save(localTransaction);

@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
-import UserFactory, { CreateUserProps } from '@/domain/factories/user.factory';
 import UserRepository from '@/domain/repositories/user-repository';
-import User from '@/domain/entities/user/user';
+import User, { CreateUserProps } from '@/domain/entities/user/user';
 
 import InMemoryDatabase from '@/infraestructure/database/in-memory.database';
 
@@ -45,7 +44,7 @@ export default class UserRepositoryMemory implements UserRepository {
     if (typeof arg1 === 'undefined' || typeof arg1 === 'number') {
       const length = arg1 ?? 10;
       for (let i = 0; i < length; i++) {
-        this.db.users.push(userFactory.create());
+        this.db.users.push(userFactory.create({}));
       }
       return;
     }
@@ -64,4 +63,7 @@ export default class UserRepositoryMemory implements UserRepository {
       return;
     }
   }
+}
+interface UserFactory {
+  create: (props: CreateUserProps) => User;
 }

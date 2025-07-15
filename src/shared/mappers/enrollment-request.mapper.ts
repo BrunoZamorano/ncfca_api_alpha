@@ -7,7 +7,7 @@ export default class EnrollmentRequestMapper {
   static toDomain(data: EnrollmentRequestData): EnrollmentRequest {
     return new EnrollmentRequest({
       rejectionReason: data.rejection_reason,
-      dependantId: data.dependant_id,
+      dependantId: data.member_id,
       requestedAt: data.requested_at,
       resolvedAt: data.resolved_at,
       familyId: data.family_id,
@@ -25,7 +25,7 @@ export default class EnrollmentRequestMapper {
       family_id: entity.familyId,
       resolved_at: entity.resolvedAt,
       requested_at: entity.requestedAt,
-      dependant_id: entity.dependantId,
+      member_id: entity.dependantId,
       rejection_reason: entity.rejectionReason,
     };
   }
