@@ -22,8 +22,12 @@ describe('Enrollment Journey (e2e)', () => {
   let familyId: string;
 
   const testUser = {
-    firstName: 'Holder', lastName: 'E2E', password: 'Password@123',
-    email: 'journey-e2e@example.com', cpf: Cpf.VALID_CPF, phone: '12345678'
+    firstName: 'Holder',
+    lastName: 'E2E',
+    password: 'Password@123',
+    email: 'journey-e2e@example.com',
+    cpf: Cpf.VALID_CPF,
+    phone: '12345678',
   };
 
   beforeEach(async () => {
@@ -42,12 +46,16 @@ describe('Enrollment Journey (e2e)', () => {
     const regResponse = await request(app.getHttpServer()).post('/account/user').send(testUser);
     accessToken = regResponse.body.accessToken;
 
-    const club = new Club({ id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22', principalId: 'owner', name: 'E2E Debate Club' });
+    const club = new Club({
+      id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22',
+      principalId: 'owner',
+      name: 'E2E Debate Club',
+    });
     db.clubs.push(club);
     clubId = club.id;
 
-    const holder = db.users.find(u => u.email === testUser.email)!;
-    const family = db.families.find(f => f.holderId === holder.id)!;
+    const holder = db.users.find((u) => u.email === testUser.email)!;
+    const family = db.families.find((f) => f.holderId === holder.id)!;
     familyId = family.id;
   });
 
@@ -68,13 +76,16 @@ describe('Enrollment Journey (e2e)', () => {
       .expect(HttpStatus.OK);
 
     // ASSERT: Verificar se a família está afiliada
-    const affiliatedFamily = db.families.find(f => f.id === familyId)!;
+    const affiliatedFamily = db.families.find((f) => f.id === familyId)!;
     expect(affiliatedFamily.status).toBe(FamilyStatus.AFFILIATED);
 
     // ---- PASSO 2: Adicionar um dependente à família afiliada ----
     const addDependantDto: AddDependantDto = {
-      firstName: 'Test', lastName: 'Child', birthdate: '2010-01-01',
-      relationship: DependantRelationship.SON, sex: Sex.MALE
+      firstName: 'Test',
+      lastName: 'Child',
+      birthdate: '2010-01-01',
+      relationship: DependantRelationship.SON,
+      sex: Sex.MALE,
     };
     const dependantResponse = await request(app.getHttpServer())
       .post('/dependants')

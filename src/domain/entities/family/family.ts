@@ -86,7 +86,7 @@ export default class Family {
     const newFirstName = info.firstName ?? dependantToUpdate.firstName;
     const newLastName = info.lastName ?? dependantToUpdate.lastName;
     const hasDuplicateName = this._dependants.some(
-      (d) => d.id !== dependantId && d.firstName === newFirstName && d.lastName === newLastName
+      (d) => d.id !== dependantId && d.firstName === newFirstName && d.lastName === newLastName,
     );
 
     if (hasDuplicateName) {

@@ -12,7 +12,7 @@ export default class Address {
   public readonly complement?: string;
 
   public constructor(props: AddressProps) {
-    if (props.zipCode && !this.isValidZipCode(props) ) throw new DomainException('Invalid zip code format.');
+    if (props.zipCode && !this.isValidZipCode(props)) throw new DomainException('Invalid zip code format.');
     if (!this.isValidState(props)) throw new DomainException('State must be a 2-character abbreviation.');
     if (!this.isValidStreet(props)) throw new DomainException('Street is required.');
     this.country = props.country ?? 'Country';

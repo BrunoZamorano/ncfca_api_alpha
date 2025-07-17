@@ -6,7 +6,7 @@ import { UserRoles } from '@/domain/enums/user-roles';
 export class AdminGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
     const { user } = context.switchToHttp().getRequest();
-    if (!user || !user.roles || !user.roles.includes(UserRoles.ADMIN)){
+    if (!user || !user.roles || !user.roles.includes(UserRoles.ADMIN)) {
       throw new ForbiddenException('Access denied. Admin role required.');
     }
     return true;

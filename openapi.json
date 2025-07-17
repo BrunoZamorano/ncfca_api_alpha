@@ -1,0 +1,2063 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/": {
+      "get": {
+        "operationId": "AppController_getHello",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "App"
+        ]
+      }
+    },
+    "/admin/users": {
+      "get": {
+        "operationId": "AdminController_listUsers",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Lista de usuários retornada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Lista todos os usuários do sistema",
+        "tags": [
+          "6. Admin"
+        ]
+      }
+    },
+    "/admin/clubs": {
+      "get": {
+        "operationId": "AdminController_listClubs",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Lista de clubes retornada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ClubDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Lista todos os clubes do sistema",
+        "tags": [
+          "6. Admin"
+        ]
+      }
+    },
+    "/admin/users/{userId}/roles": {
+      "post": {
+        "operationId": "AdminController_manageUserRole",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ManageUserRoleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Perfis do usuário atualizados com sucesso."
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Gerencia os perfis (roles) de um usuário",
+        "tags": [
+          "6. Admin"
+        ]
+      }
+    },
+    "/admin/users/{userId}/family": {
+      "get": {
+        "operationId": "AdminController_viewUserFamily",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dados da família retornados com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FamilyDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Visualiza os detalhes da família de um usuário específico",
+        "tags": [
+          "6. Admin"
+        ]
+      }
+    },
+    "/admin/affiliations": {
+      "get": {
+        "operationId": "AdminController_listAffiliations",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Lista de afiliações retornada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FamilyDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Lista todas as afiliações de famílias e seus status",
+        "tags": [
+          "6. Admin"
+        ]
+      }
+    },
+    "/admin/clubs/{clubId}/director": {
+      "patch": {
+        "operationId": "AdminController_changeClubDirector",
+        "parameters": [
+          {
+            "name": "clubId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeClubDirectorDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Diretor do clube alterado com sucesso."
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Altera o diretor (proprietário) de um clube",
+        "tags": [
+          "6. Admin"
+        ]
+      }
+    },
+    "/admin/enrollments": {
+      "get": {
+        "operationId": "AdminController_listAllEnrollments",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Lista de matrículas retornada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EnrollmentRequestDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Lista todas as solicitações de matrícula do sistema",
+        "tags": [
+          "6. Admin"
+        ]
+      }
+    },
+    "/account/user": {
+      "post": {
+        "operationId": "AccountController_registerUser",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterUserInputDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Usuário registrado com sucesso, retorna tokens.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegisterUserOutputDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados de entrada inválidos ou email/CPF já em uso."
+          }
+        },
+        "summary": "Registra um novo usuário (responsável familiar)",
+        "tags": [
+          "2. Conta de Usuário"
+        ]
+      }
+    },
+    "/account/profile": {
+      "patch": {
+        "operationId": "AccountController_updateProfile",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProfileDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Perfil atualizado com sucesso."
+          },
+          "400": {
+            "description": "Dados de entrada inválidos."
+          },
+          "401": {
+            "description": "Não autorizado."
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Atualiza o perfil do usuário autenticado",
+        "tags": [
+          "2. Conta de Usuário"
+        ]
+      }
+    },
+    "/account/change-password": {
+      "post": {
+        "operationId": "AccountController_changePassword",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Senha alterada com sucesso."
+          },
+          "400": {
+            "description": "Dados de entrada inválidos ou nova senha igual à antiga."
+          },
+          "401": {
+            "description": "Não autorizado."
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Altera a senha do usuário autenticado",
+        "tags": [
+          "2. Conta de Usuário"
+        ]
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "description": "Autentica um usuário com email e senha, retornando tokens de acesso e de atualização em caso de sucesso.",
+        "operationId": "AuthController_login",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginInputDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Autenticação bem-sucedida, retorna tokens.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginOutputDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Credenciais inválidas."
+          }
+        },
+        "summary": "Realiza a autenticação do usuário",
+        "tags": [
+          "Autenticação"
+        ]
+      }
+    },
+    "/auth/refresh-token": {
+      "post": {
+        "description": "Gera um novo par de tokens (acesso e atualização) a partir de um refresh token válido.",
+        "operationId": "AuthController_refreshToken",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshTokenInputDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Tokens renovados com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RefreshTokenOutputDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Refresh token inválido ou expirado."
+          }
+        },
+        "summary": "Gera um novo par de tokens",
+        "tags": [
+          "Autenticação"
+        ]
+      }
+    },
+    "/auth/validate-token": {
+      "post": {
+        "description": "Verifica a validade de um access token e retorna seu payload decodificado se for válido.",
+        "operationId": "AuthController_validateToken",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ValidateTokenInputDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Token válido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidateTokenOutputDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token inválido ou expirado."
+          }
+        },
+        "summary": "Valida um access token",
+        "tags": [
+          "Autenticação"
+        ]
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "description": "Endpoint para invalidar o token do lado do cliente. O servidor não mantém estado (no-op).",
+        "operationId": "AuthController_logout",
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": "Logout processado com sucesso."
+          },
+          "401": {
+            "description": "Não autorizado (token inválido ou ausente)."
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Realiza o logout do usuário",
+        "tags": [
+          "Autenticação"
+        ]
+      }
+    },
+    "/club": {
+      "get": {
+        "operationId": "ClubController_searchClubs",
+        "parameters": [
+          {
+            "name": "filter",
+            "required": false,
+            "in": "query",
+            "description": "Container para os filtros de busca de clubes.",
+            "schema": {
+              "$ref": "#/components/schemas/SearchClubsFilterDto"
+            }
+          },
+          {
+            "name": "pagination",
+            "required": false,
+            "in": "query",
+            "description": "Container para os parâmetros de paginação.",
+            "schema": {
+              "$ref": "#/components/schemas/PaginationDto"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de clubes retornada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedClubDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Busca e lista clubes com paginação e filtros",
+        "tags": [
+          "Clubes"
+        ]
+      },
+      "post": {
+        "operationId": "ClubController_createClub",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateClubDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Clube criado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClubDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Cria um novo clube",
+        "tags": [
+          "Clubes"
+        ]
+      }
+    },
+    "/club/{id}": {
+      "get": {
+        "operationId": "ClubController_getClubInfo",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dados do clube retornados com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClubDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Clube não encontrado."
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Obtém informações detalhadas de um clube específico",
+        "tags": [
+          "Clubes"
+        ]
+      }
+    },
+    "/checkout": {
+      "post": {
+        "operationId": "CheckoutController_createCheckout",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckoutInputDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Pagamento processado ou iniciado com sucesso. Retorna os dados da transação do gateway."
+          },
+          "400": {
+            "description": "Dados de pagamento inválidos."
+          },
+          "401": {
+            "description": "Não autorizado."
+          },
+          "404": {
+            "description": "Usuário ou família não encontrado."
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Inicia o processo de pagamento da afiliação familiar",
+        "tags": [
+          "3. Afiliação e Pagamento"
+        ]
+      }
+    },
+    "/dependants": {
+      "post": {
+        "operationId": "DependantController_add",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddDependantDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Dependente adicionado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DependantDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Adiciona um novo dependente à família do usuário",
+        "tags": [
+          "3. Família e Dependentes"
+        ]
+      },
+      "get": {
+        "operationId": "DependantController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Lista de dependentes retornada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DependantDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Lista todos os dependentes da família do usuário",
+        "tags": [
+          "3. Família e Dependentes"
+        ]
+      }
+    },
+    "/dependants/my-family": {
+      "get": {
+        "operationId": "DependantController_viewMyFamily",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Dados da família retornados com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FamilyDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Visualiza os dados da família do usuário autenticado",
+        "tags": [
+          "3. Família e Dependentes"
+        ]
+      }
+    },
+    "/dependants/{id}": {
+      "patch": {
+        "operationId": "DependantController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateDependantDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Dependente atualizado com sucesso."
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Atualiza os dados de um dependente específico",
+        "tags": [
+          "3. Família e Dependentes"
+        ]
+      },
+      "delete": {
+        "operationId": "DependantController_delete",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Dependente removido com sucesso."
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Remove um dependente da família",
+        "tags": [
+          "3. Família e Dependentes"
+        ]
+      }
+    },
+    "/enrollments": {
+      "post": {
+        "operationId": "EnrollmentController_request",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestEnrollmentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Solicitação de matrícula criada com sucesso."
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Solicita a matrícula de um dependente em um clube",
+        "tags": [
+          "4. Matrículas (Responsável)"
+        ]
+      }
+    },
+    "/enrollments/my-requests": {
+      "get": {
+        "operationId": "EnrollmentController_listMyRequests",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Lista de solicitações retornada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EnrollmentRequestDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Lista todas as solicitações de matrícula da família do usuário",
+        "tags": [
+          "4. Matrículas (Responsável)"
+        ]
+      }
+    },
+    "/club-management/my-club": {
+      "get": {
+        "operationId": "ClubManagementController_getMyClubInfo",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Dados do clube retornados com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClubDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Obtém as informações do clube do diretor autenticado",
+        "tags": [
+          "5. Gestão de Clube (Diretor)"
+        ]
+      }
+    },
+    "/club-management/{clubId}": {
+      "patch": {
+        "operationId": "ClubManagementController_updateClub",
+        "parameters": [
+          {
+            "name": "clubId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateClubDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Clube atualizado com sucesso."
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Atualiza as informações de um clube específico que o usuário dirige",
+        "tags": [
+          "5. Gestão de Clube (Diretor)"
+        ]
+      }
+    },
+    "/club-management/{clubId}/enrollments/pending": {
+      "get": {
+        "operationId": "ClubManagementController_listPending",
+        "parameters": [
+          {
+            "name": "clubId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de solicitações pendentes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EnrollmentRequestDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Lista as solicitações de matrícula pendentes para um clube específico",
+        "tags": [
+          "5. Gestão de Clube (Diretor)"
+        ]
+      }
+    },
+    "/club-management/enrollments/{enrollmentId}/approve": {
+      "post": {
+        "operationId": "ClubManagementController_approve",
+        "parameters": [
+          {
+            "name": "enrollmentId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Matrícula aprovada com sucesso."
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Aprova uma solicitação de matrícula",
+        "tags": [
+          "5. Gestão de Clube (Diretor)"
+        ]
+      }
+    },
+    "/club-management/enrollments/{enrollmentId}/reject": {
+      "post": {
+        "operationId": "ClubManagementController_reject",
+        "parameters": [
+          {
+            "name": "enrollmentId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RejectEnrollmentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Matrícula rejeitada com sucesso."
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Rejeita uma solicitação de matrícula",
+        "tags": [
+          "5. Gestão de Clube (Diretor)"
+        ]
+      }
+    },
+    "/club-management/my-club/members": {
+      "get": {
+        "operationId": "ClubManagementController_listMembersOfMyClub",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Lista de membros ativos.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EnrollmentRequestDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Lista todos os membros ativos do meu clube",
+        "tags": [
+          "5. Gestão de Clube (Diretor)"
+        ]
+      }
+    },
+    "/club-management/membership/{membershipId}/revoke": {
+      "post": {
+        "operationId": "ClubManagementController_removeMember",
+        "parameters": [
+          {
+            "name": "membershipId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Afiliação do membro revogada com sucesso."
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Revoga a afiliação de um membro do clube",
+        "tags": [
+          "5. Gestão de Clube (Diretor)"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "API NCFCA",
+    "description": "Documentação da API para o sistema NCFCA. Esta é a única fonte de verdade para os contratos da API.",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "JWT-auth": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http",
+        "name": "JWT",
+        "description": "Entre com o token JWT",
+        "in": "header"
+      }
+    },
+    "schemas": {
+      "AddressDto": {
+        "type": "object",
+        "properties": {
+          "zipCode": {
+            "type": "string",
+            "description": "CEP do endereço (somente números).",
+            "example": "69301080"
+          },
+          "street": {
+            "type": "string",
+            "description": "Nome da rua/avenida.",
+            "example": "Avenida Capitão Ene Garcez"
+          },
+          "number": {
+            "type": "string",
+            "description": "Número do imóvel.",
+            "example": "432"
+          },
+          "district": {
+            "type": "string",
+            "description": "Bairro.",
+            "example": "Centro"
+          },
+          "city": {
+            "type": "string",
+            "description": "Cidade.",
+            "example": "Boa Vista"
+          },
+          "state": {
+            "type": "string",
+            "description": "UF do estado (2 caracteres).",
+            "example": "RR"
+          },
+          "complement": {
+            "type": "string",
+            "description": "Complemento do endereço (opcional).",
+            "example": "Apto 101"
+          }
+        },
+        "required": [
+          "zipCode",
+          "street",
+          "number",
+          "district",
+          "city",
+          "state"
+        ]
+      },
+      "UserDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID único do usuário.",
+            "format": "uuid"
+          },
+          "email": {
+            "type": "string",
+            "description": "Email de contato do usuário.",
+            "example": "joao.silva@example.com"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "Primeiro nome do usuário.",
+            "example": "João"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Último nome do usuário.",
+            "example": "Silva"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Telefone do usuário.",
+            "example": "5511987654321"
+          },
+          "cpf": {
+            "type": "string",
+            "description": "CPF do usuário.",
+            "example": "12345678900"
+          },
+          "roles": {
+            "type": "array",
+            "description": "Perfis de acesso do usuário.",
+            "example": [
+              "SEM_FUNCAO"
+            ],
+            "items": {
+              "type": "string",
+              "enum": [
+                "DONO_DE_CLUBE",
+                "SEM_FUNCAO",
+                "ADMIN"
+              ]
+            }
+          },
+          "address": {
+            "description": "Endereço completo do usuário.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AddressDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "firstName",
+          "lastName",
+          "phone",
+          "cpf",
+          "roles",
+          "address"
+        ]
+      },
+      "ClubDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID único do clube.",
+            "format": "uuid",
+            "example": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
+          },
+          "name": {
+            "type": "string",
+            "description": "Nome oficial do clube.",
+            "example": "Clube de Debate Oradores do Amanhã"
+          },
+          "city": {
+            "type": "string",
+            "description": "Cidade de localização do clube.",
+            "example": "Brasília"
+          },
+          "state": {
+            "type": "string",
+            "description": "Estado de localização do clube.",
+            "example": "DF"
+          },
+          "principalId": {
+            "type": "string",
+            "description": "ID do usuário que é o diretor do clube (principal).",
+            "format": "uuid",
+            "example": "f1eebc99-9c0b-4ef8-bb6d-6bb9bd380a22"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "city",
+          "state",
+          "principalId"
+        ]
+      },
+      "ManageUserRoleDto": {
+        "type": "object",
+        "properties": {
+          "roles": {
+            "type": "array",
+            "description": "Lista de perfis (roles) a serem atribuídos ao usuário. Substitui os perfis existentes.",
+            "example": [
+              "DONO_DE_CLUBE"
+            ],
+            "items": {
+              "type": "string",
+              "enum": [
+                "DONO_DE_CLUBE",
+                "SEM_FUNCAO",
+                "ADMIN"
+              ]
+            }
+          }
+        },
+        "required": [
+          "roles"
+        ]
+      },
+      "DependantDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID único do dependente.",
+            "format": "uuid",
+            "example": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "Primeiro nome do dependente.",
+            "example": "João"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Último nome do dependente.",
+            "example": "Silva Filho"
+          },
+          "birthdate": {
+            "type": "string",
+            "description": "Data de nascimento do dependente.",
+            "format": "date-time",
+            "example": "2010-01-20T00:00:00.000Z"
+          },
+          "relationship": {
+            "type": "string",
+            "description": "Relação de parentesco com o responsável.",
+            "enum": [
+              "DAUGHTER",
+              "HUSBAND",
+              "CHILD",
+              "WIFE",
+              "SON",
+              "OTHER"
+            ],
+            "example": "SON"
+          },
+          "sex": {
+            "type": "string",
+            "description": "Sexo do dependente.",
+            "enum": [
+              "FEMALE",
+              "MALE"
+            ],
+            "example": "MALE"
+          },
+          "email": {
+            "type": "object",
+            "description": "Email de contato do dependente (opcional).",
+            "example": "joao.filho@example.com"
+          },
+          "phone": {
+            "type": "object",
+            "description": "Telefone de contato do dependente (opcional).",
+            "example": "11999998888"
+          },
+          "familyId": {
+            "type": "string",
+            "description": "ID da família à qual o dependente pertence.",
+            "format": "uuid",
+            "example": "f1eebc99-9c0b-4ef8-bb6d-6bb9bd380a22"
+          }
+        },
+        "required": [
+          "id",
+          "firstName",
+          "lastName",
+          "birthdate",
+          "relationship",
+          "sex",
+          "familyId"
+        ]
+      },
+      "FamilyDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID único da família.",
+            "format": "uuid",
+            "example": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
+          },
+          "holderId": {
+            "type": "string",
+            "description": "ID do usuário responsável pela família (holder).",
+            "format": "uuid",
+            "example": "f1eebc99-9c0b-4ef8-bb6d-6bb9bd380a22"
+          },
+          "status": {
+            "type": "string",
+            "description": "Status atual da afiliação da família.",
+            "enum": [
+              "PENDING_PAYMENT",
+              "NOT_AFFILIATED",
+              "AFFILIATED",
+              "EXPIRED"
+            ],
+            "example": "AFFILIATED"
+          },
+          "affiliatedAt": {
+            "type": "string",
+            "description": "Data em que a afiliação se tornou ativa.",
+            "format": "date-time",
+            "example": "2025-07-17T03:00:00.000Z",
+            "nullable": true
+          },
+          "affiliationExpiresAt": {
+            "type": "string",
+            "description": "Data em que a afiliação irá expirar.",
+            "format": "date-time",
+            "example": "2026-07-17T03:00:00.000Z",
+            "nullable": true
+          },
+          "dependants": {
+            "description": "Lista de dependentes associados a esta família.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DependantDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "holderId",
+          "status",
+          "affiliatedAt",
+          "affiliationExpiresAt",
+          "dependants"
+        ]
+      },
+      "ChangeClubDirectorDto": {
+        "type": "object",
+        "properties": {
+          "newDirectorId": {
+            "type": "string",
+            "description": "ID do usuário que será o novo diretor do clube.",
+            "example": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "newDirectorId"
+        ]
+      },
+      "EnrollmentRequestDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID único da solicitação de matrícula.",
+            "format": "uuid",
+            "example": "a1b2c3d4-e5f6-g7h8-i9j0-k1l2m3n4o5p6"
+          },
+          "status": {
+            "type": "string",
+            "description": "Status atual da solicitação.",
+            "enum": [
+              "REJECTED",
+              "APPROVED",
+              "PENDING"
+            ],
+            "example": "PENDING"
+          },
+          "clubId": {
+            "type": "string",
+            "description": "ID do clube ao qual a matrícula foi solicitada.",
+            "format": "uuid",
+            "example": "c1b2c3d4-e5f6-g7h8-i9j0-k1l2m3n4o5p7"
+          },
+          "familyId": {
+            "type": "string",
+            "description": "ID da família que está solicitando a matrícula.",
+            "format": "uuid",
+            "example": "d1b2c3d4-e5f6-g7h8-i9j0-k1l2m3n4o5p8"
+          },
+          "dependantId": {
+            "type": "string",
+            "description": "ID do dependente para o qual a matrícula se aplica.",
+            "format": "uuid",
+            "example": "e1b2c3d4-e5f6-g7h8-i9j0-k1l2m3n4o5p9"
+          },
+          "requestedAt": {
+            "type": "string",
+            "description": "Data e hora em que a solicitação foi criada.",
+            "format": "date-time",
+            "example": "2025-07-20T14:00:00Z"
+          },
+          "resolvedAt": {
+            "type": "string",
+            "description": "Data e hora em que a solicitação foi resolvida (aprovada/rejeitada).",
+            "format": "date-time",
+            "nullable": true,
+            "example": "2025-07-20T15:30:00Z"
+          },
+          "rejectionReason": {
+            "type": "object",
+            "description": "Motivo da rejeição, caso o status seja REJECTED.",
+            "nullable": true,
+            "example": "Vagas esgotadas para a faixa etária."
+          }
+        },
+        "required": [
+          "id",
+          "status",
+          "clubId",
+          "familyId",
+          "dependantId",
+          "requestedAt",
+          "resolvedAt",
+          "rejectionReason"
+        ]
+      },
+      "RegisterUserInputDto": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "description": "Primeiro nome do responsável familiar.",
+            "example": "João",
+            "minLength": 2
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Último nome do responsável familiar.",
+            "example": "Silva",
+            "minLength": 2
+          },
+          "email": {
+            "type": "string",
+            "description": "Email único para o cadastro.",
+            "example": "joao.silva@example.com"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Telefone celular do responsável.",
+            "example": "11987654321",
+            "minLength": 10
+          },
+          "cpf": {
+            "type": "string",
+            "description": "CPF do responsável familiar.",
+            "example": "12345678900"
+          },
+          "password": {
+            "type": "string",
+            "description": "Senha de acesso.",
+            "example": "Password@123",
+            "minLength": 8
+          },
+          "confirmPassword": {
+            "type": "string",
+            "description": "Confirmação da senha de acesso. Deve ser idêntica à senha.",
+            "example": "Password@123"
+          },
+          "address": {
+            "description": "Endereço completo do responsável.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AddressDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "firstName",
+          "lastName",
+          "email",
+          "phone",
+          "cpf",
+          "password",
+          "confirmPassword",
+          "address"
+        ]
+      },
+      "RegisterUserOutputDto": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "description": "Token de acesso JWT, válido por 15 minutos."
+          },
+          "refreshToken": {
+            "type": "string",
+            "description": "Token de atualização para obter um novo token de acesso, válido por 1 dia."
+          }
+        },
+        "required": [
+          "accessToken",
+          "refreshToken"
+        ]
+      },
+      "UpdateProfileDto": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "description": "Novo primeiro nome do usuário.",
+            "example": "José",
+            "minLength": 2
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Novo último nome do usuário.",
+            "example": "Ribeiro",
+            "minLength": 2
+          },
+          "phone": {
+            "type": "string",
+            "description": "Novo telefone de contato do usuário.",
+            "example": "5521998877665"
+          },
+          "email": {
+            "type": "string",
+            "description": "Novo email de contato do usuário.",
+            "example": "jose.ribeiro@example.com"
+          }
+        }
+      },
+      "ChangePasswordDto": {
+        "type": "object",
+        "properties": {
+          "oldPassword": {
+            "type": "string",
+            "description": "Senha antiga do usuário.",
+            "example": "OldPassword@123"
+          },
+          "newPassword": {
+            "type": "string",
+            "description": "Nova senha. Deve conter pelo menos uma letra maiúscula, uma minúscula, um número e ter no mínimo 8 caracteres.",
+            "example": "NewStrongPassword@456",
+            "pattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$"
+          }
+        },
+        "required": [
+          "oldPassword",
+          "newPassword"
+        ]
+      },
+      "LoginInputDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "Email do usuário para autenticação.",
+            "example": "diretor.clube@example.com"
+          },
+          "password": {
+            "type": "string",
+            "description": "Senha do usuário.",
+            "example": "Password@123",
+            "minLength": 8
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "LoginOutputDto": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "description": "Token de acesso JWT, válido por 1 hora."
+          },
+          "refreshToken": {
+            "type": "string",
+            "description": "Token de atualização para obter um novo token de acesso, válido por 1 dia."
+          }
+        },
+        "required": [
+          "accessToken",
+          "refreshToken"
+        ]
+      },
+      "RefreshTokenInputDto": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "Refresh token válido obtido durante o login.",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+          }
+        },
+        "required": [
+          "token"
+        ]
+      },
+      "RefreshTokenOutputDto": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "description": "Novo token de acesso JWT."
+          },
+          "refreshToken": {
+            "type": "string",
+            "description": "Novo token de atualização."
+          }
+        },
+        "required": [
+          "accessToken",
+          "refreshToken"
+        ]
+      },
+      "ValidateTokenInputDto": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "Access token a ser validado.",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+          }
+        },
+        "required": [
+          "token"
+        ]
+      },
+      "ValidateTokenOutputDto": {
+        "type": "object",
+        "properties": {
+          "familyId": {
+            "type": "string",
+            "description": "ID da família associada ao token."
+          },
+          "roles": {
+            "description": "Perfis (roles) do usuário contidos no token.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "email": {
+            "type": "string",
+            "description": "Email do usuário."
+          },
+          "sub": {
+            "type": "string",
+            "description": "ID do usuário (subject)."
+          },
+          "iat": {
+            "type": "integer",
+            "description": "Timestamp de emissão do token (Issued At)."
+          },
+          "exp": {
+            "type": "integer",
+            "description": "Timestamp de expiração do token (Expiration Time)."
+          }
+        },
+        "required": [
+          "familyId",
+          "roles",
+          "email",
+          "sub",
+          "iat",
+          "exp"
+        ]
+      },
+      "SearchClubsFilterDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Filtra clubes pelo nome (busca parcial, case-insensitive).",
+            "example": "Oradores"
+          },
+          "city": {
+            "type": "string",
+            "description": "Filtra clubes pela cidade (busca exata, case-insensitive).",
+            "example": "Brasília"
+          }
+        }
+      },
+      "PaginationDto": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "number",
+            "description": "Número da página a ser retornada.",
+            "minimum": 1,
+            "default": 1
+          },
+          "limit": {
+            "type": "number",
+            "description": "Número de itens por página.",
+            "minimum": 1,
+            "maximum": 100,
+            "default": 10
+          }
+        }
+      },
+      "PaginationMetaDto": {
+        "type": "object",
+        "properties": {
+          "totalPages": {
+            "type": "number",
+            "example": 3
+          },
+          "total": {
+            "type": "number",
+            "example": 250
+          },
+          "limit": {
+            "type": "number",
+            "example": 100
+          },
+          "page": {
+            "type": "number",
+            "example": 1
+          }
+        },
+        "required": [
+          "totalPages",
+          "total",
+          "limit",
+          "page"
+        ]
+      },
+      "PaginatedClubDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ClubDto"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/PaginationMetaDto"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ]
+      },
+      "CreateClubDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Nome do novo clube.",
+            "example": "Clube de Debate Oradores do Amanhã",
+            "minLength": 3
+          },
+          "city": {
+            "type": "string",
+            "description": "Cidade onde o clube está localizado.",
+            "example": "Brasília",
+            "minLength": 3
+          },
+          "state": {
+            "type": "string",
+            "description": "Estado onde o clube está localizado.",
+            "example": "DF",
+            "maxLength": 2,
+            "minLength": 2
+          }
+        },
+        "required": [
+          "name",
+          "city",
+          "state"
+        ]
+      },
+      "CheckoutInputDto": {
+        "type": "object",
+        "properties": {
+          "paymentMethod": {
+            "type": "string",
+            "description": "Método de pagamento escolhido para a afiliação.",
+            "enum": [
+              "CREDIT_CARD",
+              "PIX"
+            ],
+            "example": "PIX"
+          },
+          "paymentToken": {
+            "type": "string",
+            "description": "Token do cartão de crédito, gerado pelo frontend. Obrigatório se paymentMethod for CREDIT_CARD.",
+            "example": "tok_1J9X2e2eZvKYlo2C8c2a3e6E"
+          },
+          "installments": {
+            "type": "number",
+            "description": "Número de parcelas. Válido apenas para CREDIT_CARD.",
+            "example": 1,
+            "minimum": 1,
+            "maximum": 12
+          }
+        },
+        "required": [
+          "paymentMethod"
+        ]
+      },
+      "AddDependantDto": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "description": "Primeiro nome do dependente.",
+            "example": "João",
+            "minLength": 2
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Último nome do dependente.",
+            "example": "Silva",
+            "minLength": 2
+          },
+          "birthdate": {
+            "type": "string",
+            "description": "Data de nascimento do dependente no formato AAAA-MM-DD.",
+            "example": "2010-05-20"
+          },
+          "relationship": {
+            "type": "string",
+            "description": "Relação de parentesco com o responsável familiar.",
+            "enum": [
+              "DAUGHTER",
+              "HUSBAND",
+              "CHILD",
+              "WIFE",
+              "SON",
+              "OTHER"
+            ],
+            "example": "SON"
+          },
+          "sex": {
+            "type": "string",
+            "description": "Sexo do dependente.",
+            "enum": [
+              "FEMALE",
+              "MALE"
+            ],
+            "example": "MALE"
+          },
+          "email": {
+            "type": "string",
+            "description": "Email de contato do dependente (opcional).",
+            "example": "joao.silva@example.com"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Telefone de contato do dependente (opcional).",
+            "example": "11987654321"
+          }
+        },
+        "required": [
+          "firstName",
+          "lastName",
+          "birthdate",
+          "relationship",
+          "sex"
+        ]
+      },
+      "UpdateDependantDto": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "description": "Novo primeiro nome do dependente.",
+            "example": "Joana",
+            "minLength": 2
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Novo último nome do dependente.",
+            "example": "Souza",
+            "minLength": 2
+          },
+          "birthdate": {
+            "type": "string",
+            "description": "Nova data de nascimento do dependente (AAAA-MM-DD).",
+            "example": "2011-03-15"
+          },
+          "relationship": {
+            "type": "string",
+            "description": "Nova relação de parentesco.",
+            "enum": [
+              "DAUGHTER",
+              "HUSBAND",
+              "CHILD",
+              "WIFE",
+              "SON",
+              "OTHER"
+            ],
+            "example": "DAUGHTER"
+          },
+          "sex": {
+            "type": "string",
+            "description": "Novo sexo do dependente.",
+            "enum": [
+              "FEMALE",
+              "MALE"
+            ],
+            "example": "FEMALE"
+          },
+          "email": {
+            "type": "string",
+            "description": "Novo email do dependente.",
+            "example": "joana.souza@example.com"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Novo telefone do dependente.",
+            "example": "11912345678"
+          }
+        }
+      },
+      "RequestEnrollmentDto": {
+        "type": "object",
+        "properties": {
+          "dependantId": {
+            "type": "string",
+            "description": "ID do dependente para o qual a matrícula está sendo solicitada.",
+            "example": "b1f8b5a0-9c1e-4b8a-8c1a-9c8b8a0c1e2f",
+            "format": "uuid"
+          },
+          "clubId": {
+            "type": "string",
+            "description": "ID do clube no qual a matrícula está sendo solicitada.",
+            "example": "c2f9c6b1-8d2f-4b9a-9c2b-9c9b9a1d2f3g",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "dependantId",
+          "clubId"
+        ]
+      },
+      "UpdateClubDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Novo nome do clube.",
+            "example": "Clube de Oratória Avançada",
+            "minLength": 3
+          },
+          "city": {
+            "type": "string",
+            "description": "Nova cidade de localização do clube.",
+            "example": "São Paulo",
+            "minLength": 3
+          }
+        }
+      },
+      "RejectEnrollmentDto": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "description": "Motivo detalhado para a rejeição da matrícula. Mínimo de 10 caracteres.",
+            "example": "Infelizmente, todas as vagas para esta faixa etária já foram preenchidas.",
+            "minLength": 10
+          }
+        },
+        "required": [
+          "reason"
+        ]
+      }
+    }
+  }
+}

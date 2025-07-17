@@ -44,6 +44,7 @@ export default class CreateClub {
       await this.uow.userRepository.save(user);
       const clubInstance = new Club({
         principalId: input.loggedInUserId,
+        state: input.state,
         name: input.name,
         city: input.city,
         id: this._idGenerator.generate(),
@@ -55,6 +56,7 @@ export default class CreateClub {
 
 interface Input {
   loggedInUserId: string;
+  state: string;
   city: string;
   name: string;
 }

@@ -18,7 +18,7 @@ export default class Transaction {
   private constructor(props: TransactionProps) {
     this.gatewayTransactionId = props.gatewayTransactionId;
     this.gatewayPayload = props.gatewayPayload;
-    this.paymentMethod = props.paymentMethod
+    this.paymentMethod = props.paymentMethod;
     this.amountCents = props.amountCents;
     this.contextType = props.contextType;
     this.createdAt = props.createdAt;

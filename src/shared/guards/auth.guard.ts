@@ -1,9 +1,7 @@
-import { CanActivate, ExecutionContext, Inject } from '@nestjs/common';
+import { CanActivate, ExecutionContext, Inject, UnauthorizedException } from '@nestjs/common';
 import { Request } from 'express';
 
 import TokenService from '@/application/services/token-service';
-
-import { UnauthorizedException } from '@/domain/exceptions/domain-exception';
 
 import { TOKEN_SERVICE } from '@/shared/constants/service-constants';
 

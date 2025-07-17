@@ -1,4 +1,7 @@
+// src/infraestructure/controllers/admin.controller.ts
+
 import { Controller, Get, UseGuards, HttpCode, HttpStatus, Patch, Param, Body, Post } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import AuthGuard from '@/shared/guards/auth.guard';
 import { AdminGuard } from '@/shared/guards/admin.guard';
 import AdminListUsers from '@/application/use-cases/admin/list-users/list-users';
@@ -10,9 +13,15 @@ import AdminListAffiliations from '@/application/use-cases/admin/list-affiliatio
 import AdminChangeClubDirector from '@/application/use-cases/admin/change-club-director/change-club-director';
 import { ChangeClubDirectorDto } from '@/infraestructure/dtos/change-club-director.dto';
 import AdminListAllEnrollments from '@/application/use-cases/admin/list-all-enrollments/list-all-enrollments';
+import { UserDto } from '@/domain/dtos/user.dto';
+import ClubDto from '@/domain/dtos/club.dto';
+import { FamilyDto } from '@/domain/dtos/family.dto';
+import { EnrollmentRequestDto } from '@/domain/dtos/enrollment-request.dto';
 
-@Controller('admin')
+@ApiTags('6. Admin')
+@ApiBearerAuth('JWT-auth')
 @UseGuards(AuthGuard, AdminGuard)
+@Controller('admin')
 export default class AdminController {
   constructor(
     private readonly _listUsers: AdminListUsers,
@@ -23,38 +32,54 @@ export default class AdminController {
     private readonly _changeClubDirector: AdminChangeClubDirector,
     private readonly _listAllEnrollments: AdminListAllEnrollments,
   ) {}
+
   @Get('users')
-  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Lista todos os usuários do sistema' })
+  @ApiResponse({ status: 200, description: 'Lista de usuários retornada com sucesso.', type: [UserDto] })
   async listUsers() {
     return this._listUsers.execute();
   }
+
   @Get('clubs')
-  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Lista todos os clubes do sistema' })
+  @ApiResponse({ status: 200, description: 'Lista de clubes retornada com sucesso.', type: [ClubDto] })
   async listClubs() {
     return this._listClubs.execute();
   }
+
   @Post('users/:userId/roles')
   @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Gerencia os perfis (roles) de um usuário' })
+  @ApiResponse({ status: 204, description: 'Perfis do usuário atualizados com sucesso.' })
   async manageUserRole(@Param('userId') userId: string, @Body() body: ManageUserRoleDto) {
     await this._manageUserRole.execute({ userId, roles: body.roles });
   }
+
   @Get('users/:userId/family')
-  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Visualiza os detalhes da família de um usuário específico' })
+  @ApiResponse({ status: 200, description: 'Dados da família retornados com sucesso.', type: FamilyDto })
   async viewUserFamily(@Param('userId') userId: string) {
     return this._viewUserFamily.execute(userId);
   }
+
   @Get('affiliations')
-  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Lista todas as afiliações de famílias e seus status' })
+  @ApiResponse({ status: 200, description: 'Lista de afiliações retornada com sucesso.', type: [FamilyDto] })
   async listAffiliations() {
     return this._listAffiliations.execute();
   }
+
   @Patch('clubs/:clubId/director')
   @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Altera o diretor (proprietário) de um clube' })
+  @ApiResponse({ status: 204, description: 'Diretor do clube alterado com sucesso.' })
   async changeClubDirector(@Param('clubId') clubId: string, @Body() body: ChangeClubDirectorDto) {
     await this._changeClubDirector.execute({ clubId, newDirectorId: body.newDirectorId });
   }
+
   @Get('enrollments')
-  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Lista todas as solicitações de matrícula do sistema' })
+  @ApiResponse({ status: 200, description: 'Lista de matrículas retornada com sucesso.', type: [EnrollmentRequestDto] })
   async listAllEnrollments() {
     return this._listAllEnrollments.execute();
   }

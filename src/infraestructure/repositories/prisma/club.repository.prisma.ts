@@ -4,9 +4,8 @@ import ClubRepository from '@/domain/repositories/club-repository';
 import Club from '@/domain/entities/club/club';
 import ClubMapper from '@/shared/mappers/club.mapper';
 import SearchClubsQueryDto from '@/domain/dtos/search-clubs-query.dto';
-import PaginatedOutputDto from '@/domain/dtos/paginated-output.dto';
-import ClubDto from '@/domain/dtos/club.dto';
 import ClubMembershipMapper from '@/shared/mappers/club-membership.mapper';
+import { PaginatedClubDto } from '@/domain/dtos/paginated-output.dto';
 
 @Injectable()
 export class ClubRepositoryPrisma implements ClubRepository {
@@ -52,7 +51,7 @@ export class ClubRepositoryPrisma implements ClubRepository {
     return ClubMapper.modelToEntity(upsertedClub);
   }
 
-  async search(query: SearchClubsQueryDto): Promise<PaginatedOutputDto<ClubDto>> {
+  async search(query: SearchClubsQueryDto): Promise<PaginatedClubDto> {
     const { page = 1, limit = 10 } = query?.pagination ?? {};
     const where = {
       name: { contains: query.filter?.name },
@@ -68,6 +67,7 @@ export class ClubRepositoryPrisma implements ClubRepository {
       id: c.id,
       name: c.name,
       city: c.city,
+      state: c.state,
       principalId: c.principal_id,
     }));
 

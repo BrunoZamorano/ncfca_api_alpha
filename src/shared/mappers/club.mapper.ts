@@ -13,6 +13,7 @@ export default class ClubMapper {
       id: data.id,
       name: data.name,
       city: data.city,
+      state: data.state,
       principalId: data.principal_id,
       members: members,
     });
@@ -34,6 +35,7 @@ export default class ClubMapper {
       id: entity.id,
       name: entity.name,
       city: entity.city,
+      state: entity.state,
       principalId: entity.principalId,
     };
   }

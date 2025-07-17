@@ -8,7 +8,7 @@ export interface PaymentItem {
 }
 
 export interface PaymentPayer {
-  id: string; 
+  id: string;
   name: string;
   email: string;
   phone?: string;
@@ -26,14 +26,14 @@ export interface PaymentPayer {
 }
 
 export interface PaymentTransaction {
-  id: string; 
+  id: string;
   status: PaymentStatus;
-  amount: number; 
+  amount: number;
   dueDate: Date;
-  paymentUrl?: string; 
-  qrCode?: string; 
-  qrCodeText?: string; 
-  metadata: Record<string, any>; 
+  paymentUrl?: string;
+  qrCode?: string;
+  qrCodeText?: string;
+  metadata: Record<string, any>;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -43,11 +43,11 @@ export interface PaymentResult {
   transactionId: string;
   message: string;
   errorCode?: string;
-  metadata: Record<string, any>; 
+  metadata: Record<string, any>;
 }
 
 export interface CreditCardPaymentData {
-  token: string; 
+  token: string;
   installments?: number;
 }
 
@@ -60,8 +60,8 @@ export interface PaymentOptions {
 export interface WebhookPayload {
   event: string;
   data: {
-    id: string; 
-    status: string; 
+    id: string;
+    status: string;
   };
   timestamp: string;
 }

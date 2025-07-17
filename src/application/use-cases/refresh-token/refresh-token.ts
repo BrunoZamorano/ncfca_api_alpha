@@ -1,12 +1,11 @@
-import { Inject } from '@nestjs/common';
+import { Inject, Logger, UnauthorizedException } from '@nestjs/common';
 
 import TokenService, { Payload } from '@/application/services/token-service';
-
-import { UnauthorizedException } from '@/domain/exceptions/domain-exception';
 
 import { TOKEN_SERVICE } from '@/shared/constants/service-constants';
 
 export default class RefreshToken {
+  private readonly logger = new Logger(RefreshToken.name);
   constructor(@Inject(TOKEN_SERVICE) private readonly _tokenService: TokenService) {}
 
   async execute(token: string): Promise<Output> {
@@ -14,6 +13,7 @@ export default class RefreshToken {
     if (!decoded) throw new UnauthorizedException(RefreshToken.errorCodes.INVALID_TOKEN);
     const { familyId, email, roles, sub } = decoded;
     const payload: Payload = { familyId, email, roles, sub };
+    this.logger.debug('Token Provided');
     return {
       accessToken: await this._tokenService.signAccessToken(payload),
       refreshToken: await this._tokenService.signRefreshToken(payload),

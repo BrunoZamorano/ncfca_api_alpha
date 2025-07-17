@@ -1,7 +1,6 @@
 import SearchClubsQueryDto from '@/domain/dtos/search-clubs-query.dto';
-import PaginatedOutputDto from '@/domain/dtos/paginated-output.dto';
+import { PaginatedClubDto } from '@/domain/dtos/paginated-output.dto';
 import ClubRepository from '@/domain/repositories/club-repository';
-import ClubDto from '@/domain/dtos/club.dto';
 import Club from '@/domain/entities/club/club';
 
 import InMemoryDatabase from '@/infraestructure/database/in-memory.database';
@@ -17,7 +16,7 @@ export default class ClubRepositoryMemory implements ClubRepository {
     this.db.clubs.push(...initialClubs);
   }
 
-  async search(query: SearchClubsQueryDto): Promise<PaginatedOutputDto<ClubDto>> {
+  async search(query: SearchClubsQueryDto): Promise<PaginatedClubDto> {
     const { page = 1, limit = 10 } = query?.pagination ?? {};
     const filters = query?.filter;
     let filteredClubs = this.db.clubs;
@@ -70,7 +69,7 @@ export default class ClubRepositoryMemory implements ClubRepository {
   public populate(totalClubs: number = 10): Club[] {
     return Array.from({ length: totalClubs }, () =>
       Club.create(
-        { principalId: crypto.randomUUID(), city: 'city', name: 'name' },
+        { principalId: crypto.randomUUID(), city: 'city', name: 'name', state: 'state' },
         { generate: () => crypto.randomUUID() },
       ),
     );

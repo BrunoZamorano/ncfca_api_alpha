@@ -19,6 +19,11 @@ export class UserRepositoryPrisma implements UserRepository {
     return user ? UserMapper.toEntity(user) : null;
   }
 
+  async findByCpf(cpf: string): Promise<User | null> {
+    const user = await this.prisma.user.findUnique({ where: { cpf } });
+    return user ? UserMapper.toEntity(user) : null;
+  }
+
   async findAll(): Promise<User[]> {
     const users = await this.prisma.user.findMany();
     return users.map(UserMapper.toEntity);

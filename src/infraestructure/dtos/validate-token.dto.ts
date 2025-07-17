@@ -1,33 +1,41 @@
+// src/infraestructure/dtos/validate-token.dto.ts
+
+import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class ValidateTokenInputDto {
+  @ApiProperty({
+    description: 'Access token a ser validado.',
+    example:
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c',
+  })
   @IsString()
   @IsNotEmpty()
   token: string;
 }
 
 export class ValidateTokenOutputDto {
+  @ApiProperty({ description: 'ID da família associada ao token.' })
   @IsString()
-  @IsNotEmpty()
   familyId: string;
 
+  @ApiProperty({ description: 'Perfis (roles) do usuário contidos no token.' })
   @IsString({ each: true })
-  @IsNotEmpty()
   roles: string[];
 
+  @ApiProperty({ description: 'Email do usuário.' })
   @IsString()
-  @IsNotEmpty()
   email: string;
 
+  @ApiProperty({ description: 'ID do usuário (subject).' })
   @IsString()
-  @IsNotEmpty()
   sub: string;
 
+  @ApiProperty({ description: 'Timestamp de emissão do token (Issued At).', type: 'integer' })
   @IsNumber()
-  @IsNotEmpty()
   iat: number;
 
+  @ApiProperty({ description: 'Timestamp de expiração do token (Expiration Time).', type: 'integer' })
   @IsNumber()
-  @IsNotEmpty()
   exp: number;
 }

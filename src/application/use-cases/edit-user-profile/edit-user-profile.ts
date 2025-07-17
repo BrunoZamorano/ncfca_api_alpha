@@ -9,7 +9,7 @@ import { USER_REPOSITORY } from '@/shared/constants/repository-constants';
 export default class EditUserProfile {
   constructor(@Inject(USER_REPOSITORY) private readonly _userRepository: UserRepository) {}
 
-  async execute({ id,  ...input }: Input): Promise<User> {
+  async execute({ id, ...input }: Input): Promise<User> {
     const user = await this._userRepository.find(id);
     if (!user) throw new EntityNotFoundException('User', id);
     user.updateProfile(input);

@@ -12,6 +12,9 @@ export default class UserRepositoryMemory implements UserRepository {
   constructor() {
     this.db = InMemoryDatabase.getInstance();
   }
+  findByCpf(cpf: string): Promise<User | null> {
+    throw new Error('Method not implemented.');
+  }
 
   async find(id: string): Promise<User | null> {
     return this.db.users.find((p) => p.id === id) ?? null;

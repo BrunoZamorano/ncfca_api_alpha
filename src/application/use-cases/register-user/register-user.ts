@@ -10,6 +10,7 @@ import { UNIT_OF_WORK, UnitOfWork } from '@/domain/services/unit-of-work';
 import { FamilyStatus } from '@/domain/enums/family-status';
 import HashingService from '@/domain/services/hashing-service';
 import User from '@/domain/entities/user/user';
+import { InvalidOperationException } from '@/domain/exceptions/domain-exception';
 
 export default class RegisterUser {
   private readonly logger = new Logger(RegisterUser.name);
@@ -28,6 +29,7 @@ export default class RegisterUser {
         this.logger.debug(`Tentativa de registro com email já em uso: ${input.email}`);
         throw new Error(RegisterUser.errorCodes.EMAIL_ALREADY_IN_USE);
       }
+      if (await this.cpfHasBeenUsed(input.cpf)) throw new InvalidOperationException('Cpf já cadastrado');
       const user = User.create(input, this.idGenerator, this.hashingService);
       const createdUser = await this.uow.userRepository.save(user);
       const familyId = this.idGenerator.generate();
@@ -51,6 +53,10 @@ export default class RegisterUser {
     const emailUsed = !!(await this.uow.userRepository.findByEmail(email));
     this.logger.debug(`Verificação de email '${email}' retornou: ${emailUsed ? 'em uso' : 'disponível'}`);
     return emailUsed;
+  }
+
+  private async cpfHasBeenUsed(cpf: string): Promise<boolean> {
+    return !!(await this.uow.userRepository.findByCpf(cpf));
   }
 
   static errorCodes = {

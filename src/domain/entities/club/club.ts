@@ -8,6 +8,7 @@ import ClubMembership from '@/domain/entities/club-membership/club-membership.en
 
 export default class Club {
   private readonly _members: ClubMembership[];
+  private readonly _state: string;
   private readonly _id: string;
   private _principalId: string;
   private _city: string;
@@ -17,6 +18,7 @@ export default class Club {
     this._id = props.id;
     this._city = props.city;
     this._name = props.name;
+    this._state = props.state;
     this._members = props.members ?? [];
     this._principalId = props.principalId;
   }
@@ -32,6 +34,7 @@ export default class Club {
       id: idGenerator.generate(),
       name: props.name,
       city: props.city,
+      state: props.state,
       members: [],
       principalId: props.principalId,
     });
@@ -98,6 +101,9 @@ export default class Club {
   get principalId(): string {
     return this._principalId;
   }
+  get state(): string {
+    return this._state;
+  }
   get name(): string {
     return this._name;
   }
@@ -108,6 +114,7 @@ export default class Club {
 
 interface CreateClubProps {
   principalId: string;
+  state: string;
   name: string;
   city: string;
 }

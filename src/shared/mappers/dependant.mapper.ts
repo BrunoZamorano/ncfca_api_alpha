@@ -43,9 +43,9 @@ export default class DependantMapper {
       birthdate: entity.birthdate,
       firstName: entity.firstName,
       lastName: entity.lastName,
-      phone: entity.phone,
+      phone: entity.phone ?? null,
       familyId: entity.familyId,
-      email: entity.email,
+      email: entity.email ?? null,
       sex: entity.sex,
       id: entity.id,
     };
