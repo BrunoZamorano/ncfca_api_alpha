@@ -5,9 +5,17 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// local env
+// datasource db {
+//   provider = "mysql"
+//   url      = env("DATABASE_URL")
+// }
+
+// neon env
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL_UNPOOLED")
 }
 
 enum UserRole {
@@ -18,9 +26,9 @@ enum UserRole {
 
 enum FamilyStatus {
   NOT_AFFILIATED
+  PENDING_PAYMENT
   AFFILIATED
   EXPIRED
-  PENDING_PAYMENT
 }
 
 enum DependantRelationship {
@@ -128,15 +136,13 @@ model Dependant {
 }
 
 model Club {
-  id           String   @id @default(uuid())
-  name         String
-  city         String
-  state        String
-  status       Boolean  @default(true)
-  created_at   DateTime @default(now())
-  updated_at   DateTime @updatedAt
-  principal_id String   @unique
-
+  id                 String              @id @default(uuid())
+  name               String
+  city               String
+  state              String
+  created_at         DateTime            @default(now())
+  updated_at         DateTime            @updatedAt
+  principal_id       String              @unique
   principal          User                @relation("club_principal", fields: [principal_id], references: [id])
   memberships        ClubMembership[]
   enrollmentRequests EnrollmentRequest[]

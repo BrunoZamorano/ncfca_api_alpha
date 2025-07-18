@@ -6,6 +6,7 @@ import GlobalExceptionFilter from '@/infraestructure/filters/global-exception-fi
 import { AppModule } from '@/app.module';
 import { adminSeed } from '@/admin.seed';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { testDataSeed } from '@/test-data.seed';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -42,6 +43,7 @@ async function bootstrap() {
   app.useGlobalFilters(new GlobalExceptionFilter());
   app.set('query parser', 'extended');
   await adminSeed(app);
+  if (process.env.NODE_ENV !== 'production') await testDataSeed(app);
   await app.listen(process.env.PORT ?? 3000);
 }
 

@@ -56,6 +56,9 @@ export class ClubRepositoryPrisma implements ClubRepository {
     const where = {
       name: { contains: query.filter?.name },
       city: { contains: query.filter?.city },
+      state: { contains: query.filter?.state },
+      
+      
     };
     const total = await this.prisma.club.count({ where });
     const clubsData = await this.prisma.club.findMany({

@@ -21,6 +21,14 @@ class SearchClubsFilterDto {
   @IsOptional()
   @IsString()
   city?: string;
+
+  @ApiPropertyOptional({
+    description: 'Filtra clubes pela cidade (busca exata, case-insensitive).',
+    example: 'Brasília',
+  })
+  @IsOptional()
+  @IsString()
+  state?: string;
 }
 
 export default class SearchClubsQueryDto {

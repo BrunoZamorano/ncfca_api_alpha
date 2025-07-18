@@ -24,8 +24,7 @@ export default class ClubMapper {
       id: entity.id,
       name: entity.name,
       city: entity.city,
-      state: 'RR',
-      status: true,
+      state: entity.state,
       principal_id: entity.principalId,
     };
   }
