@@ -9,16 +9,11 @@ export default class UpdateClubInfo {
   async execute(input: UpdateClubInfoInput): Promise<void> {
     return this.uow.executeInTransaction(async () => {
       const club = await this.uow.clubRepository.find(input.clubId);
-      if (!club) {
-        throw new EntityNotFoundException('Club', input.clubId);
-      }
-
+      if (!club) throw new EntityNotFoundException('Club', input.clubId);
       if (club.principalId !== input.loggedInUserId) {
         throw new ForbiddenException('User is not authorized to edit this club.');
       }
-
-      club.updateInfo({ name: input.name, city: input.city });
-
+      club.updateInfo({ name: input.name, city: input.city, state: input.state });
       await this.uow.clubRepository.save(club);
     });
   }
@@ -27,6 +22,7 @@ export default class UpdateClubInfo {
 interface UpdateClubInfoInput {
   loggedInUserId: string;
   clubId: string;
+  state?: string;
   name?: string;
   city?: string;
 }

@@ -7,10 +7,11 @@ import IdGenerator from '@/application/services/id-generator';
 import ClubMembership from '@/domain/entities/club-membership/club-membership.entity';
 
 export default class Club {
+  private readonly _createdAt: Date;
   private readonly _members: ClubMembership[];
-  private readonly _state: string;
   private readonly _id: string;
   private _principalId: string;
+  private _state: string;
   private _city: string;
   private _name: string;
 
@@ -19,7 +20,8 @@ export default class Club {
     this._city = props.city;
     this._name = props.name;
     this._state = props.state;
-    this._members = props.members ?? [];
+    this._members = props.members;
+    this._createdAt = props.createdAt;
     this._principalId = props.principalId;
   }
 
@@ -36,6 +38,7 @@ export default class Club {
       city: props.city,
       state: props.state,
       members: [],
+      createdAt: new Date(),
       principalId: props.principalId,
     });
   }
@@ -68,12 +71,15 @@ export default class Club {
     membership.revoke();
   }
 
-  public updateInfo(props: { name?: string; city?: string }): void {
+  public updateInfo(props: { name?: string; city?: string; state?: string }): void {
     if (props.name && props.name.trim().length >= 3) {
       this._name = props.name;
     }
     if (props.city && props.city.trim().length >= 3) {
       this._city = props.city;
+    }
+    if (props.state && props.state.trim().length === 2) {
+      this._state = props.state;
     }
   }
 
@@ -110,6 +116,9 @@ export default class Club {
   get city(): string {
     return this._city;
   }
+  get createdAt(): Date {
+    return this._createdAt;
+  }
 }
 
 interface CreateClubProps {
@@ -121,5 +130,6 @@ interface CreateClubProps {
 
 interface ClubConstructorProps extends CreateClubProps {
   id: string;
-  members?: ClubMembership[];
+  members: ClubMembership[];
+  createdAt: Date;
 }

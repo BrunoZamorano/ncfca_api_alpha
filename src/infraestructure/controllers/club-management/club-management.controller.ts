@@ -17,6 +17,7 @@ import AuthGuard from '@/shared/guards/auth.guard';
 import ListMembersOfMyClub from '@/application/use-cases/list-members-of-my-club/list-members-of-my-club';
 import ClubDto from '@/domain/dtos/club.dto';
 import { EnrollmentRequestDto } from '@/domain/dtos/enrollment-request.dto';
+import { ClubMemberDto } from '@/domain/dtos/club-member.dto';
 
 @ApiTags('5. Gestão de Clube (Diretor)')
 @ApiBearerAuth('JWT-auth')
@@ -83,7 +84,7 @@ export default class ClubManagementController {
 
   @Get('/my-club/members')
   @ApiOperation({ summary: 'Lista todos os membros ativos do meu clube' })
-  @ApiResponse({ status: 200, description: 'Lista de membros ativos.', type: [EnrollmentRequestDto] }) // Nota: Deveria ser um DTO de Membro, mas usando o de request por ora.
+  @ApiResponse({ status: 200, description: 'Lista de membros ativos.', type: [ClubMemberDto] }) // Nota: Deveria ser um DTO de Membro, mas usando o de request por ora.
   async listMembersOfMyClub(@Request() req: any) {
     return this._listMembersOfMyClub.execute({ loggedInUserId: req.user.id });
   }

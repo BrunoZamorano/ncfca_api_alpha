@@ -39,13 +39,12 @@ export class ClubRepositoryPrisma implements ClubRepository {
       });
     });
 
-    let upsertedClub;
-    await this.prisma.$transaction([
-      (upsertedClub = this.prisma.club.upsert({
+    const [upsertedClub] = await this.prisma.$transaction([
+      this.prisma.club.upsert({
         where: { id: club.id },
         update: clubData,
         create: clubData,
-      })),
+      }),
       ...memberOperations,
     ]);
     return ClubMapper.modelToEntity(upsertedClub);
@@ -54,23 +53,32 @@ export class ClubRepositoryPrisma implements ClubRepository {
   async search(query: SearchClubsQueryDto): Promise<PaginatedClubDto> {
     const { page = 1, limit = 10 } = query?.pagination ?? {};
     const where = {
-      name: { contains: query.filter?.name },
-      city: { contains: query.filter?.city },
-      state: { contains: query.filter?.state },
-      
-      
+      name: { contains: query.filter?.name, mode: 'insensitive' as const },
+      city: { contains: query.filter?.city, mode: 'insensitive' as const },
+      state: { contains: query.filter?.state, mode: 'insensitive' as const },
     };
     const total = await this.prisma.club.count({ where });
     const clubsData = await this.prisma.club.findMany({
       where,
       skip: (page - 1) * limit,
       take: limit,
+      select: {
+        id: true,
+        name: true,
+        city: true,
+        state: true,
+        _count: { select: { memberships: true } },
+        created_at: true,
+        principal_id: true,
+      },
     });
     const clubDtos = clubsData.map((c) => ({
       id: c.id,
       name: c.name,
       city: c.city,
       state: c.state,
+      corum: c._count.memberships,
+      createdAt: c.created_at,
       principalId: c.principal_id,
     }));
 

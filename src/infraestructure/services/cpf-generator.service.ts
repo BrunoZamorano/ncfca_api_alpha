@@ -3,7 +3,7 @@
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
-export default class CpfGenerator {
+export class CpfGenerator {
   /**
    * Gera um número de CPF formatado e válido.
    * @returns {string} CPF no formato XXX.XXX.XXX-XX

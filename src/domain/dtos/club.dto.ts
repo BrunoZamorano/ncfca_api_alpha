@@ -34,4 +34,18 @@ export default class ClubDto {
     example: 'f1eebc99-9c0b-4ef8-bb6d-6bb9bd380a22',
   })
   principalId: string;
+
+  @ApiProperty({
+    description: 'Data de criação do clube.',
+    type: 'string',
+    format: 'date-time',
+    example: '2023-01-15T10:00:00Z',
+  })
+  createdAt: Date;
+
+  @ApiProperty({
+    description: 'Quantidade de membros ativos no clube.',
+    example: 25,
+  })
+  corum: number;
 }

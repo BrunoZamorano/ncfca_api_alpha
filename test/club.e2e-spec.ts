@@ -7,7 +7,7 @@ import { AppModule } from '@/app.module';
 import InMemoryDatabase from '@/infraestructure/database/in-memory.database';
 import { RegisterUserInputDto } from '@/infraestructure/dtos/register-user.dto';
 import Cpf from '@/domain/value-objects/cpf/cpf';
-import { CreateClubDto } from '@/infraestructure/dtos/create-club.dto';
+import { CreateClubInputDto } from '@/infraestructure/dtos/create-club.dto';
 import { UserRoles } from '@/domain/enums/user-roles';
 import { USER_REPOSITORY } from '@/shared/constants/repository-constants';
 import UserRepository from '@/domain/repositories/user-repository';
@@ -48,7 +48,7 @@ describe('ClubController (e2e)', () => {
       cpf: Cpf.VALID_CPF,
       phone: '11122233344',
     };
-    const createClubDto: CreateClubDto = {
+    const createClubDto: CreateClubInputDto = {
       name: 'Orators Debate Club',
       city: 'Metropolis',
     };

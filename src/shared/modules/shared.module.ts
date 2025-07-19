@@ -26,6 +26,7 @@ import { UserRepositoryPrisma } from '@/infraestructure/repositories/prisma/user
 import { EnrollmentRequestRepositoryPrisma } from '@/infraestructure/repositories/prisma/enrollment-request.repository.prisma';
 import { CLUB_MEMBERSHIP_REPOSITORY } from '@/domain/repositories/club-membership.repository';
 import { ClubMembershipRepositoryPrisma } from '@/infraestructure/repositories/prisma/club-membership.repository.prisma';
+import { HashingServiceBcrypt } from '@/infraestructure/services/hashing-bcrypct.service';
 
 const repositories = [
   { provide: FAMILY_REPOSITORY, useClass: FamilyRepositoryPrisma },
@@ -38,7 +39,7 @@ const repositories = [
 
 const services = [
   PrismaService,
-  { provide: HASHING_SERVICE, useClass: AnemicHashingService },
+  { provide: HASHING_SERVICE, useClass: HashingServiceBcrypt },
   { provide: PAYMENT_GATEWAY, useClass: PaymentGatewayMemory },
   { provide: UNIT_OF_WORK, useClass: UnitOfWorkPrisma, scope: Scope.REQUEST },
   { provide: TOKEN_SERVICE, useClass: TokenServiceJwt },

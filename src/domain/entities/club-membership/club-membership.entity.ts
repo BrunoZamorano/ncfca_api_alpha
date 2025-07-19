@@ -4,6 +4,7 @@ import { MembershipStatus } from '@/domain/enums/membership-status';
 import { InvalidOperationException } from '@/domain/exceptions/domain-exception';
 
 export default class ClubMembership {
+  public readonly createdAt: Date;
   public status: MembershipStatus;
   public readonly memberId: string;
   public readonly familyId: string;
@@ -16,6 +17,7 @@ export default class ClubMembership {
     this.status = props.status;
     this.familyId = props.familyId;
     this.memberId = props.memberId;
+    this.createdAt = props.createdAt ?? new Date();
   }
 
   public static create(props: CreateMembershipProps, idGenerator: IdGenerator): ClubMembership {
@@ -53,6 +55,7 @@ interface ClubMembershipConstructorProps {
   status: MembershipStatus;
   familyId: string;
   memberId: string;
+  createdAt?: Date;
 }
 
 interface CreateMembershipProps {

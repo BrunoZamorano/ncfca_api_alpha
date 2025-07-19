@@ -541,7 +541,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateClubDto"
+                "$ref": "#/components/schemas/CreateClubInputDto"
               }
             }
           }
@@ -552,7 +552,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ClubDto"
+                  "$ref": "#/components/schemas/CreateClubOutputDto"
                 }
               }
             }
@@ -1767,6 +1767,11 @@
             "type": "string",
             "description": "Filtra clubes pela cidade (busca exata, case-insensitive).",
             "example": "Brasília"
+          },
+          "state": {
+            "type": "string",
+            "description": "Filtra clubes pela cidade (busca exata, case-insensitive).",
+            "example": "Brasília"
           }
         }
       },
@@ -1833,7 +1838,7 @@
           "meta"
         ]
       },
-      "CreateClubDto": {
+      "CreateClubInputDto": {
         "type": "object",
         "properties": {
           "name": {
@@ -1860,6 +1865,45 @@
           "name",
           "city",
           "state"
+        ]
+      },
+      "CreateClubOutputDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Nome do novo clube.",
+            "example": "Clube de Debate Oradores do Amanhã",
+            "minLength": 3
+          },
+          "city": {
+            "type": "string",
+            "description": "Cidade onde o clube está localizado.",
+            "example": "Brasília",
+            "minLength": 3
+          },
+          "state": {
+            "type": "string",
+            "description": "Estado onde o clube está localizado.",
+            "example": "DF",
+            "maxLength": 2,
+            "minLength": 2
+          },
+          "accessToken": {
+            "type": "string",
+            "description": "Novo token de acesso JWT."
+          },
+          "refreshToken": {
+            "type": "string",
+            "description": "Novo token de atualização."
+          }
+        },
+        "required": [
+          "name",
+          "city",
+          "state",
+          "accessToken",
+          "refreshToken"
         ]
       },
       "CheckoutInputDto": {

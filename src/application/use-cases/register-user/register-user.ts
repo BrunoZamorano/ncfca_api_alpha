@@ -60,8 +60,8 @@ export default class RegisterUser {
   }
 
   static errorCodes = {
-    EMAIL_ALREADY_IN_USE: 'EMAIL_ALREADY_IN_USE',
-    INVALID_CPF: 'INVALID_CPF',
+    EMAIL_ALREADY_IN_USE: 'O email não está disponível.',
+    INVALID_CPF: 'Cpf Inválido',
   };
 }
 

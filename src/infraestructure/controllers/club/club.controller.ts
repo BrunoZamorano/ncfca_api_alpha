@@ -8,7 +8,7 @@ import CreateClub from '@/application/use-cases/create-club/create-club';
 import SearchClubsQueryDto from '@/domain/dtos/search-clubs-query.dto';
 import ClubDto from '@/domain/dtos/club.dto';
 import { PaginatedClubDto } from '@/domain/dtos/paginated-output.dto';
-import { CreateClubDto } from '@/infraestructure/dtos/create-club.dto';
+import { CreateClubInputDto, CreateClubOutputDto } from '@/infraestructure/dtos/create-club.dto';
 import ClubMapper from '@/shared/mappers/club.mapper';
 import AuthGuard from '@/shared/guards/auth.guard';
 
@@ -43,10 +43,10 @@ export default class ClubController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Cria um novo clube' })
-  @ApiResponse({ status: 201, description: 'Clube criado com sucesso.', type: ClubDto })
-  async createClub(@Request() req: any, @Body() body: CreateClubDto): Promise<ClubDto> {
+  @ApiResponse({ status: 201, description: 'Clube criado com sucesso.', type: CreateClubOutputDto })
+  async createClub(@Request() req: any, @Body() body: CreateClubInputDto): Promise<CreateClubOutputDto> {
     const loggedInUserId = req.user.id;
-    const club = await this._createClub.execute({ ...body, loggedInUserId });
-    return ClubMapper.entityToDto(club);
+    const { club, tokens } = await this._createClub.execute({ ...body, loggedInUserId });
+    return { ...ClubMapper.entityToDto(club), ...tokens };
   }
 }

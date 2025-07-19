@@ -14,8 +14,9 @@ export default class ClubMapper {
       name: data.name,
       city: data.city,
       state: data.state,
-      principalId: data.principal_id,
       members: members,
+      createdAt: data.created_at,
+      principalId: data.principal_id,
     });
   }
 
@@ -36,6 +37,8 @@ export default class ClubMapper {
       city: entity.city,
       state: entity.state,
       principalId: entity.principalId,
+      corum: entity.members.length,
+      createdAt: entity.createdAt,
     };
   }
 }
