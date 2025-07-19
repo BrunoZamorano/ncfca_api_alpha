@@ -29,6 +29,9 @@ importers:
       '@types/stripe':
         specifier: ^8.0.417
         version: 8.0.417(@types/node@22.15.33)
+      bcryptjs:
+        specifier: ^3.0.2
+        version: 3.0.2
       class-transformer:
         specifier: ^0.5.1
         version: 0.5.1
@@ -84,9 +87,6 @@ importers:
       '@types/supertest':
         specifier: ^6.0.2
         version: 6.0.3
-      bcryptjs:
-        specifier: ^3.0.2
-        version: 3.0.2
       eslint:
         specifier: ^9.18.0
         version: 9.29.0(jiti@2.4.2)
