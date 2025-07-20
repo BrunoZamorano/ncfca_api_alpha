@@ -8,6 +8,7 @@ import ClubManagementController from '@/infraestructure/controllers/club-managem
 import UpdateClubInfo from '@/application/use-cases/update-club-info/update-club-info';
 import GetMyClubInfo from '@/application/use-cases/get-my-club-info/get-my-club-info';
 import ListMembersOfMyClub from '@/application/use-cases/list-members-of-my-club/list-members-of-my-club';
+import ListAllEnrollments from '@/application/use-cases/list-all-enrollments/list-all-enrollments';
 
 @Module({
   imports: [SharedModule],
@@ -15,6 +16,7 @@ import ListMembersOfMyClub from '@/application/use-cases/list-members-of-my-club
   providers: [
     ListPendingEnrollments,
     ListMembersOfMyClub,
+    ListAllEnrollments,
     ApproveEnrollment,
     RemoveClubMember,
     RejectEnrollment,

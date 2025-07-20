@@ -18,6 +18,7 @@ import ListMembersOfMyClub from '@/application/use-cases/list-members-of-my-club
 import ClubDto from '@/domain/dtos/club.dto';
 import { EnrollmentRequestDto } from '@/domain/dtos/enrollment-request.dto';
 import { ClubMemberDto } from '@/domain/dtos/club-member.dto';
+import ListAllEnrollments from '@/application/use-cases/list-all-enrollments/list-all-enrollments';
 
 @ApiTags('5. Gestão de Clube (Diretor)')
 @ApiBearerAuth('JWT-auth')
@@ -27,9 +28,10 @@ import { ClubMemberDto } from '@/domain/dtos/club-member.dto';
 export default class ClubManagementController {
   constructor(
     private readonly _listPendingEnrollments: ListPendingEnrollments,
+    private readonly _listMembersOfMyClub: ListMembersOfMyClub,
+    private readonly _listAllEnrollments: ListAllEnrollments,
     private readonly _approveEnrollment: ApproveEnrollment,
     private readonly _rejectEnrollment: RejectEnrollment,
-    private readonly _listMembersOfMyClub: ListMembersOfMyClub,
     private readonly _removeClubMember: RemoveClubMember,
     private readonly _updateClubInfo: UpdateClubInfo,
     private readonly _getMyClubInfo: GetMyClubInfo,
@@ -53,6 +55,13 @@ export default class ClubManagementController {
       clubId,
       ...body,
     });
+  }
+
+  @Get('/my-club/enrollments')
+  @ApiOperation({ summary: 'Lista todas as solicitações de matrícula para o clube do usuário logado.' })
+  @ApiResponse({ status: 200, description: 'Lista de solicitações pendentes.', type: [EnrollmentRequestDto] })
+  async listEnrollments(@Request() req: any) {
+    return this._listAllEnrollments.execute({ loggedInUserId: req.user.id });
   }
 
   @Get(':clubId/enrollments/pending')

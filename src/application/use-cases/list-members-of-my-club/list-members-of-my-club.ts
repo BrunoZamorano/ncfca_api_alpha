@@ -10,7 +10,7 @@ export default class ListMembersOfMyClub {
   constructor(@Inject(UNIT_OF_WORK) private readonly uow: UnitOfWork) {}
 
   async execute(input: { loggedInUserId: string }): Promise<ClubMemberDto[]> {
-    const club = await this.uow.clubRepository.findByOwnerId(input.loggedInUserId);
+    const club = await this.uow.clubRepository.findByPrincipalId(input.loggedInUserId);
     if (!club) throw new EntityNotFoundException('Club', 'for user: ' + input.loggedInUserId);
     if (club.principalId !== input.loggedInUserId) throw new ForbiddenException('User is not the owner of this club.');
     const memberships = await this.uow.clubMembershipRepository.findByClub(club.id);
@@ -30,6 +30,8 @@ export default class ListMembersOfMyClub {
         lastName: dependant.lastName,
         email: holder.email,
         phone: holder.phone,
+        birthDate: dependant.birthdate,
+        sex: dependant.sex,
         holder: {
           id: holder.id,
           firstName: holder.firstName,

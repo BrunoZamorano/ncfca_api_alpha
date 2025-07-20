@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { HolderDto } from '@/domain/dtos/holder.dto';
+import { Sex } from '@/domain/enums/sex';
 
 export class ClubMemberDto {
   @ApiProperty({
@@ -46,4 +47,19 @@ export class ClubMemberDto {
     example: '2023-01-15T10:00:00Z',
   })
   memberSince: Date;
+
+  @ApiProperty({
+    description: 'Data de nascimento do membro.',
+    type: 'string',
+    format: 'date-time',
+    example: '1990-01-15T00:00:00Z',
+  })
+  birthDate: Date;
+
+  @ApiProperty({
+    description: 'Sexo do membro.',
+    enum: Sex,
+    example: Sex.MALE,
+  })
+  sex: Sex;
 }

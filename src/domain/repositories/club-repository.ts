@@ -7,5 +7,5 @@ export default interface ClubRepository {
   save(club: Club): Promise<Club>;
   find(id: string): Promise<Club | null>;
   findAll(): Promise<Club[]>;
-  findByOwnerId(ownerId: string): Promise<Club | null>;
+  findByPrincipalId(ownerId: string): Promise<Club | null>;
 }

@@ -9,17 +9,35 @@ import { PaginatedClubDto } from '@/domain/dtos/paginated-output.dto';
 
 @Injectable()
 export class ClubRepositoryPrisma implements ClubRepository {
+  private readonly select = {
+    id: true,
+    name: true,
+    city: true,
+    state: true,
+    _count: { select: { memberships: true } },
+    created_at: true,
+    updated_at: true,
+    memberships: true,
+    principal_id: true,
+  };
+
   constructor(private readonly prisma: PrismaService) {}
 
   async find(id: string): Promise<Club | null> {
     if (!id) return null;
-    const club = await this.prisma.club.findUnique({ where: { id }, include: { memberships: true } });
+    const club = await this.prisma.club.findUnique({
+      where: { id },
+      select: this.select,
+    });
     return club ? ClubMapper.modelToEntity(club) : null;
   }
 
-  async findByOwnerId(ownerId: string): Promise<Club | null> {
+  async findByPrincipalId(ownerId: string): Promise<Club | null> {
     if (!ownerId) return null;
-    const club = await this.prisma.club.findUnique({ where: { principal_id: ownerId } });
+    const club = await this.prisma.club.findUnique({
+      where: { principal_id: ownerId },
+      select: this.select,
+    });
     return club ? ClubMapper.modelToEntity(club) : null;
   }
 
@@ -62,15 +80,7 @@ export class ClubRepositoryPrisma implements ClubRepository {
       where,
       skip: (page - 1) * limit,
       take: limit,
-      select: {
-        id: true,
-        name: true,
-        city: true,
-        state: true,
-        _count: { select: { memberships: true } },
-        created_at: true,
-        principal_id: true,
-      },
+      select: this.select,
     });
     const clubDtos = clubsData.map((c) => ({
       id: c.id,

@@ -15,7 +15,7 @@ export default class AdminChangeClubDirector {
       const newDirector = await this.uow.userRepository.find(input.newDirectorId);
       if (!newDirector) throw new EntityNotFoundException('User', input.newDirectorId);
       if (!newDirector.roles.includes(UserRoles.DONO_DE_CLUBE)) newDirector.assignRoles([UserRoles.DONO_DE_CLUBE]);
-      const prevClub = await this.uow.clubRepository.findByOwnerId(newDirector.id);
+      const prevClub = await this.uow.clubRepository.findByPrincipalId(newDirector.id);
       if (prevClub) throw new InvalidOperationException('User can only own one club.');
       const prevDirector = await this.uow.userRepository.find(club.principalId);
       if (!prevDirector) throw new EntityNotFoundException('User', club.principalId);

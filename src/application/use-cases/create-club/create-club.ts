@@ -22,7 +22,7 @@ export default class CreateClub {
 
   async execute(input: Input): Promise<{ club: Club; tokens: { accessToken: string; refreshToken: string } }> {
     return this._uow.executeInTransaction(async () => {
-      const existingClub = await this._uow.clubRepository.findByOwnerId(input.loggedInUserId);
+      const existingClub = await this._uow.clubRepository.findByPrincipalId(input.loggedInUserId);
       if (existingClub) {
         this.logger.debug(`User already owns a club: ${existingClub.id}`);
         throw new InvalidOperationException('User can only own one club.');

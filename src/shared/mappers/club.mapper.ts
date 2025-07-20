@@ -4,11 +4,11 @@ import ClubDto from '@/domain/dtos/club.dto';
 import ClubMembershipMapper from './club-membership.mapper';
 import ClubMembership from '@/domain/entities/club-membership/club-membership.entity';
 
-type ClubWithMembersData = ClubData & { members?: ClubMembershipData[] };
+type ClubWithMembersData = ClubData & { memberships?: ClubMembershipData[] };
 
 export default class ClubMapper {
   static modelToEntity(data: ClubWithMembersData): Club {
-    const members: ClubMembership[] = data.members ? data.members.map(ClubMembershipMapper.toEntity) : [];
+    const members: ClubMembership[] = data.memberships ? data.memberships.map(ClubMembershipMapper.toEntity) : [];
     return new Club({
       id: data.id,
       name: data.name,

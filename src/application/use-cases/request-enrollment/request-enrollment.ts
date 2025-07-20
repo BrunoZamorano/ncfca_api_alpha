@@ -19,20 +19,22 @@ export default class RequestEnrollment {
       const family = await this.uow.familyRepository.findByHolderId(input.loggedInUserId);
       if (!family) throw new EntityNotFoundException('Family', `for user ${input.loggedInUserId}`);
       const dependant = family.dependants.find((d) => d.id === input.dependantId);
-      if (!dependant) throw new ForbiddenException('Dependant does not belong to this family.');
+      if (!dependant) throw new ForbiddenException('O dependente não pertence à esta família.');
       const club = await this.uow.clubRepository.find(input.clubId);
       if (!club) throw new EntityNotFoundException('Club', input.clubId);
       if (family.status !== FamilyStatus.AFFILIATED) {
-        throw new ForbiddenException('Family must be affiliated to request enrollment.');
+        throw new ForbiddenException('A família não está afiliada a um clube. Afilie-se primeiro.');
       }
       const existingRequests = await this.uow.enrollmentRequestRepository.findByDependantAndClub(dependant.id, club.id);
       const pendingRequests = existingRequests.filter((p) => p.status === EnrollmentStatus.PENDING);
       if (pendingRequests.length > 0) {
-        throw new InvalidOperationException('A pending enrollment request for this dependant and club already exists.');
+        throw new InvalidOperationException(
+          'Uma solicitação de matrícula pendente já existe para este dependente neste clube.',
+        );
       }
       const existingMembership = await this.uow.clubMembershipRepository.findByMemberAndClub(dependant.id, club.id);
       if (existingMembership) {
-        throw new InvalidOperationException('Dependant is already a member of this club.');
+        throw new InvalidOperationException('O Dependente já é membro deste clube.');
       }
       const request = new EnrollmentRequest({
         id: this.idGenerator.generate(),

@@ -54,7 +54,7 @@ export default class ClubRepositoryMemory implements ClubRepository {
     return updatedClub;
   }
 
-  async findByOwnerId(ownerId: string): Promise<Club | null> {
+  async findByPrincipalId(ownerId: string): Promise<Club | null> {
     return this.db.clubs.find((p) => p.principalId === ownerId) ?? null;
   }
 

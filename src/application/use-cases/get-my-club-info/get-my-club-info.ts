@@ -10,7 +10,7 @@ export default class GetMyClubInfo {
 
   async execute(input: Input): Promise<ClubDto> {
     return this.uow.executeInTransaction(async () => {
-      const club = await this.uow.clubRepository.findByOwnerId(input.loggedInUserId);
+      const club = await this.uow.clubRepository.findByPrincipalId(input.loggedInUserId);
       if (!club) throw new EntityNotFoundException('Club', 'for user: ' + input.loggedInUserId);
       return ClubMapper.entityToDto(club);
     });
