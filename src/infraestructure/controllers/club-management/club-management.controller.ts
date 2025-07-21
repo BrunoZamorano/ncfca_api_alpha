@@ -19,6 +19,7 @@ import ClubDto from '@/domain/dtos/club.dto';
 import { EnrollmentRequestDto } from '@/domain/dtos/enrollment-request.dto';
 import { ClubMemberDto } from '@/domain/dtos/club-member.dto';
 import ListAllEnrollments from '@/application/use-cases/list-all-enrollments/list-all-enrollments';
+import { ListPendingEnrollmentsOutputDto } from '@/infraestructure/dtos/list-pending-enrollments.dto';
 
 @ApiTags('5. Gestão de Clube (Diretor)')
 @ApiBearerAuth('JWT-auth')
@@ -64,9 +65,9 @@ export default class ClubManagementController {
     return this._listAllEnrollments.execute({ loggedInUserId: req.user.id });
   }
 
-  @Get(':clubId/enrollments/pending')
+  @Get('/:clubId/enrollments/pending')
   @ApiOperation({ summary: 'Lista as solicitações de matrícula pendentes para um clube específico' })
-  @ApiResponse({ status: 200, description: 'Lista de solicitações pendentes.', type: [EnrollmentRequestDto] })
+  @ApiResponse({ status: 200, description: 'Lista de solicitações pendentes.', type: [ListPendingEnrollmentsOutputDto] })
   async listPending(@Request() req: any, @Param('clubId') clubId: string) {
     return this._listPendingEnrollments.execute({ loggedInUserId: req.user.id, clubId });
   }

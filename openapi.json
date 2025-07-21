@@ -739,6 +739,42 @@
         ]
       }
     },
+    "/dependants/dependant/{id}": {
+      "get": {
+        "operationId": "DependantController_viewDependant",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dados de um dependente.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ViewDependantOutputDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Visualiza os dados de um dependente.",
+        "tags": [
+          "3. Família e Dependentes"
+        ]
+      }
+    },
     "/dependants/{id}": {
       "patch": {
         "operationId": "DependantController_update",
@@ -931,6 +967,36 @@
         ]
       }
     },
+    "/club-management/my-club/enrollments": {
+      "get": {
+        "operationId": "ClubManagementController_listEnrollments",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Lista de solicitações pendentes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EnrollmentRequestDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Lista todas as solicitações de matrícula para o clube do usuário logado.",
+        "tags": [
+          "5. Gestão de Clube (Diretor)"
+        ]
+      }
+    },
     "/club-management/{clubId}/enrollments/pending": {
       "get": {
         "operationId": "ClubManagementController_listPending",
@@ -952,7 +1018,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/EnrollmentRequestDto"
+                    "$ref": "#/components/schemas/ListPendingEnrollmentsOutputDto"
                   }
                 }
               }
@@ -1050,7 +1116,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/EnrollmentRequestDto"
+                    "$ref": "#/components/schemas/ClubMemberDto"
                   }
                 }
               }
@@ -1263,6 +1329,17 @@
             "description": "ID do usuário que é o diretor do clube (principal).",
             "format": "uuid",
             "example": "f1eebc99-9c0b-4ef8-bb6d-6bb9bd380a22"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Data de criação do clube.",
+            "format": "date-time",
+            "example": "2023-01-15T10:00:00Z"
+          },
+          "corum": {
+            "type": "number",
+            "description": "Quantidade de membros ativos no clube.",
+            "example": 25
           }
         },
         "required": [
@@ -1270,7 +1347,9 @@
           "name",
           "city",
           "state",
-          "principalId"
+          "principalId",
+          "createdAt",
+          "corum"
         ]
       },
       "ManageUserRoleDto": {
@@ -1996,6 +2075,127 @@
           "sex"
         ]
       },
+      "HolderDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID único do titular.",
+            "format": "uuid",
+            "example": "b1eebc99-9c0b-4ef8-bb6d-6bb9bd380a22"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "Nome do titular.",
+            "example": "Maria Silva"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Nome do titular.",
+            "example": "Maria Silva"
+          },
+          "email": {
+            "type": "string",
+            "description": "Email do titular.",
+            "example": "maria.silva@email.com"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Telefone do titular.",
+            "example": "(11) 98888-8888"
+          }
+        },
+        "required": [
+          "id",
+          "firstName",
+          "lastName",
+          "email",
+          "phone"
+        ]
+      },
+      "ViewDependantOutputDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID único do dependente.",
+            "format": "uuid",
+            "example": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "Primeiro nome do dependente.",
+            "example": "João"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Último nome do dependente.",
+            "example": "Silva Filho"
+          },
+          "birthdate": {
+            "type": "string",
+            "description": "Data de nascimento do dependente.",
+            "format": "date-time",
+            "example": "2010-01-20T00:00:00.000Z"
+          },
+          "relationship": {
+            "type": "string",
+            "description": "Relação de parentesco com o responsável.",
+            "enum": [
+              "DAUGHTER",
+              "HUSBAND",
+              "CHILD",
+              "WIFE",
+              "SON",
+              "OTHER"
+            ],
+            "example": "SON"
+          },
+          "sex": {
+            "type": "string",
+            "description": "Sexo do dependente.",
+            "enum": [
+              "FEMALE",
+              "MALE"
+            ],
+            "example": "MALE"
+          },
+          "email": {
+            "type": "object",
+            "description": "Email de contato do dependente (opcional).",
+            "example": "joao.filho@example.com"
+          },
+          "phone": {
+            "type": "object",
+            "description": "Telefone de contato do dependente (opcional).",
+            "example": "11999998888"
+          },
+          "familyId": {
+            "type": "string",
+            "description": "ID da família à qual o dependente pertence.",
+            "format": "uuid",
+            "example": "f1eebc99-9c0b-4ef8-bb6d-6bb9bd380a22"
+          },
+          "holder": {
+            "description": "Dados do titular.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/HolderDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "firstName",
+          "lastName",
+          "birthdate",
+          "relationship",
+          "sex",
+          "familyId",
+          "holder"
+        ]
+      },
       "UpdateDependantDto": {
         "type": "object",
         "properties": {
@@ -2085,8 +2285,92 @@
             "description": "Nova cidade de localização do clube.",
             "example": "São Paulo",
             "minLength": 3
+          },
+          "state": {
+            "type": "string",
+            "description": "Estado onde o clube está localizado.",
+            "example": "DF",
+            "maxLength": 2,
+            "minLength": 2
           }
-        }
+        },
+        "required": [
+          "state"
+        ]
+      },
+      "ListPendingEnrollmentsOutputDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID único da solicitação de matrícula.",
+            "format": "uuid",
+            "example": "a1b2c3d4-e5f6-g7h8-i9j0-k1l2m3n4o5p6"
+          },
+          "status": {
+            "type": "string",
+            "description": "Status atual da solicitação.",
+            "enum": [
+              "REJECTED",
+              "APPROVED",
+              "PENDING"
+            ],
+            "example": "PENDING"
+          },
+          "clubId": {
+            "type": "string",
+            "description": "ID do clube ao qual a matrícula foi solicitada.",
+            "format": "uuid",
+            "example": "c1b2c3d4-e5f6-g7h8-i9j0-k1l2m3n4o5p7"
+          },
+          "familyId": {
+            "type": "string",
+            "description": "ID da família que está solicitando a matrícula.",
+            "format": "uuid",
+            "example": "d1b2c3d4-e5f6-g7h8-i9j0-k1l2m3n4o5p8"
+          },
+          "dependantId": {
+            "type": "string",
+            "description": "ID do dependente para o qual a matrícula se aplica.",
+            "format": "uuid",
+            "example": "e1b2c3d4-e5f6-g7h8-i9j0-k1l2m3n4o5p9"
+          },
+          "dependantName": {
+            "type": "string",
+            "description": "Nome do dependente para o qual a matrícula se aplica.",
+            "example": "Augustus Nicodemus"
+          },
+          "requestedAt": {
+            "type": "string",
+            "description": "Data e hora em que a solicitação foi criada.",
+            "format": "date-time",
+            "example": "2025-07-20T14:00:00Z"
+          },
+          "resolvedAt": {
+            "type": "string",
+            "description": "Data e hora em que a solicitação foi resolvida (aprovada/rejeitada).",
+            "format": "date-time",
+            "nullable": true,
+            "example": "2025-07-20T15:30:00Z"
+          },
+          "rejectionReason": {
+            "type": "object",
+            "description": "Motivo da rejeição, caso o status seja REJECTED.",
+            "nullable": true,
+            "example": "Vagas esgotadas para a faixa etária."
+          }
+        },
+        "required": [
+          "id",
+          "status",
+          "clubId",
+          "familyId",
+          "dependantId",
+          "dependantName",
+          "requestedAt",
+          "resolvedAt",
+          "rejectionReason"
+        ]
       },
       "RejectEnrollmentDto": {
         "type": "object",
@@ -2100,6 +2384,77 @@
         },
         "required": [
           "reason"
+        ]
+      },
+      "ClubMemberDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID único do membro.",
+            "format": "uuid",
+            "example": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Sobrenome do membro.",
+            "example": "Silva"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "Nome do membro.",
+            "example": "João"
+          },
+          "email": {
+            "type": "string",
+            "description": "Email do membro.",
+            "example": "joao.silva@email.com"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Telefone do membro.",
+            "example": "(11) 99999-9999"
+          },
+          "holder": {
+            "description": "Dados do titular.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/HolderDto"
+              }
+            ]
+          },
+          "memberSince": {
+            "type": "string",
+            "description": "Data de início da associação.",
+            "format": "date-time",
+            "example": "2023-01-15T10:00:00Z"
+          },
+          "birthDate": {
+            "type": "string",
+            "description": "Data de nascimento do membro.",
+            "format": "date-time",
+            "example": "1990-01-15T00:00:00Z"
+          },
+          "sex": {
+            "type": "string",
+            "description": "Sexo do membro.",
+            "enum": [
+              "FEMALE",
+              "MALE"
+            ],
+            "example": "MALE"
+          }
+        },
+        "required": [
+          "id",
+          "lastName",
+          "firstName",
+          "email",
+          "phone",
+          "holder",
+          "memberSince",
+          "birthDate",
+          "sex"
         ]
       }
     }

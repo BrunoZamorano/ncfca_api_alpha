@@ -6,6 +6,7 @@ import ClubMapper from '@/shared/mappers/club.mapper';
 import SearchClubsQueryDto from '@/domain/dtos/search-clubs-query.dto';
 import ClubMembershipMapper from '@/shared/mappers/club-membership.mapper';
 import { PaginatedClubDto } from '@/domain/dtos/paginated-output.dto';
+import { MembershipStatus } from '@/domain/enums/membership-status';
 
 @Injectable()
 export class ClubRepositoryPrisma implements ClubRepository {
@@ -14,10 +15,10 @@ export class ClubRepositoryPrisma implements ClubRepository {
     name: true,
     city: true,
     state: true,
-    _count: { select: { memberships: true } },
+    _count: { select: { memberships: { where: { status: MembershipStatus.ACTIVE } } } },
     created_at: true,
     updated_at: true,
-    memberships: true,
+    memberships: { where: { status: MembershipStatus.ACTIVE } },
     principal_id: true,
   };
 

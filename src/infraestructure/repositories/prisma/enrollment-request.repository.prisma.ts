@@ -14,12 +14,12 @@ export class EnrollmentRequestRepositoryPrisma implements EnrollmentRequestRepos
   }
 
   async findByClubId(clubId: string): Promise<EnrollmentRequest[]> {
-    const requests = await this.prisma.enrollmentRequest.findMany({ where: { club_id: clubId } });
+    const requests = await this.prisma.enrollmentRequest.findMany({ where: { club_id: clubId }, include: { dependant: true} });
     return requests.map(EnrollmentRequestMapper.toDomain);
   }
 
   async findByFamilyId(familyId: string): Promise<EnrollmentRequest[]> {
-    const requests = await this.prisma.enrollmentRequest.findMany({ where: { family_id: familyId } });
+    const requests = await this.prisma.enrollmentRequest.findMany({ where: { family_id: familyId }, orderBy: {requested_at: 'desc'} });
     return requests.map(EnrollmentRequestMapper.toDomain);
   }
 

@@ -25,7 +25,7 @@ export default class ListMembersOfMyClub {
       const dependant = family.dependants.find((d) => d.id === membership.memberId);
       if (!dependant) throw new EntityNotFoundException('Dependant', 'for membership: ' + membership.id);
       members.push({
-        id: membership.memberId,
+        id: membership.id,
         firstName: dependant.firstName,
         lastName: dependant.lastName,
         email: holder.email,

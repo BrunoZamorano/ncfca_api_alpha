@@ -1,11 +1,9 @@
-// src/domain/dtos/dependant.dto.ts
-
 import { ApiProperty } from '@nestjs/swagger';
 import { DependantRelationship } from '@/domain/enums/dependant-relationship';
 import { Sex } from '@/domain/enums/sex';
 import { HolderDto } from '@/domain/dtos/holder.dto';
 
-export default class DependantDto {
+export class ViewDependantOutputDto {
   @ApiProperty({
     description: 'ID único do dependente.',
     format: 'uuid',
@@ -57,4 +55,10 @@ export default class DependantDto {
     example: 'f1eebc99-9c0b-4ef8-bb6d-6bb9bd380a22',
   })
   familyId: string;
+
+  @ApiProperty({
+    description: 'Dados do titular.',
+    type: () => HolderDto,
+  })
+  holder: HolderDto;
 }

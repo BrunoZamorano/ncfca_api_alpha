@@ -4,6 +4,7 @@ import FamilyRepository from '@/domain/repositories/family-repository';
 import Family from '@/domain/entities/family/family';
 import InMemoryDatabase from '@/infraestructure/database/in-memory.database';
 import { FamilyStatus } from '@/domain/enums/family-status';
+import Dependant from '@/domain/entities/dependant/dependant';
 
 @Injectable()
 export default class FamilyRepositoryMemory implements FamilyRepository {
@@ -13,6 +14,9 @@ export default class FamilyRepositoryMemory implements FamilyRepository {
     this.db = InMemoryDatabase.getInstance();
     const initialFamilies = families ?? this.populate();
     this.db.families.push(...initialFamilies);
+  }
+  findDependant(dependantId: string): Promise<Dependant | null> {
+    throw new Error('Method not implemented.');
   }
 
   async create(family: Family): Promise<Family> {

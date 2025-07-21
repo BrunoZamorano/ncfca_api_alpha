@@ -4,15 +4,15 @@ import { AddDependantDto } from '@/infraestructure/dtos/add-dependant.dto';
 import {
   Body,
   Controller,
+  Delete,
+  Get,
   HttpCode,
   HttpStatus,
-  Post,
-  UseGuards,
-  Request,
   Param,
-  Delete,
   Patch,
-  Get,
+  Post,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import AddDependant from '@/application/use-cases/add-dependant/add-dependant';
@@ -26,6 +26,8 @@ import { UpdateDependantDto } from '@/infraestructure/dtos/update-dependant.dto'
 import ViewMyFamily from '@/application/use-cases/view-my-family/view-my-family';
 import FamilyMapper from '@/shared/mappers/family.mapper';
 import { FamilyDto } from '@/domain/dtos/family.dto';
+import ViewDependant from '@/application/use-cases/view-dependant/view-dependant';
+import { ViewDependantOutputDto } from '@/infraestructure/dtos/view-dependant.dto';
 
 @ApiTags('3. Família e Dependentes')
 @ApiBearerAuth('JWT-auth')
@@ -36,6 +38,7 @@ export default class DependantController {
     private readonly _deleteDependant: DeleteDependant,
     private readonly _updateDependant: UpdateDependant,
     private readonly _listDependants: ListDependants,
+    private readonly _viewDependant: ViewDependant,
     private readonly _viewMyFamily: ViewMyFamily,
     private readonly _addDependant: AddDependant,
   ) {}
@@ -57,6 +60,15 @@ export default class DependantController {
   async viewMyFamily(@Request() req: any): Promise<FamilyDto> {
     const family = await this._viewMyFamily.execute({ loggedInUserId: req.user.id });
     return FamilyMapper.entityToDto(family);
+  }
+
+  @Get('/:id')
+  @ApiOperation({ summary: 'Visualiza os dados de um dependente.' })
+  @ApiResponse({ status: 200, description: 'Dados de um dependente.', type: ViewDependantOutputDto })
+  @HttpCode(HttpStatus.OK)
+  async viewDependant(@Param('id') dependantId: string): Promise<ViewDependantOutputDto> {
+    const output = await this._viewDependant.execute(dependantId);
+    return { ...DependantMapper.entityToDto(output.dependant), holder: output.holder };
   }
 
   @Get()

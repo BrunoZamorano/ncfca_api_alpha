@@ -6,6 +6,7 @@ import IdGenerator from '@/application/services/id-generator';
 import { ID_GENERATOR } from '@/shared/constants/service-constants';
 import { FamilyStatus } from '@/domain/enums/family-status';
 import { EnrollmentStatus } from '@/domain/enums/enrollment-status';
+import { MembershipStatus } from '@/domain/enums/membership-status';
 
 @Injectable()
 export default class RequestEnrollment {
@@ -33,8 +34,8 @@ export default class RequestEnrollment {
         );
       }
       const existingMembership = await this.uow.clubMembershipRepository.findByMemberAndClub(dependant.id, club.id);
-      if (existingMembership) {
-        throw new InvalidOperationException('O Dependente já é membro deste clube.');
+      if (existingMembership && existingMembership.status === MembershipStatus.ACTIVE) {
+        throw new InvalidOperationException('O Dependente já é membro ativo deste clube.');
       }
       const request = new EnrollmentRequest({
         id: this.idGenerator.generate(),

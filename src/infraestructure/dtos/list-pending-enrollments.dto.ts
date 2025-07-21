@@ -1,8 +1,8 @@
+
 import { ApiProperty } from '@nestjs/swagger';
+import { EnrollmentStatus } from '@/domain/enums/enrollment-status';
 
-import { EnrollmentStatus } from '../enums/enrollment-status';
-
-export class EnrollmentRequestDto {
+export class ListPendingEnrollmentsOutputDto {
   @ApiProperty({
     description: 'ID único da solicitação de matrícula.',
     format: 'uuid',
@@ -37,6 +37,12 @@ export class EnrollmentRequestDto {
     example: 'e1b2c3d4-e5f6-g7h8-i9j0-k1l2m3n4o5p9',
   })
   dependantId: string;
+
+  @ApiProperty({
+    description: 'Nome do dependente para o qual a matrícula se aplica.',
+    example: 'Augustus Nicodemus',
+  })
+  dependantName: string;
 
   @ApiProperty({
     description: 'Data e hora em que a solicitação foi criada.',

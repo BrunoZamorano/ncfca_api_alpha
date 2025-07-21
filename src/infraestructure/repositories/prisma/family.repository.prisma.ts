@@ -4,10 +4,18 @@ import FamilyRepository from '@/domain/repositories/family-repository';
 import Family from '@/domain/entities/family/family';
 import FamilyMapper from '@/shared/mappers/family.mapper';
 import DependantMapper from '@/shared/mappers/dependant.mapper';
+import Dependant from '@/domain/entities/dependant/dependant';
 
 @Injectable()
 export class FamilyRepositoryPrisma implements FamilyRepository {
   constructor(private readonly prisma: PrismaService) {}
+
+  async findDependant(dependantId: string): Promise<Dependant | null> {
+    const dependant = await this.prisma.dependant.findUnique({
+      where: { id: dependantId },
+    });
+    return dependant ? DependantMapper.toEntity(dependant) : null;
+  }
 
   async find(id: string): Promise<Family | null> {
     const family = await this.prisma.family.findUnique({
