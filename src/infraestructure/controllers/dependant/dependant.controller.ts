@@ -19,7 +19,7 @@ import AddDependant from '@/application/use-cases/add-dependant/add-dependant';
 import AuthGuard from '@/shared/guards/auth.guard';
 import DependantDto from '@/domain/dtos/dependant.dto';
 import DependantMapper from '@/shared/mappers/dependant.mapper';
-import ListDependants from '@/application/use-cases/list-dependants/list-dependants';
+import ListUserDependants from '@/application/use-cases/list-user-dependants/list-user-dependants';
 import UpdateDependant from '@/application/use-cases/update-dependant/update-dependant';
 import DeleteDependant from '@/application/use-cases/delete-dependant/delete-dependant';
 import { UpdateDependantDto } from '@/infraestructure/dtos/update-dependant.dto';
@@ -37,7 +37,7 @@ export default class DependantController {
   constructor(
     private readonly _deleteDependant: DeleteDependant,
     private readonly _updateDependant: UpdateDependant,
-    private readonly _listDependants: ListDependants,
+    private readonly _listDependants: ListUserDependants,
     private readonly _viewDependant: ViewDependant,
     private readonly _viewMyFamily: ViewMyFamily,
     private readonly _addDependant: AddDependant,

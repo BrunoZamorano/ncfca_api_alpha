@@ -11,6 +11,7 @@ import AdminListAllEnrollments from '@/application/use-cases/admin/list-all-enro
 import AdminController from '@/infraestructure/controllers/admin.controller';
 
 import SharedModule from './shared.module';
+import ListDependants from '@/application/use-cases/list-dependants/list-dependants';
 
 @Module({
   imports: [SharedModule],
@@ -18,6 +19,7 @@ import SharedModule from './shared.module';
   providers: [
     AdminListUsers,
     AdminListClubs,
+    ListDependants,
     AdminManageUserRole,
     AdminViewUserFamily,
     AdminListAffiliations,

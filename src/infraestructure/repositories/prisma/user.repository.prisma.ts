@@ -16,9 +16,8 @@ export class UserRepositoryPrisma implements UserRepository {
 
   async findByEmail(email: string): Promise<User | null> {
     try {
-      
-    const user = await this.prisma.user.findUnique({ where: { email } });
-    return user ? UserMapper.toEntity(user) : null;
+      const user = await this.prisma.user.findUnique({ where: { email: email.toLowerCase() } });
+      return user ? UserMapper.toEntity(user) : null;
     } catch (error) {
       // Handle specific error cases if needed
       console.error(`Error finding user by email: ${email}`, error);

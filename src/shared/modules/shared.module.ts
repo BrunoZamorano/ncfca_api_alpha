@@ -5,7 +5,6 @@ import { JwtModule } from '@nestjs/jwt';
 import { UNIT_OF_WORK } from '@/domain/services/unit-of-work';
 
 import { PaymentGatewayMemory } from '@/infraestructure/services/payment-gateway.memory';
-import AnemicHashingService from '@/infraestructure/services/anemic-hashing-service';
 import TokenServiceJwt from '@/infraestructure/services/token-service-jwt';
 import UuidGenerator from '@/infraestructure/services/uuid-generator';
 
@@ -27,6 +26,10 @@ import { EnrollmentRequestRepositoryPrisma } from '@/infraestructure/repositorie
 import { CLUB_MEMBERSHIP_REPOSITORY } from '@/domain/repositories/club-membership.repository';
 import { ClubMembershipRepositoryPrisma } from '@/infraestructure/repositories/prisma/club-membership.repository.prisma';
 import { HashingServiceBcrypt } from '@/infraestructure/services/hashing-bcrypct.service';
+import { QUERY_SERVICE } from '@/application/services/query.service';
+import QueryServicePrisma from '@/infraestructure/services/query.service.prisma';
+import { DEPENDANT_QUERY } from '@/application/queries/dependant-query/dependant.query';
+import { DependantQueryPrisma } from '@/infraestructure/queries/dependant.query.prisma';
 
 const repositories = [
   { provide: FAMILY_REPOSITORY, useClass: FamilyRepositoryPrisma },
@@ -37,18 +40,21 @@ const repositories = [
   { provide: ENROLLMENT_REQUEST_REPOSITORY, useClass: EnrollmentRequestRepositoryPrisma },
 ];
 
+const queries = [{ provide: DEPENDANT_QUERY, useClass: DependantQueryPrisma }];
+
 const services = [
   PrismaService,
   { provide: HASHING_SERVICE, useClass: HashingServiceBcrypt },
   { provide: PAYMENT_GATEWAY, useClass: PaymentGatewayMemory },
-  { provide: UNIT_OF_WORK, useClass: UnitOfWorkPrisma, scope: Scope.REQUEST },
+  { provide: QUERY_SERVICE, useClass: QueryServicePrisma },
   { provide: TOKEN_SERVICE, useClass: TokenServiceJwt },
+  { provide: UNIT_OF_WORK, useClass: UnitOfWorkPrisma, scope: Scope.REQUEST },
   { provide: ID_GENERATOR, useClass: UuidGenerator },
 ];
 
 @Module({
   imports: [JwtModule.register({ global: true })],
-  providers: [...repositories, ...services],
-  exports: [...repositories, ...services],
+  providers: [...repositories, ...services, ...queries],
+  exports: [...repositories, ...services, ...queries],
 })
 export default class SharedModule {}

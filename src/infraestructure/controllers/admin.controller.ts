@@ -17,6 +17,14 @@ import { UserDto } from '@/domain/dtos/user.dto';
 import ClubDto from '@/domain/dtos/club.dto';
 import { FamilyDto } from '@/domain/dtos/family.dto';
 import { EnrollmentRequestDto } from '@/domain/dtos/enrollment-request.dto';
+import UserMapper from '@/shared/mappers/user.mapper';
+import ClubMapper from '@/shared/mappers/club.mapper';
+import FamilyMapper from '@/shared/mappers/family.mapper';
+import { AffiliationDto } from '@/domain/dtos/affiliation.dto';
+import DependantMapper from '@/shared/mappers/dependant.mapper';
+import ListUserDependants from '@/application/use-cases/list-user-dependants/list-user-dependants';
+import ListDependants from '@/application/use-cases/list-dependants/list-dependants';
+import { DependantsListItemView } from '@/application/queries/dependant-query/dependants-list-item.view';
 
 @ApiTags('6. Admin')
 @ApiBearerAuth('JWT-auth')
@@ -26,6 +34,7 @@ export default class AdminController {
   constructor(
     private readonly _listUsers: AdminListUsers,
     private readonly _listClubs: AdminListClubs,
+    private readonly _listDependants: ListDependants,
     private readonly _manageUserRole: AdminManageUserRole,
     private readonly _viewUserFamily: AdminViewUserFamily,
     private readonly _listAffiliations: AdminListAffiliations,
@@ -33,21 +42,30 @@ export default class AdminController {
     private readonly _listAllEnrollments: AdminListAllEnrollments,
   ) {}
 
-  @Get('users')
+  @Get('/users')
   @ApiOperation({ summary: 'Lista todos os usuários do sistema' })
   @ApiResponse({ status: 200, description: 'Lista de usuários retornada com sucesso.', type: [UserDto] })
   async listUsers() {
-    return this._listUsers.execute();
+    const users = await this._listUsers.execute();
+    return users.map(UserMapper.entityToDto);
   }
 
-  @Get('clubs')
+  @Get('/clubs')
   @ApiOperation({ summary: 'Lista todos os clubes do sistema' })
   @ApiResponse({ status: 200, description: 'Lista de clubes retornada com sucesso.', type: [ClubDto] })
   async listClubs() {
-    return this._listClubs.execute();
+    const clubs = await this._listClubs.execute();
+    return clubs.map(ClubMapper.entityToDto);
   }
 
-  @Post('users/:userId/roles')
+  @Get('/dependants')
+  @ApiOperation({ summary: 'Lista todos os dependentes do sistema' })
+  @ApiResponse({ status: 200, description: 'Lista de dependentes retornada com sucesso.', type: [DependantsListItemView] })
+  async listDependants(): Promise<DependantsListItemView[]> {
+    return await this._listDependants.execute();
+  }
+
+  @Post('/users/:userId/roles')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Gerencia os perfis (roles) de um usuário' })
   @ApiResponse({ status: 204, description: 'Perfis do usuário atualizados com sucesso.' })
@@ -55,21 +73,23 @@ export default class AdminController {
     await this._manageUserRole.execute({ userId, roles: body.roles });
   }
 
-  @Get('users/:userId/family')
+  @Get('/users/:userId/family')
   @ApiOperation({ summary: 'Visualiza os detalhes da família de um usuário específico' })
+  // corrigir dtos
   @ApiResponse({ status: 200, description: 'Dados da família retornados com sucesso.', type: FamilyDto })
   async viewUserFamily(@Param('userId') userId: string) {
-    return this._viewUserFamily.execute(userId);
+    const output = await this._viewUserFamily.execute(userId);
+    return { user: UserMapper.entityToDto(output.user), family: FamilyMapper.entityToDto(output.family) };
   }
 
-  @Get('affiliations')
+  @Get('/affiliations')
   @ApiOperation({ summary: 'Lista todas as afiliações de famílias e seus status' })
-  @ApiResponse({ status: 200, description: 'Lista de afiliações retornada com sucesso.', type: [FamilyDto] })
+  @ApiResponse({ status: 200, description: 'Lista de afiliações retornada com sucesso.', type: [AffiliationDto] })
   async listAffiliations() {
-    return this._listAffiliations.execute();
+    return await this._listAffiliations.execute();
   }
 
-  @Patch('clubs/:clubId/director')
+  @Patch('/clubs/:clubId/director')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Altera o diretor (proprietário) de um clube' })
   @ApiResponse({ status: 204, description: 'Diretor do clube alterado com sucesso.' })
@@ -77,7 +97,7 @@ export default class AdminController {
     await this._changeClubDirector.execute({ clubId, newDirectorId: body.newDirectorId });
   }
 
-  @Get('enrollments')
+  @Get('/enrollments')
   @ApiOperation({ summary: 'Lista todas as solicitações de matrícula do sistema' })
   @ApiResponse({ status: 200, description: 'Lista de matrículas retornada com sucesso.', type: [EnrollmentRequestDto] })
   async listAllEnrollments() {

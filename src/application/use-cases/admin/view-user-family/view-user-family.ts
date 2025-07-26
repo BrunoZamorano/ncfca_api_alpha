@@ -9,6 +9,7 @@ export default class AdminViewUserFamily {
     const user = await this.uow.userRepository.find(userId);
     if (!user) throw new EntityNotFoundException('User', userId);
     const family = await this.uow.familyRepository.findByHolderId(userId);
+    if (!family) throw new EntityNotFoundException('Family', `Holder ID: ${userId}`);
     return { user, family };
   }
 }

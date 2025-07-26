@@ -1,15 +1,12 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { UNIT_OF_WORK, UnitOfWork } from '@/domain/services/unit-of-work';
-import { EntityNotFoundException } from '@/domain/exceptions/domain-exception';
-import Dependant from '@/domain/entities/dependant/dependant';
+import { Inject } from '@nestjs/common';
 
-@Injectable()
+import { QUERY_SERVICE, QueryService } from '@/application/services/query.service';
+import { DependantsListItemView } from '@/application/queries/dependant-query/dependants-list-item.view';
+
 export default class ListDependants {
-  constructor(@Inject(UNIT_OF_WORK) private readonly uow: UnitOfWork) {}
+  constructor(@Inject(QUERY_SERVICE) private readonly query: QueryService) {}
 
-  async execute(loggedInUserId: string): Promise<Dependant[]> {
-    const family = await this.uow.familyRepository.findByHolderId(loggedInUserId);
-    if (!family) throw new EntityNotFoundException('Family', `for user ${loggedInUserId}`);
-    return family.dependants;
+  async execute(): Promise<DependantsListItemView[]> {
+    return await this.query.dependantQuery.dependantsListView();
   }
 }

@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import UserRepository from '@/domain/repositories/user-repository';
 import { USER_REPOSITORY } from '@/shared/constants/repository-constants';
 import User from '@/domain/entities/user/user';
+import { UserDto } from '@/domain/dtos/user.dto';
 
 @Injectable()
 export default class AdminListUsers {

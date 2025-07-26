@@ -38,6 +38,11 @@ describe('User Entity', () => {
       expect(user.roles).toContain(UserRoles.SEM_FUNCAO);
     });
 
+    it('Não deve criar um usuário cujo email não seja em minúsculas', function () {
+      const user = User.create({ email: 'EMAIL@EX.COM' }, mockIdGenerator, mockHashingService);
+      expect(user.email).toBe('email@ex.com');
+    });
+
     it('deve garantir que a role SEM_FUNCAO seja adicionada mesmo se outras roles forem fornecidas', () => {
       const user = User.create({ roles: [UserRoles.DONO_DE_CLUBE] }, mockIdGenerator, mockHashingService);
       expect(user.roles).toHaveLength(2);

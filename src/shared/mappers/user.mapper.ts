@@ -6,6 +6,7 @@ import Address from '@/domain/value-objects/address/address';
 import Entity from '@/domain/entities/user/user';
 import Email from '@/domain/value-objects/email/email';
 import Cpf from '@/domain/value-objects/cpf/cpf';
+import { UserDto } from '@/domain/dtos/user.dto';
 
 export default class UserMapper {
   static toEntity(data: Model): Entity {
@@ -56,6 +57,27 @@ export default class UserMapper {
       city: entity.address.city,
       state: entity.address.state,
       zip_code: entity.address.zipCode,
+    };
+  }
+  
+  static entityToDto(entity: Entity): UserDto {
+    return {
+      id: entity.id,
+      firstName: entity.firstName,
+      lastName: entity.lastName,
+      email: entity.email,
+      phone: entity.phone,
+      cpf: entity.cpf,
+      rg: entity.rg,
+      roles: entity.roles,
+      address: {
+        district: entity.address.district,
+        zipCode: entity.address.zipCode,
+        street: entity.address.street,
+        number: entity.address.number,
+        state: entity.address.state,
+        city: entity.address.city,
+      },
     };
   }
 }

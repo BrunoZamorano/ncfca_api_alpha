@@ -75,6 +75,36 @@
         ]
       }
     },
+    "/admin/dependants": {
+      "get": {
+        "operationId": "AdminController_listDependants",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Lista de dependentes retornada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DependantsListItemView"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Lista todos os dependentes do sistema",
+        "tags": [
+          "6. Admin"
+        ]
+      }
+    },
     "/admin/users/{userId}/roles": {
       "post": {
         "operationId": "AdminController_manageUserRole",
@@ -162,7 +192,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/FamilyDto"
+                    "$ref": "#/components/schemas/AffiliationDto"
                   }
                 }
               }
@@ -739,7 +769,7 @@
         ]
       }
     },
-    "/dependants/dependant/{id}": {
+    "/dependants/{id}": {
       "get": {
         "operationId": "DependantController_viewDependant",
         "parameters": [
@@ -773,9 +803,7 @@
         "tags": [
           "3. Família e Dependentes"
         ]
-      }
-    },
-    "/dependants/{id}": {
+      },
       "patch": {
         "operationId": "DependantController_update",
         "parameters": [
@@ -1265,6 +1293,11 @@
             "description": "CPF do usuário.",
             "example": "12345678900"
           },
+          "rg": {
+            "type": "string",
+            "description": "Rg do usuário.",
+            "example": "123456"
+          },
           "roles": {
             "type": "array",
             "description": "Perfis de acesso do usuário.",
@@ -1296,6 +1329,7 @@
           "lastName",
           "phone",
           "cpf",
+          "rg",
           "roles",
           "address"
         ]
@@ -1350,6 +1384,31 @@
           "principalId",
           "createdAt",
           "corum"
+        ]
+      },
+      "DependantsListItemView": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "Email do dependente",
+            "example": "dependente@example.com"
+          },
+          "name": {
+            "type": "string",
+            "description": "Nome completo do dependente",
+            "example": "João Silva"
+          },
+          "id": {
+            "type": "string",
+            "description": "ID único do dependente",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "email",
+          "name",
+          "id"
         ]
       },
       "ManageUserRoleDto": {
@@ -1500,6 +1559,65 @@
         "required": [
           "id",
           "holderId",
+          "status",
+          "affiliatedAt",
+          "affiliationExpiresAt",
+          "dependants"
+        ]
+      },
+      "AffiliationDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID único da família.",
+            "format": "uuid",
+            "example": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
+          },
+          "holder": {
+            "description": "Dados do titular.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/UserDto"
+              }
+            ]
+          },
+          "status": {
+            "type": "string",
+            "description": "Status atual da afiliação da família.",
+            "enum": [
+              "PENDING_PAYMENT",
+              "NOT_AFFILIATED",
+              "AFFILIATED",
+              "EXPIRED"
+            ],
+            "example": "AFFILIATED"
+          },
+          "affiliatedAt": {
+            "type": "string",
+            "description": "Data em que a afiliação se tornou ativa.",
+            "format": "date-time",
+            "example": "2025-07-17T03:00:00.000Z",
+            "nullable": true
+          },
+          "affiliationExpiresAt": {
+            "type": "string",
+            "description": "Data em que a afiliação irá expirar.",
+            "format": "date-time",
+            "example": "2026-07-17T03:00:00.000Z",
+            "nullable": true
+          },
+          "dependants": {
+            "description": "Lista de dependentes associados a esta família.",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DependantDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "holder",
           "status",
           "affiliatedAt",
           "affiliationExpiresAt",

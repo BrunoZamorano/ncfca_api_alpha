@@ -43,7 +43,7 @@ export class ClubRepositoryPrisma implements ClubRepository {
   }
 
   async findAll(): Promise<Club[]> {
-    const clubs = await this.prisma.club.findMany();
+    const clubs = await this.prisma.club.findMany({select: this.select});
     return clubs.map(ClubMapper.modelToEntity);
   }
 
