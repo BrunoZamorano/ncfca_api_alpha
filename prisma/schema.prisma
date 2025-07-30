@@ -40,6 +40,12 @@ enum DependantRelationship {
   OTHER
 }
 
+enum DependantType {
+  STUDENT
+  ALUMNI
+  PARENT
+}
+
 enum Sex {
   FEMALE
   MALE
@@ -123,6 +129,7 @@ model Dependant {
   first_name   String
   family_id    String
   relationship DependantRelationship
+  type         DependantType
   sex          Sex
   email        String?
   phone        String?

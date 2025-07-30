@@ -4,7 +4,6 @@ export default class Address {
   private readonly REGEX = /^\d{5}-?\d{3}$/;
   public readonly zipCode: string;
   public readonly street: string;
-  public readonly country: string;
   public readonly number: string;
   public readonly district: string;
   public readonly city: string;
@@ -15,7 +14,6 @@ export default class Address {
     if (props.zipCode && !this.isValidZipCode(props)) throw new DomainException('Invalid zip code format.');
     if (!this.isValidState(props)) throw new DomainException('State must be a 2-character abbreviation.');
     if (!this.isValidStreet(props)) throw new DomainException('Street is required.');
-    this.country = props.country ?? 'Country';
     this.zipCode = props.zipCode ? props.zipCode.replace(/\D/g, '') : '12312312';
     this.street = props.street ?? 'Street';
     this.number = props.number ?? '123';

@@ -40,7 +40,6 @@ export default class Checkout {
         state: user.address.state,
         number: user.address.number,
         street: user.address.street,
-        country: user.address.country,
         zip_code: user.address.zipCode,
         district: user.address.district,
         complement: user.address.complement,

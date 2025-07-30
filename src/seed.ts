@@ -16,6 +16,7 @@ import { UserRoles } from '@/domain/enums/user-roles';
 import User, { CreateUserProps } from '@/domain/entities/user/user';
 import UuidGenerator from '@/infraestructure/services/uuid-generator';
 import UserMapper from '@/shared/mappers/user.mapper';
+import { DependantType } from '@/domain/enums/dependant-type.enum';
 
 const prisma = new PrismaClient();
 
@@ -98,6 +99,7 @@ async function main() {
             last_name: dependantLastName,
             relationship: DependantRelationship.CHILD,
             sex: sex,
+            type: DependantType.STUDENT,
             birthdate: faker.date.birthdate({ min: 5, max: 25, mode: 'age' }),
             email: faker.internet.email({ firstName: dependantFirstName, lastName: dependantLastName }),
           },

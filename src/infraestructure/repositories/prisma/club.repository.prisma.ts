@@ -1,12 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/infraestructure/database/prisma.service';
+
 import ClubRepository from '@/domain/repositories/club-repository';
 import Club from '@/domain/entities/club/club';
-import ClubMapper from '@/shared/mappers/club.mapper';
-import SearchClubsQueryDto from '@/domain/dtos/search-clubs-query.dto';
-import ClubMembershipMapper from '@/shared/mappers/club-membership.mapper';
+
 import { PaginatedClubDto } from '@/domain/dtos/paginated-output.dto';
 import { MembershipStatus } from '@/domain/enums/membership-status';
+import SearchClubsQueryDto from '@/domain/dtos/search-clubs-query.dto';
+
+import ClubMembershipMapper from '@/shared/mappers/club-membership.mapper';
+import ClubMapper from '@/shared/mappers/club.mapper';
 
 @Injectable()
 export class ClubRepositoryPrisma implements ClubRepository {
@@ -43,7 +46,7 @@ export class ClubRepositoryPrisma implements ClubRepository {
   }
 
   async findAll(): Promise<Club[]> {
-    const clubs = await this.prisma.club.findMany({select: this.select});
+    const clubs = await this.prisma.club.findMany({ select: this.select });
     return clubs.map(ClubMapper.modelToEntity);
   }
 

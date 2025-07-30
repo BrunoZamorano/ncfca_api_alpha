@@ -42,7 +42,6 @@ describe('Enrollment Journey (e2e)', () => {
     db = InMemoryDatabase.getInstance();
     db.reset();
 
-    // SETUP: Registrar e logar para obter um token válido.
     const regResponse = await request(app.getHttpServer()).post('/account/user').send(testUser);
     accessToken = regResponse.body.accessToken;
 
@@ -64,10 +63,9 @@ describe('Enrollment Journey (e2e)', () => {
   });
 
   it('deve permitir a um usuário pagar a afiliação, adicionar um dependente e solicitar a matrícula', async () => {
-    // ---- PASSO 1: Pagar a afiliação da família ----
     const checkoutDto: CheckoutInputDto = {
       paymentMethod: PaymentMethod.CREDIT_CARD,
-      paymentToken: 'valid-token', // Simula um pagamento bem-sucedido
+      paymentToken: 'valid-token',
     };
     await request(app.getHttpServer())
       .post('/checkout')
@@ -75,11 +73,9 @@ describe('Enrollment Journey (e2e)', () => {
       .send(checkoutDto)
       .expect(HttpStatus.OK);
 
-    // ASSERT: Verificar se a família está afiliada
     const affiliatedFamily = db.families.find((f) => f.id === familyId)!;
     expect(affiliatedFamily.status).toBe(FamilyStatus.AFFILIATED);
 
-    // ---- PASSO 2: Adicionar um dependente à família afiliada ----
     const addDependantDto: AddDependantDto = {
       firstName: 'Test',
       lastName: 'Child',
@@ -95,7 +91,6 @@ describe('Enrollment Journey (e2e)', () => {
     const createdDependant: DependantDto = dependantResponse.body;
     expect(createdDependant.id).toBeDefined();
 
-    // ---- PASSO 3: Solicitar a matrícula para o dependente recém-criado ----
     const enrollmentDto = { dependantId: createdDependant.id, clubId };
     await request(app.getHttpServer())
       .post('/enrollments')
@@ -103,7 +98,6 @@ describe('Enrollment Journey (e2e)', () => {
       .send(enrollmentDto)
       .expect(HttpStatus.CREATED);
 
-    // ---- ASSERT FINAL: Verificar se a solicitação foi criada corretamente ----
     expect(db.enrollmentRequests).toHaveLength(1);
     const requestInDb = db.enrollmentRequests[0];
     expect(requestInDb.status).toBe(EnrollmentStatus.PENDING);

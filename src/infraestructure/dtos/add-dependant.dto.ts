@@ -48,13 +48,11 @@ export class AddDependantDto {
   sex: Sex;
 
   @ApiProperty({
-    description: 'Email de contato do dependente (opcional).',
+    description: 'Email de contato do dependente.',
     example: 'joao.silva@example.com',
-    required: false,
   })
-  @IsString({ message: 'Email must be a string.' })
-  @IsOptional()
-  email?: string;
+  @IsString({ message: 'Email requerido.' })
+  email: string;
 
   @ApiProperty({
     description: 'Telefone de contato do dependente (opcional).',

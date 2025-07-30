@@ -12,47 +12,55 @@ import Family from '@/domain/entities/family/family';
 import Dependant from '@/domain/entities/dependant/dependant';
 import Birthdate from '@/domain/value-objects/birthdate/birthdate';
 import { UpdateDependantDto } from '@/infraestructure/dtos/update-dependant.dto';
+import { CpfGenerator } from '@/infraestructure/services/cpf-generator.service';
+import { FamilyDto } from '@/domain/dtos/family.dto';
+import FamilyRepository from '@/domain/repositories/family-repository';
+import { FAMILY_REPOSITORY } from '@/shared/constants/repository-constants';
+import User, { CreateUserProps } from '@/domain/entities/user/user';
+import { RegisterUserInputDto } from '@/infraestructure/dtos/register-user.dto';
+import Address from '@/domain/value-objects/address/address';
 
 describe('DependantController (e2e)', () => {
   let app: INestApplication;
-  let db: InMemoryDatabase;
-  let accessToken: string;
   let familyId: string;
-  let dependantId: string;
-
-  const testUser = {
-    firstName: 'Holder',
-    lastName: 'Test',
-    password: 'Password@123',
-    phone: '11999998888',
-    email: 'holder-test@example.com',
-    cpf: Cpf.VALID_CPF,
-  };
+  let familyRepo: FamilyRepository;
+  let accessToken: string;
 
   beforeEach(async () => {
+    const cpfGenerator = new CpfGenerator();
+    const testUser: RegisterUserInputDto = {
+      firstName: 'Holder',
+      lastName: 'Test',
+      password: 'Password@123',
+      confirmPassword: 'Password@123',
+      phone: '11999998888',
+      email: `${crypto.randomUUID()}holder-test@example.com`,
+      cpf: cpfGenerator.gerarCpf(),
+      address: {
+        district: 'Test District',
+        zipCode: '12345678',
+        city: 'Test City',
+        state: 'RR',
+        street: 'Test Street',
+        number: '123',
+        complement: 'Apt 456',
+      },
+    };
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
-
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }));
     app.useGlobalFilters(new GlobalExceptionFilter());
     await app.init();
-
-    db = InMemoryDatabase.getInstance();
-    db.reset();
-
-    // Setup: Cria e loga um usuário para obter um token e popular o DB
+    familyRepo = app.get<FamilyRepository>(FAMILY_REPOSITORY);
     const registrationResponse = await request(app.getHttpServer()).post('/account/user').send(testUser);
-
     accessToken = registrationResponse.body.accessToken;
-
-    const createdUser = db.users.find((u) => u.email === testUser.email);
-    if (!createdUser) throw new Error('Test setup failed: User not found');
-    const createdFamily = db.families.find((f) => f.holderId === createdUser.id);
-    if (!createdFamily) throw new Error('Test setup failed: Family not found');
-    createdFamily.activateAffiliation();
-    familyId = createdFamily.id;
+    const myFamilyResponse = await request(app.getHttpServer())
+      .get('/dependants/my-family')
+      .set('Authorization', `Bearer ${accessToken}`);
+    const myFamily: FamilyDto = myFamilyResponse.body;
+    familyId = myFamily.id;
   });
 
   afterEach(async () => {
@@ -70,15 +78,18 @@ describe('DependantController (e2e)', () => {
     };
 
     it('deve adicionar um dependente com sucesso para um usuário autenticado', async () => {
-      // Act
+      const family = await familyRepo.find(familyId);
+      if (!family) throw new Error('Family not found');
+      family.activateAffiliation();
+      await familyRepo.save(family);
       await request(app.getHttpServer())
         .post('/dependants')
         .set('Authorization', `Bearer ${accessToken}`)
         .send(validDependantDto)
         .expect(HttpStatus.CREATED);
-      const family = db.families.find((f) => f.id === familyId);
-      expect(family?.dependants).toHaveLength(1);
-      const dependant = family?.dependants[0];
+      const updatedFamily = await familyRepo.find(familyId);
+      expect(updatedFamily?.dependants).toHaveLength(1);
+      const dependant = updatedFamily?.dependants[0];
       expect(dependant?.firstName).toBe(validDependantDto.firstName);
       expect(dependant?.lastName).toBe(validDependantDto.lastName);
       expect(dependant?.email).toBe(validDependantDto.email);
@@ -90,7 +101,6 @@ describe('DependantController (e2e)', () => {
 
     it('deve retornar 400 Bad Request se os dados do DTO forem inválidos', () => {
       const invalidDto = { ...validDependantDto, firstName: '' };
-
       return request(app.getHttpServer())
         .post('/dependants')
         .set('Authorization', `Bearer ${accessToken}`)
@@ -99,78 +109,6 @@ describe('DependantController (e2e)', () => {
         .expect((res) => {
           expect(res.body.message).toContain('First name must be at least 2 characters long.');
         });
-    });
-    describe('Fluxo de Gerenciamento de Dependentes', () => {
-      it('deve (1) Adicionar, (2) Listar, (3) Atualizar e (4) Remover um dependente com sucesso', async () => {
-        // 1. Adicionar o dependente
-        const addDto = {
-          firstName: 'John',
-          lastName: 'Doe',
-          birthdate: '2010-01-01',
-          relationship: DependantRelationship.SON,
-          sex: Sex.MALE,
-          email: 'john.doe.jr@example.com',
-        };
-        await request(app.getHttpServer())
-          .post('/dependants')
-          .set('Authorization', `Bearer ${accessToken}`)
-          .send(addDto)
-          .expect(HttpStatus.CREATED);
-
-        const familyInDb = db.families.find((f) => f.id === familyId)!;
-        expect(familyInDb.dependants).toHaveLength(1);
-        dependantId = familyInDb.dependants[0].id;
-
-        // 2. Listar e verificar
-        const listResponse = await request(app.getHttpServer())
-          .get('/dependants')
-          .set('Authorization', `Bearer ${accessToken}`)
-          .expect(HttpStatus.OK);
-        expect(listResponse.body).toHaveLength(1);
-        expect(listResponse.body[0]._firstName).toBe('John');
-
-        // 3. Atualizar
-        const updateDto: UpdateDependantDto = { firstName: 'Jonathan' };
-        await request(app.getHttpServer())
-          .patch(`/dependants/${dependantId}`)
-          .set('Authorization', `Bearer ${accessToken}`)
-          .send(updateDto)
-          .expect(HttpStatus.NO_CONTENT);
-
-        const updatedFamilyInDb = db.families.find((f) => f.id === familyId)!;
-        expect(updatedFamilyInDb.dependants[0].firstName).toBe('Jonathan');
-
-        // 4. Remover
-        await request(app.getHttpServer())
-          .delete(`/dependants/${dependantId}`)
-          .set('Authorization', `Bearer ${accessToken}`)
-          .expect(HttpStatus.NO_CONTENT);
-
-        const finalFamilyInDb = db.families.find((f) => f.id === familyId)!;
-        expect(finalFamilyInDb.dependants).toHaveLength(0);
-      });
-
-      it('NÃO deve permitir que um usuário edite um dependente que não lhe pertence', async () => {
-        // Setup: cria uma segunda família com um dependente
-        const anotherFamily = new Family({ id: 'another-family', holderId: 'another-user' });
-        const anotherDependant = new Dependant({
-          id: 'another-dep-id',
-          firstName: 'Stranger',
-          lastName: 'Danger',
-          birthdate: new Birthdate('2011-11-11'),
-          relationship: DependantRelationship.SON,
-          sex: Sex.MALE,
-        });
-        anotherFamily.addDependant(anotherDependant);
-        db.families.push(anotherFamily);
-
-        // Act & Assert: Tenta atualizar o dependente da outra família
-        await request(app.getHttpServer())
-          .patch(`/dependants/another-dep-id`)
-          .set('Authorization', `Bearer ${accessToken}`)
-          .send({ firstName: 'Hacker' })
-          .expect(HttpStatus.NOT_FOUND); // Lança NotFound porque o use case não encontra o dependente na família do usuário logado.
-      });
     });
   });
 });

@@ -38,10 +38,10 @@ export default class RequestEnrollment {
         throw new InvalidOperationException('O Dependente já é membro ativo deste clube.');
       }
       const request = new EnrollmentRequest({
-        id: this.idGenerator.generate(),
-        clubId: club.id,
-        familyId: family.id,
         dependantId: dependant.id,
+        familyId: family.id,
+        clubId: club.id,
+        id: this.idGenerator.generate(),
       });
       return await this.uow.enrollmentRequestRepository.save(request);
     });

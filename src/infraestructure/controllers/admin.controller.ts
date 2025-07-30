@@ -60,7 +60,11 @@ export default class AdminController {
 
   @Get('/dependants')
   @ApiOperation({ summary: 'Lista todos os dependentes do sistema' })
-  @ApiResponse({ status: 200, description: 'Lista de dependentes retornada com sucesso.', type: [DependantsListItemView] })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de dependentes retornada com sucesso.',
+    type: [DependantsListItemView],
+  })
   async listDependants(): Promise<DependantsListItemView[]> {
     return await this._listDependants.execute();
   }
@@ -75,7 +79,7 @@ export default class AdminController {
 
   @Get('/users/:userId/family')
   @ApiOperation({ summary: 'Visualiza os detalhes da família de um usuário específico' })
-  // corrigir dtos
+  //todo: corrigir dtos
   @ApiResponse({ status: 200, description: 'Dados da família retornados com sucesso.', type: FamilyDto })
   async viewUserFamily(@Param('userId') userId: string) {
     const output = await this._viewUserFamily.execute(userId);

@@ -20,7 +20,6 @@ export interface PaymentPayer {
     district: string;
     city: string;
     state: string;
-    country: string;
     complement?: string;
   };
 }

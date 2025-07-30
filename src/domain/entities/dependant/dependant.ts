@@ -1,37 +1,42 @@
-import { DomainException } from '@/domain/exceptions/domain-exception';
-import Birthdate from '@/domain/value-objects/birthdate/birthdate';
 import { DependantRelationship } from '@/domain/enums/dependant-relationship';
+import { DomainException } from '@/domain/exceptions/domain-exception';
 import { Sex } from '@/domain/enums/sex';
+import Birthdate from '@/domain/value-objects/birthdate/birthdate';
 import Email from '@/domain/value-objects/email/email';
+import { DependantType } from '@/domain/enums/dependant-type.enum';
 
 export default class Dependant {
   private _relationship: DependantRelationship;
   private _birthdate: Birthdate;
   private _firstName: string;
   private _lastName: string;
-  private _familyId: string;
+  private _email: Email;
   private _phone?: string;
-  private _email?: Email;
   private _sex: Sex;
+  private readonly _familyId: string;
+  private readonly _type: DependantType;
   private readonly _id: string;
 
   constructor(props: DependantProps) {
     this.validateName(props.firstName, 'First name');
     this.validateName(props.lastName, 'Last name');
-
     this._id = props.id;
-    this._firstName = props.firstName;
+    this._sex = props.sex;
+    this._type = props.type ?? DependantType.STUDENT;
+    this._email = props.email ?? new Email(`${crypto.randomUUID()}@ex.com`); 
+    this._phone = props.phone;
     this._lastName = props.lastName;
+    this._familyId = props.familyId ?? 'id_family';
+    this._firstName = props.firstName;
     this._birthdate = props.birthdate;
     this._relationship = props.relationship;
-    this._sex = props.sex;
-    this._email = props.email;
-    this._phone = props.phone;
-    this._familyId = props.familyId ?? 'id_family';
   }
 
   get id(): string {
     return this._id;
+  }
+  get type(): DependantType {
+    return this._type;
   }
   get firstName(): string {
     return this._firstName;
@@ -54,7 +59,6 @@ export default class Dependant {
   get phone(): string | undefined {
     return this._phone;
   }
-
   get familyId() {
     return this._familyId;
   }
@@ -68,11 +72,11 @@ export default class Dependant {
       this.validateName(input.lastName, 'Last name');
       this._lastName = input.lastName;
     }
-    if (input.birthdate) this._birthdate = new Birthdate(input.birthdate);
     if (input.relationship) this._relationship = input.relationship;
-    if (input.sex) this._sex = input.sex;
+    if (input.birthdate) this._birthdate = new Birthdate(input.birthdate);
     if (input.email) this._email = new Email(input.email);
     if (input.phone) this._phone = input.phone;
+    if (input.sex) this._sex = input.sex;
   }
 
   private validateName(name: string, field: string): void {
@@ -83,15 +87,16 @@ export default class Dependant {
 }
 
 interface DependantProps {
-  id: string;
+  relationship: DependantRelationship;
+  birthdate: Birthdate;
   firstName: string;
   lastName: string;
-  birthdate: Birthdate;
-  relationship: DependantRelationship;
-  sex: Sex;
+  familyId?: string;
   email?: Email;
   phone?: string;
-  familyId?: string;
+  type?: DependantType;
+  sex: Sex;
+  id: string;
 }
 
 export interface UpdateDependantProps {

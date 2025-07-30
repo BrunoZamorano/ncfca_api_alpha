@@ -4,6 +4,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { DependantRelationship } from '@/domain/enums/dependant-relationship';
 import { Sex } from '@/domain/enums/sex';
 import { HolderDto } from '@/domain/dtos/holder.dto';
+import { DependantType } from '@/domain/enums/dependant-type.enum';
 
 export default class DependantDto {
   @ApiProperty({
@@ -36,6 +37,9 @@ export default class DependantDto {
 
   @ApiProperty({ description: 'Sexo do dependente.', enum: Sex, example: Sex.MALE })
   sex: Sex;
+
+  @ApiProperty({ description: 'Tipo do dependente.', enum: DependantType, example: DependantType.STUDENT })
+  type: DependantType;
 
   @ApiProperty({
     description: 'Email de contato do dependente (opcional).',
