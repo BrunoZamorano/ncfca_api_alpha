@@ -4,15 +4,18 @@ import { JwtModule } from '@nestjs/jwt';
 
 import { ENROLLMENT_REQUEST_REPOSITORY } from '@/domain/repositories/enrollment-request-repository';
 import { CLUB_MEMBERSHIP_REPOSITORY } from '@/domain/repositories/club-membership.repository';
+import { TRAINING_REPOSITORY } from '@/domain/repositories/training.repository';
 import { UNIT_OF_WORK } from '@/domain/services/unit-of-work';
 
 import { ENROLLMENT_QUERY } from '@/application/queries/enrollment-query/enrollment.query';
 import { DEPENDANT_QUERY } from '@/application/queries/dependant-query/dependant.query';
+import { TRAINING_QUERY } from '@/application/queries/training-query/training.query';
 import { QUERY_SERVICE } from '@/application/services/query.service';
 
 import { EnrollmentRequestRepositoryPrisma } from '@/infraestructure/repositories/prisma/enrollment-request.repository.prisma';
 import { ClubMembershipRepositoryPrisma } from '@/infraestructure/repositories/prisma/club-membership.repository.prisma';
 import { TransactionRepositoryPrisma } from '@/infraestructure/repositories/prisma/transaction.repository.prisma';
+import { TrainingRepositoryPrisma } from '@/infraestructure/repositories/prisma/training.repository.prisma';
 import { FamilyRepositoryPrisma } from '@/infraestructure/repositories/prisma/family.repository.prisma';
 import { EnrollmentQueryPrisma } from '@/infraestructure/queries/enrollment.query.prisma';
 import { HashingServiceBcrypt } from '@/infraestructure/services/hashing-bcrypct.service';
@@ -20,6 +23,7 @@ import { ClubRepositoryPrisma } from '@/infraestructure/repositories/prisma/club
 import { UserRepositoryPrisma } from '@/infraestructure/repositories/prisma/user.repository.prisma';
 import { DependantQueryPrisma } from '@/infraestructure/queries/dependant.query.prisma';
 import { PaymentGatewayMemory } from '@/infraestructure/services/payment-gateway.memory';
+import { TrainingQueryPrisma } from '@/infraestructure/queries/training.query.prisma';
 import { UnitOfWorkPrisma } from '@/infraestructure/services/unit-of-work.prisma';
 import { PrismaService } from '@/infraestructure/database/prisma.service';
 import QueryServicePrisma from '@/infraestructure/services/query.service.prisma';
@@ -35,26 +39,28 @@ import {
 import { HASHING_SERVICE, ID_GENERATOR, PAYMENT_GATEWAY, TOKEN_SERVICE } from '@/shared/constants/service-constants';
 
 const repositories = [
-  { provide: FAMILY_REPOSITORY, useClass: FamilyRepositoryPrisma },
+  { provide: ENROLLMENT_REQUEST_REPOSITORY, useClass: EnrollmentRequestRepositoryPrisma },
+  { provide: CLUB_MEMBERSHIP_REPOSITORY, useClass: ClubMembershipRepositoryPrisma },
   { provide: TRANSACTION_REPOSITORY, useClass: TransactionRepositoryPrisma },
+  { provide: TRAINING_REPOSITORY, useClass: TrainingRepositoryPrisma },
+  { provide: FAMILY_REPOSITORY, useClass: FamilyRepositoryPrisma },
   { provide: CLUB_REPOSITORY, useClass: ClubRepositoryPrisma },
   { provide: USER_REPOSITORY, useClass: UserRepositoryPrisma },
-  { provide: CLUB_MEMBERSHIP_REPOSITORY, useClass: ClubMembershipRepositoryPrisma },
-  { provide: ENROLLMENT_REQUEST_REPOSITORY, useClass: EnrollmentRequestRepositoryPrisma },
 ];
 
 const queries = [
-  { provide: DEPENDANT_QUERY, useClass: DependantQueryPrisma },
   { provide: ENROLLMENT_QUERY, useClass: EnrollmentQueryPrisma },
+  { provide: DEPENDANT_QUERY, useClass: DependantQueryPrisma },
+  { provide: TRAINING_QUERY, useClass: TrainingQueryPrisma },
 ];
 
 const services = [
   PrismaService,
+  { provide: UNIT_OF_WORK, useClass: UnitOfWorkPrisma, scope: Scope.REQUEST },
   { provide: HASHING_SERVICE, useClass: HashingServiceBcrypt },
   { provide: PAYMENT_GATEWAY, useClass: PaymentGatewayMemory },
   { provide: QUERY_SERVICE, useClass: QueryServicePrisma },
   { provide: TOKEN_SERVICE, useClass: TokenServiceJwt },
-  { provide: UNIT_OF_WORK, useClass: UnitOfWorkPrisma, scope: Scope.REQUEST },
   { provide: ID_GENERATOR, useClass: UuidGenerator },
 ];
 

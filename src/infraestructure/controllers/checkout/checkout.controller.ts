@@ -1,5 +1,3 @@
-// src/infraestructure/controllers/checkout/checkout.controller.ts
-
 import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import Checkout from '@/application/use-cases/checkout/checkout';
@@ -7,7 +5,7 @@ import { PaymentTransaction } from '@/domain/types/payment';
 import { CheckoutInputDto } from '@/infraestructure/dtos/checkout.dto';
 import AuthGuard from '@/shared/guards/auth.guard';
 
-@ApiTags('3. Afiliação e Pagamento')
+@ApiTags('Afiliação e Pagamento')
 @Controller('checkout')
 export default class CheckoutController {
   constructor(private readonly checkout: Checkout) {}

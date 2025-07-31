@@ -13,16 +13,18 @@ import DependantModule from '@/shared/modules/dependant.module';
 import EnrollmentModule from '@/shared/modules/enrollment.module';
 import ClubManagementModule from '@/shared/modules/club-management.module';
 import AdminModule from '@/shared/modules/admin.module';
+import TrainingModule from '@/shared/modules/training.module';
 
 @Module({
   imports: [
-    AdminModule,
-    AccountModule,
     AuthModule,
-    SharedModule,
     ClubModule,
-    CheckoutModule,
+    AdminModule,
+    SharedModule,
+    AccountModule,
     WebhookModule,
+    TrainingModule,
+    CheckoutModule,
     DependantModule,
     EnrollmentModule,
     ClubManagementModule,

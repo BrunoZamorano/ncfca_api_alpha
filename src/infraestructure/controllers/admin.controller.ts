@@ -1,5 +1,3 @@
-// src/infraestructure/controllers/admin.controller.ts
-
 import { Controller, Get, UseGuards, HttpCode, HttpStatus, Patch, Param, Body, Post } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import AuthGuard from '@/shared/guards/auth.guard';
@@ -21,12 +19,10 @@ import UserMapper from '@/shared/mappers/user.mapper';
 import ClubMapper from '@/shared/mappers/club.mapper';
 import FamilyMapper from '@/shared/mappers/family.mapper';
 import { AffiliationDto } from '@/domain/dtos/affiliation.dto';
-import DependantMapper from '@/shared/mappers/dependant.mapper';
-import ListUserDependants from '@/application/use-cases/list-user-dependants/list-user-dependants';
 import ListDependants from '@/application/use-cases/list-dependants/list-dependants';
 import { DependantsListItemView } from '@/application/queries/dependant-query/dependants-list-item.view';
 
-@ApiTags('6. Admin')
+@ApiTags('Admin')
 @ApiBearerAuth('JWT-auth')
 @UseGuards(AuthGuard, AdminGuard)
 @Controller('admin')

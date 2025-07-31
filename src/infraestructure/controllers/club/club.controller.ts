@@ -1,4 +1,3 @@
-// src/infraestructure/controllers/club/club.controller.ts
 
 import { Controller, Get, Post, Body, HttpCode, HttpStatus, Query, UseGuards, Request, Param } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';

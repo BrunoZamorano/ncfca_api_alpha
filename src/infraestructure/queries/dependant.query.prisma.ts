@@ -7,11 +7,7 @@ import { DependantQuery } from '@/application/queries/dependant-query/dependant.
 import { PrismaService } from '@/infraestructure/database/prisma.service';
 
 export class DependantQueryPrisma implements DependantQuery {
-  private prisma: PrismaClient;
-
-  constructor(@Inject(PrismaService) private readonly prismaService: PrismaService) {
-    this.prisma = prismaService;
-  }
+  constructor(@Inject(PrismaService) private readonly prisma: PrismaService) {}
 
   async dependantsListView(): Promise<DependantsListItemView[]> {
     return await this.prisma.$queryRaw<DependantsListItemView[]>`

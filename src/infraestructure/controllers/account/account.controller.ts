@@ -1,4 +1,3 @@
-// src/infraestructure/controllers/account/account.controller.ts
 
 import { Body, Controller, Post, Patch, UseGuards, Request, HttpCode, HttpStatus } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -10,7 +9,7 @@ import AuthGuard from '@/shared/guards/auth.guard';
 import { UpdateProfileDto } from '@/infraestructure/dtos/update-profile.dto';
 import { ChangePasswordDto } from '@/infraestructure/dtos/change-password.dto';
 
-@ApiTags('2. Conta de Usuário')
+@ApiTags('Conta de Usuário')
 @Controller('/account')
 export default class AccountController {
   constructor(

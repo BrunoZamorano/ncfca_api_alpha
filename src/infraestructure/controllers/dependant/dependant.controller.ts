@@ -1,5 +1,3 @@
-// src/infraestructure/controllers/dependant/dependant.controller.ts
-
 import { AddDependantDto } from '@/infraestructure/dtos/add-dependant.dto';
 import {
   Body,
@@ -29,7 +27,7 @@ import { FamilyDto } from '@/domain/dtos/family.dto';
 import ViewDependant from '@/application/use-cases/view-dependant/view-dependant';
 import { ViewDependantOutputDto } from '@/infraestructure/dtos/view-dependant.dto';
 
-@ApiTags('3. Família e Dependentes')
+@ApiTags('Família e Dependentes')
 @ApiBearerAuth('JWT-auth')
 @UseGuards(AuthGuard)
 @Controller('dependants')

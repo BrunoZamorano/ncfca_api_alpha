@@ -1,5 +1,3 @@
-// src/infraestructure/controllers/club-management.controller.ts
-
 import { Body, Controller, Get, HttpCode, HttpStatus, Param, Patch, Post, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import ListPendingEnrollments from '@/application/use-cases/list-pending-enrollments/list-pending-enrollments';
@@ -21,7 +19,7 @@ import { ClubMemberDto } from '@/domain/dtos/club-member.dto';
 import ListAllEnrollments from '@/application/use-cases/list-all-enrollments/list-all-enrollments';
 import { ListPendingEnrollmentsOutputDto } from '@/infraestructure/dtos/list-pending-enrollments.dto';
 
-@ApiTags('5. Gestão de Clube (Diretor)')
+@ApiTags('Gestão de Clube (Diretor)')
 @ApiBearerAuth('JWT-auth')
 @UseGuards(AuthGuard, RolesGuard)
 @Roles(UserRoles.DONO_DE_CLUBE)

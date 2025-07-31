@@ -1,5 +1,3 @@
-// src/infraestructure/controllers/webhook/webhook.controller.ts
-
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { ApiExcludeController } from '@nestjs/swagger';
 

@@ -201,3 +201,12 @@ model Transaction {
   user   User   @relation(fields: [user_id], references: [id])
   family Family @relation(fields: [family_id], references: [id])
 }
+
+model Training {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  youtube_url String
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+}
