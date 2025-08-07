@@ -15,6 +15,7 @@ import EnrollmentRequestRepository, {
   ENROLLMENT_REQUEST_REPOSITORY,
 } from '@/domain/repositories/enrollment-request-repository';
 import ClubMembershipRepository, { CLUB_MEMBERSHIP_REPOSITORY } from '@/domain/repositories/club-membership.repository';
+import { ClubRequestRepository } from '@/domain/repositories/club-request.repository';
 
 export class UnitOfWorkMemory implements UnitOfWork {
   private readonly db: InMemoryDatabase;
@@ -29,6 +30,7 @@ export class UnitOfWorkMemory implements UnitOfWork {
   ) {
     this.db = InMemoryDatabase.getInstance();
   }
+  clubRequestRepository: ClubRequestRepository;
 
   async beginTransaction(): Promise<void> {
     this.db.beginTransaction();

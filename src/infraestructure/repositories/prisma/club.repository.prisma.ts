@@ -16,13 +16,19 @@ export class ClubRepositoryPrisma implements ClubRepository {
   private readonly select = {
     id: true,
     name: true,
-    city: true,
-    state: true,
     _count: { select: { memberships: { where: { status: MembershipStatus.ACTIVE } } } },
     created_at: true,
     updated_at: true,
+    max_members: true,
     memberships: { where: { status: MembershipStatus.ACTIVE } },
     principal_id: true,
+    city: true,
+    state: true,
+    number: true,
+    street: true,
+    zip_code: true,
+    complement: true,
+    neighborhood: true,
   };
 
   constructor(private readonly prisma: PrismaService) {}

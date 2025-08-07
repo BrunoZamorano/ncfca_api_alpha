@@ -1,8 +1,8 @@
 services:
+
   mysql_db:
     image: mysql:8.0
-    container_name: ncfca-mysql-db
-    restart: always
+    restart: unless-stopped
     ports:
       - "${DB_PORT}:3306"
     environment:
@@ -14,10 +14,21 @@ services:
       - ncfca-db-data:/var/lib/mysql
     networks:
       - ncfca-net
+  
+  rabbitmq:
+    image: rabbitmq:4.1.2-management
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}    
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq/
 
 volumes:
   ncfca-db-data:
-
+  rabbitmq_data:
 networks:
   ncfca-net:
     driver: bridge

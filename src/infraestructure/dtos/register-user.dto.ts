@@ -46,8 +46,6 @@ export class RegisterUserInputDto {
     example: '12345678900',
   })
   @IsString()
-  // A validação `refine(isValidCpf)` deve ser tratada com um custom validator,
-  // mas para manter o foco no DTO, a validação de formato é a responsabilidade primária aqui.
   @IsNotEmpty({ message: 'CPF é obrigatório.' })
   cpf: string;
 

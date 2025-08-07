@@ -1,6 +1,9 @@
 import { Inject, Injectable, ForbiddenException } from '@nestjs/common';
+
 import { UNIT_OF_WORK, UnitOfWork } from '@/domain/services/unit-of-work';
 import { EntityNotFoundException } from '@/domain/exceptions/domain-exception';
+import { AddressDto } from '@/domain/dtos/address.dto';
+import Address from '@/domain/value-objects/address/address';
 
 @Injectable()
 export default class UpdateClubInfo {
@@ -8,21 +11,19 @@ export default class UpdateClubInfo {
 
   async execute(input: UpdateClubInfoInput): Promise<void> {
     return this.uow.executeInTransaction(async () => {
-      const club = await this.uow.clubRepository.find(input.clubId);
-      if (!club) throw new EntityNotFoundException('Club', input.clubId);
-      if (club.principalId !== input.loggedInUserId) {
+      const club = await this.uow.clubRepository.findByPrincipalId(input.principalId);
+      if (!club) throw new EntityNotFoundException('Club', `for principalId: ${input.principalId}`);
+      if (club.principalId !== input.principalId)
         throw new ForbiddenException('User is not authorized to edit this club.');
-      }
-      club.updateInfo({ name: input.name, city: input.city, state: input.state });
+      club.updateInfo({ ...input, address: input.address ? new Address(input.address) : undefined });
       await this.uow.clubRepository.save(club);
     });
   }
 }
 
 interface UpdateClubInfoInput {
-  loggedInUserId: string;
-  clubId: string;
-  state?: string;
+  principalId: string;
+  maxMembers?: number;
+  address?: AddressDto;
   name?: string;
-  city?: string;
 }

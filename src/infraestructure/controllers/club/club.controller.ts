@@ -1,4 +1,3 @@
-
 import { Controller, Get, Post, Body, HttpCode, HttpStatus, Query, UseGuards, Request, Param } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import SearchClubs from '@/application/use-cases/search-clubs/search-clubs';
@@ -37,15 +36,5 @@ export default class ClubController {
   async getClubInfo(@Request() req: Request, @Param('id') id: string): Promise<ClubDto> {
     const userId: string = req['user'].id;
     return this._getClubInfo.execute({ loggedInUserId: userId, clubId: id });
-  }
-
-  @Post()
-  @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Cria um novo clube' })
-  @ApiResponse({ status: 201, description: 'Clube criado com sucesso.', type: CreateClubOutputDto })
-  async createClub(@Request() req: any, @Body() body: CreateClubInputDto): Promise<CreateClubOutputDto> {
-    const loggedInUserId = req.user.id;
-    const { club, tokens } = await this._createClub.execute({ ...body, loggedInUserId });
-    return { ...ClubMapper.entityToDto(club), ...tokens };
   }
 }

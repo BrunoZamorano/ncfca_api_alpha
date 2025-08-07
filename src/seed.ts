@@ -80,9 +80,13 @@ async function main() {
       const club = await tx.club.create({
         data: {
           principal_id: createdUser.id,
-          name: `${faker.company.name()} Club`,
+          name: `${faker.company.name()} Clube`,
           city: createdUser.city,
           state: createdUser.state,
+          zip_code: createdUser.zip_code,
+          street: createdUser.street,
+          number: createdUser.number,
+          neighborhood: createdUser.neighborhood,
         },
       });
 

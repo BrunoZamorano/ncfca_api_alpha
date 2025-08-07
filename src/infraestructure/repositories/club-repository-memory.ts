@@ -6,6 +6,7 @@ import Club from '@/domain/entities/club/club';
 import InMemoryDatabase from '@/infraestructure/database/in-memory.database';
 
 import ClubMapper from '@/shared/mappers/club.mapper';
+import Address from '@/domain/value-objects/address/address';
 
 export default class ClubRepositoryMemory implements ClubRepository {
   private db: InMemoryDatabase;
@@ -27,7 +28,7 @@ export default class ClubRepositoryMemory implements ClubRepository {
       }
       if (filters.city) {
         const city = filters.city.toLocaleLowerCase();
-        filteredClubs = filteredClubs.filter((club) => club.city.toLocaleLowerCase() === city);
+        filteredClubs = filteredClubs.filter((club) => club.address.city.toLocaleLowerCase() === city);
       }
     }
     const total = filteredClubs.length;
@@ -69,7 +70,7 @@ export default class ClubRepositoryMemory implements ClubRepository {
   public populate(totalClubs: number = 10): Club[] {
     return Array.from({ length: totalClubs }, () =>
       Club.create(
-        { principalId: crypto.randomUUID(), city: 'city', name: 'name', state: 'state' },
+        { principalId: crypto.randomUUID(), address: new Address({}), name: 'name', maxMembers: 30 },
         { generate: () => crypto.randomUUID() },
       ),
     );

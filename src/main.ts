@@ -1,11 +1,11 @@
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-
 import GlobalExceptionFilter from '@/infraestructure/filters/global-exception-filter';
+
 import { AppModule } from '@/app.module';
 import { adminSeed } from '@/admin.seed';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -29,7 +29,7 @@ async function bootstrap() {
         description: 'Entre com o token JWT',
         in: 'header',
       },
-      'JWT-auth', // Este nome deve ser usado no decorator @ApiBearerAuth
+      'JWT-auth',
     )
     .build();
   const document = SwaggerModule.createDocument(app, config);

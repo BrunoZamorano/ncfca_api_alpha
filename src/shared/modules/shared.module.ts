@@ -32,15 +32,24 @@ import UuidGenerator from '@/infraestructure/services/uuid-generator';
 
 import {
   CLUB_REPOSITORY,
+  CLUB_REQUEST_REPOSITORY,
   FAMILY_REPOSITORY,
   TRANSACTION_REPOSITORY,
   USER_REPOSITORY,
 } from '@/shared/constants/repository-constants';
-import { HASHING_SERVICE, ID_GENERATOR, PAYMENT_GATEWAY, TOKEN_SERVICE } from '@/shared/constants/service-constants';
+import {
+  HASHING_SERVICE,
+  ID_GENERATOR,
+  PAYMENT_GATEWAY,
+  QUEUE_SERVICE,
+  TOKEN_SERVICE,
+} from '@/shared/constants/service-constants';
+import { ClubRequestRepositoryPrisma } from '@/infraestructure/repositories/prisma/club-request.repository.prisma';
 
 const repositories = [
   { provide: ENROLLMENT_REQUEST_REPOSITORY, useClass: EnrollmentRequestRepositoryPrisma },
   { provide: CLUB_MEMBERSHIP_REPOSITORY, useClass: ClubMembershipRepositoryPrisma },
+  { provide: CLUB_REQUEST_REPOSITORY, useClass: ClubRequestRepositoryPrisma },
   { provide: TRANSACTION_REPOSITORY, useClass: TransactionRepositoryPrisma },
   { provide: TRAINING_REPOSITORY, useClass: TrainingRepositoryPrisma },
   { provide: FAMILY_REPOSITORY, useClass: FamilyRepositoryPrisma },
@@ -59,6 +68,7 @@ const services = [
   { provide: UNIT_OF_WORK, useClass: UnitOfWorkPrisma, scope: Scope.REQUEST },
   { provide: HASHING_SERVICE, useClass: HashingServiceBcrypt },
   { provide: PAYMENT_GATEWAY, useClass: PaymentGatewayMemory },
+  { provide: QUEUE_SERVICE, useClass: QueryServicePrisma },
   { provide: QUERY_SERVICE, useClass: QueryServicePrisma },
   { provide: TOKEN_SERVICE, useClass: TokenServiceJwt },
   { provide: ID_GENERATOR, useClass: UuidGenerator },

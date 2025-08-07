@@ -44,14 +44,14 @@ export default class ClubManagementController {
     return this._getMyClubInfo.execute(input);
   }
 
-  @Patch(':clubId')
+  @Patch()
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Atualiza as informações de um clube específico que o usuário dirige' })
   @ApiResponse({ status: 204, description: 'Clube atualizado com sucesso.' })
-  async updateClub(@Request() req: any, @Param('clubId') clubId: string, @Body() body: UpdateClubDto): Promise<void> {
+  async updateClub(@Request() req: any, @Body() body: UpdateClubDto): Promise<void> {
     await this._updateClubInfo.execute({
-      loggedInUserId: req.user.id,
-      clubId,
+      principalId: req.user.id,
+      address: body.address,
       ...body,
     });
   }
@@ -65,7 +65,11 @@ export default class ClubManagementController {
 
   @Get('/:clubId/enrollments/pending')
   @ApiOperation({ summary: 'Lista as solicitações de matrícula pendentes para um clube específico' })
-  @ApiResponse({ status: 200, description: 'Lista de solicitações pendentes.', type: [ListPendingEnrollmentsOutputDto] })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de solicitações pendentes.',
+    type: [ListPendingEnrollmentsOutputDto],
+  })
   async listPending(@Request() req: any, @Param('clubId') clubId: string) {
     return this._listPendingEnrollments.execute({ loggedInUserId: req.user.id, clubId });
   }

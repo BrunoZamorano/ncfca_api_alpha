@@ -1,7 +1,9 @@
 // src/infraestructure/dtos/update-club.dto.ts
 
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional, IsString, Length, MinLength } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString, Length, MinLength, ValidateNested } from 'class-validator';
+import { AddressDto } from '@/domain/dtos/address.dto';
+import { Type } from 'class-transformer';
 
 export class UpdateClubDto {
   @ApiPropertyOptional({
@@ -13,25 +15,21 @@ export class UpdateClubDto {
   @IsString()
   @MinLength(3)
   name?: string;
-
+  
   @ApiPropertyOptional({
-    description: 'Nova cidade de localização do clube.',
-    example: 'São Paulo',
-    minLength: 3,
+    description: 'Número máximo de membros permitidos no clube. Deve ser um número inteiro. Ex: 100',
+    example: '30',
   })
   @IsOptional()
-  @IsString()
-  @MinLength(3)
-  city?: string;
+  @IsNumber()
+  maxMembers?: number;
 
-  @ApiProperty({
-    description: 'Estado onde o clube está localizado.',
-    example: 'DF',
-    maxLength: 2,
-    minLength: 2,
+  @ApiPropertyOptional({
+    description: 'Endereço completo do responsável.',
+    type: AddressDto,
   })
-  @IsString()
-  @IsNotEmpty()
-  @Length(2)
-  state: string;
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => AddressDto)
+  address?: AddressDto;
 }

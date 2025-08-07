@@ -1,44 +1,60 @@
-import { Club as ClubData, ClubMembership as ClubMembershipData } from '@prisma/client';
-import Club from '@/domain/entities/club/club';
+import { Club as Model, ClubMembership as ClubMembershipModel } from '@prisma/client';
+
+import Entity from '@/domain/entities/club/club';
 import ClubDto from '@/domain/dtos/club.dto';
-import ClubMembershipMapper from './club-membership.mapper';
+import Address from '@/domain/value-objects/address/address';
 import ClubMembership from '@/domain/entities/club-membership/club-membership.entity';
 
-type ClubWithMembersData = ClubData & { memberships?: ClubMembershipData[] };
+import ClubMembershipMapper from './club-membership.mapper';
+
+type ClubWithMembersData = Model & { memberships?: ClubMembershipModel[] };
 
 export default class ClubMapper {
-  static modelToEntity(data: ClubWithMembersData): Club {
+  static modelToEntity(data: ClubWithMembersData): Entity {
     const members: ClubMembership[] = data.memberships ? data.memberships.map(ClubMembershipMapper.toEntity) : [];
-    return new Club({
+    return new Entity({
       id: data.id,
       name: data.name,
-      city: data.city,
-      state: data.state,
       members: members,
+      address: new Address({
+        city: data.city,
+        number: data.number,
+        street: data.street,
+        zipCode: data.zip_code,
+        district: data.neighborhood,
+        complement: data.complement ?? undefined,
+      }),
       createdAt: data.created_at,
+      maxMembers: data.max_members ?? undefined,
       principalId: data.principal_id,
     });
   }
 
-  static entityToModel(entity: Club): Omit<ClubData, 'created_at' | 'updated_at'> {
+  static entityToModel(entity: Entity): Omit<Model, 'created_at' | 'updated_at'> {
     return {
       id: entity.id,
       name: entity.name,
-      city: entity.city,
-      state: entity.state,
+      max_members: entity.maxMembers ?? null,
       principal_id: entity.principalId,
+      city: entity.address.city,
+      state: entity.address.state,
+      number: entity.address.number,
+      street: entity.address.street,
+      zip_code: entity.address.zipCode,
+      complement: entity.address.complement ?? null,
+      neighborhood: entity.address.district,
     };
   }
 
-  static entityToDto(entity: Club): ClubDto {
+  static entityToDto(entity: Entity): ClubDto {
     return {
       id: entity.id,
       name: entity.name,
-      city: entity.city,
-      state: entity.state,
-      principalId: entity.principalId,
+      city: entity.address.city,
+      state: entity.address.state,
       corum: entity.members.length,
       createdAt: entity.createdAt,
+      principalId: entity.principalId,
     };
   }
 }

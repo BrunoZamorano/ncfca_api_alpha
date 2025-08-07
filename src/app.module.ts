@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 import AuthModule from '@/shared/modules/auth.module';
 import ClubModule from '@/shared/modules/club.module';
@@ -14,9 +15,11 @@ import EnrollmentModule from '@/shared/modules/enrollment.module';
 import ClubManagementModule from '@/shared/modules/club-management.module';
 import AdminModule from '@/shared/modules/admin.module';
 import TrainingModule from '@/shared/modules/training.module';
+import ClubRequestModule from '@/shared/modules/club-request.module';
 
 @Module({
   imports: [
+    EventEmitterModule.forRoot(),
     AuthModule,
     ClubModule,
     AdminModule,
@@ -28,6 +31,7 @@ import TrainingModule from '@/shared/modules/training.module';
     DependantModule,
     EnrollmentModule,
     ClubManagementModule,
+    ClubRequestModule,
   ],
   controllers: [AppController],
   providers: [AppService],

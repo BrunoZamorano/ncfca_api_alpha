@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 
 import IdGenerator from '@/application/services/id-generator';
 
@@ -13,7 +13,8 @@ import TokenService, { Payload } from '@/application/services/token-service';
 
 @Injectable()
 export default class CreateClub {
-  private logger = new Logger(CreateClub.name);
+  private readonly logger = new Logger(CreateClub.name);
+  
   constructor(
     @Inject(TOKEN_SERVICE) private readonly _tokenService: TokenService,
     @Inject(ID_GENERATOR) private readonly _idGenerator: IdGenerator,
@@ -22,20 +23,22 @@ export default class CreateClub {
 
   async execute(input: Input): Promise<{ club: Club; tokens: { accessToken: string; refreshToken: string } }> {
     return this._uow.executeInTransaction(async () => {
-      const existingClub = await this._uow.clubRepository.findByPrincipalId(input.loggedInUserId);
+      const clubRequest = await this._uow.clubRequestRepository.findById(input.requestId);
+      if (!clubRequest) throw new EntityNotFoundException('ClubRequest', input.requestId);
+      const existingClub = await this._uow.clubRepository.findByPrincipalId(clubRequest.requesterId);
       if (existingClub) {
         this.logger.debug(`User already owns a club: ${existingClub.id}`);
         throw new InvalidOperationException('User can only own one club.');
       }
-      const user = await this._uow.userRepository.find(input.loggedInUserId);
+      const user = await this._uow.userRepository.find(clubRequest.requesterId);
       if (!user) {
-        this.logger.debug(`User not found: ${input.loggedInUserId}`);
-        throw new EntityNotFoundException('User', input.loggedInUserId);
+        this.logger.debug(`User not found: ${clubRequest.requesterId}`);
+        throw new EntityNotFoundException('User', clubRequest.requesterId);
       }
-      const family = await this._uow.familyRepository.findByHolderId(input.loggedInUserId);
+      const family = await this._uow.familyRepository.findByHolderId(clubRequest.requesterId);
       if (!family) {
-        this.logger.debug(`Family not found for user: ${input.loggedInUserId}`);
-        throw new EntityNotFoundException('Family', input.loggedInUserId);
+        this.logger.debug(`Family not found for user: ${clubRequest.requesterId}`);
+        throw new EntityNotFoundException('Family', clubRequest.requesterId);
       }
       if (family.status !== FamilyStatus.AFFILIATED) {
         this.logger.debug(`Family is not affiliated: ${family.id}`);
@@ -45,10 +48,10 @@ export default class CreateClub {
       await this._uow.userRepository.save(user);
       const clubInstance = Club.create(
         {
-          principalId: input.loggedInUserId,
-          state: input.state,
-          name: input.name,
-          city: input.city,
+          principalId: clubRequest.requesterId,
+          maxMembers: clubRequest.maxMembers,
+          address: clubRequest.address,
+          name: clubRequest.clubName,
         },
         this._idGenerator,
       );
@@ -67,8 +70,5 @@ export default class CreateClub {
 }
 
 interface Input {
-  loggedInUserId: string;
-  state: string;
-  city: string;
-  name: string;
+  requestId: string;
 }

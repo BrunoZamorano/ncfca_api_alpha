@@ -1,44 +1,48 @@
-  import {
+import {
   DomainException,
   EntityNotFoundException,
   InvalidOperationException,
 } from '@/domain/exceptions/domain-exception';
 import IdGenerator from '@/application/services/id-generator';
 import ClubMembership from '@/domain/entities/club-membership/club-membership.entity';
+import Address from '@/domain/value-objects/address/address';
 
 export default class Club {
   private readonly _createdAt: Date;
   private readonly _members: ClubMembership[];
   private readonly _id: string;
   private _principalId: string;
-  private _state: string;
-  private _city: string;
+  private _maxMembers?: number;
+  private _address: Address;
   private _name: string;
 
   constructor(props: ClubConstructorProps) {
     this._id = props.id;
-    this._city = props.city;
     this._name = props.name;
-    this._state = props.state;
+    this._address = props.address;
     this._members = props.members;
     this._createdAt = props.createdAt;
+    this._maxMembers = props.maxMembers;
     this._principalId = props.principalId;
   }
 
   public static create(props: CreateClubProps, idGenerator: IdGenerator): Club {
     if (!props.name || props.name.trim().length < 3) {
-      throw new DomainException('Club name is required and must have at least 3 characters.');
+      throw new InvalidOperationException('Club name is required and must have at least 3 characters.');
     }
-    if (!props.city || props.city.trim().length < 3) {
-      throw new DomainException('City is required and must have at least 3 characters.');
+    if (!props.address) {
+      throw new InvalidOperationException('Address is required.');
+    }
+    if (!props.maxMembers || props.maxMembers < 1) {
+      throw new InvalidOperationException('Max members is required and must be greater than 0.');
     }
     return new Club({
       id: idGenerator.generate(),
       name: props.name,
-      city: props.city,
-      state: props.state,
+      address: props.address,
       members: [],
       createdAt: new Date(),
+      maxMembers: props.maxMembers,
       principalId: props.principalId,
     });
   }
@@ -71,16 +75,10 @@ export default class Club {
     membership.revoke();
   }
 
-  public updateInfo(props: { name?: string; city?: string; state?: string }): void {
-    if (props.name && props.name.trim().length >= 3) {
-      this._name = props.name;
-    }
-    if (props.city && props.city.trim().length >= 3) {
-      this._city = props.city;
-    }
-    if (props.state && props.state.trim().length === 2) {
-      this._state = props.state;
-    }
+  public updateInfo(props: UpdateClubInfoProps): void {
+    if (props.name && props.name.trim().length >= 3) this._name = props.name;
+    if (props.address) this._address = props.address;
+    if (props.maxMembers) this._maxMembers = props.maxMembers;
   }
 
   public changeOwner(newOwnerId: string): void {
@@ -107,14 +105,14 @@ export default class Club {
   get principalId(): string {
     return this._principalId;
   }
-  get state(): string {
-    return this._state;
+  get maxMembers() {
+    return this._maxMembers;
+  }
+  get address(): Address {
+    return this._address;
   }
   get name(): string {
     return this._name;
-  }
-  get city(): string {
-    return this._city;
   }
   get createdAt(): Date {
     return this._createdAt;
@@ -123,13 +121,19 @@ export default class Club {
 
 interface CreateClubProps {
   principalId: string;
-  state: string;
+  maxMembers?: number;
+  address: Address;
   name: string;
-  city: string;
 }
 
 interface ClubConstructorProps extends CreateClubProps {
-  id: string;
-  members: ClubMembership[];
   createdAt: Date;
+  members: ClubMembership[];
+  id: string;
+}
+
+interface UpdateClubInfoProps {
+  maxMembers?: number;
+  address?: Address;
+  name?: string;
 }

@@ -81,6 +81,12 @@ enum TransactionContextType {
   FAMILY_RENEWAL
 }
 
+enum ClubRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 model User {
   id           String  @id @default(uuid())
   email        String  @unique
@@ -105,6 +111,7 @@ model User {
   club        Club?         @relation("club_principal")
   family      Family?       @relation("holder")
   Transaction Transaction[]
+  ClubRequest ClubRequest[]
 }
 
 model Family {
@@ -143,13 +150,20 @@ model Dependant {
 }
 
 model Club {
-  id                 String              @id @default(uuid())
-  name               String
-  city               String
-  state              String
-  created_at         DateTime            @default(now())
-  updated_at         DateTime            @updatedAt
-  principal_id       String              @unique
+  id           String   @id @default(uuid())
+  name         String
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+  max_members  Int?
+  principal_id String   @unique
+  city         String
+  state        String
+  number       String
+  street       String
+  zip_code     String
+  complement   String?
+  neighborhood String
+
   principal          User                @relation("club_principal", fields: [principal_id], references: [id])
   memberships        ClubMembership[]
   enrollmentRequests EnrollmentRequest[]
@@ -209,4 +223,24 @@ model Training {
   youtube_url String
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
+}
+
+model ClubRequest {
+  id               String            @id @default(uuid())
+  status           ClubRequestStatus @default(PENDING)
+  club_name        String
+  max_members      Int?
+  resolved_at      DateTime?
+  requested_at     DateTime          @default(now())
+  requester_id     String
+  rejection_reason String?
+  city             String
+  state            String
+  number           String
+  street           String
+  zip_code         String
+  complement       String?
+  neighborhood     String
+
+  requester User @relation(fields: [requester_id], references: [id])
 }
