@@ -33,7 +33,7 @@ export default class Club {
     if (!props.address) {
       throw new InvalidOperationException('Address is required.');
     }
-    if (!props.maxMembers || props.maxMembers < 1) {
+    if (props.maxMembers && props.maxMembers < 1) {
       throw new InvalidOperationException('Max members is required and must be greater than 0.');
     }
     return new Club({

@@ -49,7 +49,7 @@ describe('Approve Club Request Use Case', () => {
     expect(repositoryMock.findById).toHaveBeenCalledWith(clubRequestId);
     expect(savedRequest.status).toBe(ClubRequestStatus.APPROVED);
     expect(repositoryMock.save).toHaveBeenCalledWith(savedRequest);
-    expect(clientProxyMock.emit).toHaveBeenCalledWith('club_request.approved', {
+    expect(clientProxyMock.emit).toHaveBeenCalledWith('ClubRequest.Approved', {
       requestId: clubRequestStub.id,
       requesterId: clubRequestStub.requesterId,
     });

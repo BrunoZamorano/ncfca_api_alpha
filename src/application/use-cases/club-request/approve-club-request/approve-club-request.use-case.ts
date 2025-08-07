@@ -22,6 +22,6 @@ export default class ApproveClubRequest {
     await this.clubRequestRepository.save(clubRequest);
 
     const event = new ClubRequestApprovedEvent(clubRequest.id, clubRequest.requesterId);
-    this.client.emit('club_request.approved', event);
+    this.client.emit('ClubRequest.Approved', event);
   }
 }

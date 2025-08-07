@@ -191,41 +191,6 @@
         "tags": [
           "Clubes"
         ]
-      },
-      "post": {
-        "operationId": "ClubController_createClub",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateClubInputDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Clube criado com sucesso.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CreateClubOutputDto"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWT-auth": []
-          }
-        ],
-        "summary": "Cria um novo clube",
-        "tags": [
-          "Clubes"
-        ]
       }
     },
     "/club/{id}": {
@@ -1094,19 +1059,10 @@
         ]
       }
     },
-    "/club-management/{clubId}": {
+    "/club-management": {
       "patch": {
         "operationId": "ClubManagementController_updateClub",
-        "parameters": [
-          {
-            "name": "clubId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "parameters": [],
         "requestBody": {
           "required": true,
           "content": {
@@ -1326,6 +1282,164 @@
         "summary": "Revoga a afiliação de um membro do clube",
         "tags": [
           "Gestão de Clube (Diretor)"
+        ]
+      }
+    },
+    "/club-requests": {
+      "post": {
+        "operationId": "ClubRequestController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateClubRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Solicitação recebida e pendente de aprovação."
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Submete uma nova solicitação para criação de clube (Usuário)",
+        "tags": [
+          "Clubes - Solicitações"
+        ]
+      }
+    },
+    "/club-requests/my-requests": {
+      "get": {
+        "operationId": "ClubRequestController_getMyRequests",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ClubRequestStatusDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Lista as solicitações de clube do usuário autenticado (Usuário)",
+        "tags": [
+          "Clubes - Solicitações"
+        ]
+      }
+    },
+    "/club-requests/pending": {
+      "get": {
+        "operationId": "ClubRequestController_listPending",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ClubRequestStatusDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Lista todas as solicitações de clube pendentes (Admin)",
+        "tags": [
+          "Clubes - Solicitações"
+        ]
+      }
+    },
+    "/club-requests/{id}/approve": {
+      "post": {
+        "operationId": "ClubRequestController_approve",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Solicitação aprovada."
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Aprova uma solicitação de clube (Admin)",
+        "tags": [
+          "Clubes - Solicitações"
+        ]
+      }
+    },
+    "/club-requests/{id}/reject": {
+      "post": {
+        "operationId": "ClubRequestController_reject",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RejectRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Solicitação rejeitada."
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Rejeita uma solicitação de clube (Admin)",
+        "tags": [
+          "Clubes - Solicitações"
         ]
       }
     }
@@ -1603,74 +1717,6 @@
         "required": [
           "data",
           "meta"
-        ]
-      },
-      "CreateClubInputDto": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "description": "Nome do novo clube.",
-            "example": "Clube de Debate Oradores do Amanhã",
-            "minLength": 3
-          },
-          "city": {
-            "type": "string",
-            "description": "Cidade onde o clube está localizado.",
-            "example": "Brasília",
-            "minLength": 3
-          },
-          "state": {
-            "type": "string",
-            "description": "Estado onde o clube está localizado.",
-            "example": "DF",
-            "maxLength": 2,
-            "minLength": 2
-          }
-        },
-        "required": [
-          "name",
-          "city",
-          "state"
-        ]
-      },
-      "CreateClubOutputDto": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string",
-            "description": "Nome do novo clube.",
-            "example": "Clube de Debate Oradores do Amanhã",
-            "minLength": 3
-          },
-          "city": {
-            "type": "string",
-            "description": "Cidade onde o clube está localizado.",
-            "example": "Brasília",
-            "minLength": 3
-          },
-          "state": {
-            "type": "string",
-            "description": "Estado onde o clube está localizado.",
-            "example": "DF",
-            "maxLength": 2,
-            "minLength": 2
-          },
-          "accessToken": {
-            "type": "string",
-            "description": "Novo token de acesso JWT."
-          },
-          "refreshToken": {
-            "type": "string",
-            "description": "Novo token de atualização."
-          }
-        },
-        "required": [
-          "name",
-          "city",
-          "state",
-          "accessToken",
-          "refreshToken"
         ]
       },
       "AddressDto": {
@@ -2727,23 +2773,20 @@
             "example": "Clube de Oratória Avançada",
             "minLength": 3
           },
-          "city": {
-            "type": "string",
-            "description": "Nova cidade de localização do clube.",
-            "example": "São Paulo",
-            "minLength": 3
+          "maxMembers": {
+            "type": "number",
+            "description": "Número máximo de membros permitidos no clube. Deve ser um número inteiro. Ex: 100",
+            "example": "30"
           },
-          "state": {
-            "type": "string",
-            "description": "Estado onde o clube está localizado.",
-            "example": "DF",
-            "maxLength": 2,
-            "minLength": 2
+          "address": {
+            "description": "Endereço completo do responsável.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AddressDto"
+              }
+            ]
           }
-        },
-        "required": [
-          "state"
-        ]
+        }
       },
       "ListPendingEnrollmentsOutputDto": {
         "type": "object",
@@ -2902,6 +2945,90 @@
           "memberSince",
           "birthDate",
           "sex"
+        ]
+      },
+      "ClubRequestApprovedEvent": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateClubRequestDto": {
+        "type": "object",
+        "properties": {
+          "clubName": {
+            "type": "string",
+            "description": "Nome desejado para o novo clube.",
+            "example": "Clube de Debate Principia",
+            "minLength": 3
+          },
+          "maxMembers": {
+            "type": "number",
+            "description": "Número máximo de membros para o clube.",
+            "example": 50,
+            "minimum": 1
+          },
+          "address": {
+            "description": "Endereço de localização do clube.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AddressDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "clubName",
+          "maxMembers",
+          "address"
+        ]
+      },
+      "ClubRequestStatusDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "clubName": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "APPROVED",
+              "REJECTED"
+            ]
+          },
+          "requestedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "resolvedAt": {
+            "type": "object"
+          },
+          "rejectionReason": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "clubName",
+          "status",
+          "requestedAt"
+        ]
+      },
+      "RejectRequestDto": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "description": "Motivo detalhado para a rejeição. Mínimo de 10 caracteres.",
+            "example": "A documentação fornecida está incompleta.",
+            "minLength": 10
+          }
+        },
+        "required": [
+          "reason"
         ]
       }
     }

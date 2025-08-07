@@ -1,17 +1,17 @@
 services:
 
-  mysql_db:
-    image: mysql:8.0
+  db_dev:
+    image: postgres
     restart: unless-stopped
     ports:
-      - "${DB_PORT}:3306"
+      - "${DB_PORT}:5432"
     environment:
-      MYSQL_DATABASE: ${DB_DATABASE}
-      MYSQL_USER: ${DB_USERNAME}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      POSTGRES_DATABASE: ${DB_DATABASE}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
     volumes:
-      - ncfca-db-data:/var/lib/mysql
+      - ncfca-db-dev-data:/var/lib/mysql
     networks:
       - ncfca-net
   
@@ -19,7 +19,7 @@ services:
     image: rabbitmq:4.1.2-management
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
-      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}    
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
     ports:
       - "5672:5672"
       - "15672:15672"
@@ -27,7 +27,8 @@ services:
       - rabbitmq_data:/var/lib/rabbitmq/
 
 volumes:
-  ncfca-db-data:
+  ncfca-db-dev-data:
+  ncfca-db-test-data:    
   rabbitmq_data:
 networks:
   ncfca-net:

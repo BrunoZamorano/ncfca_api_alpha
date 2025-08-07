@@ -1,8 +1,10 @@
+// main.ts
+
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { Transport } from '@nestjs/microservices';
+import { Transport } from '@nestjs/microservices'; // Importar Transport
 import GlobalExceptionFilter from '@/infraestructure/filters/global-exception-filter';
 
 import { AppModule } from '@/app.module';
@@ -12,13 +14,11 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     rawBody: true,
   });
-
   app.connectMicroservice({
     transport: Transport.RMQ,
     options: {
       urls: [process.env.RABBITMQ_URL || 'amqp://admin:admin@localhost:5672'],
-      queue: 'club_creation_queue',
-      noAck: false,
+      queue: 'ClubRequest',
       queueOptions: {
         durable: true,
       },
@@ -58,6 +58,7 @@ async function bootstrap() {
   app.useGlobalFilters(new GlobalExceptionFilter());
   app.set('query parser', 'extended');
 
+  // Agora esta chamada irá iniciar o listener de RMQ e o servidor HTTP
   await app.startAllMicroservices();
   await adminSeed(app);
   await app.listen(process.env.PORT ?? 3000);

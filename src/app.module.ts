@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { EventEmitterModule } from '@nestjs/event-emitter';
 
 import AuthModule from '@/shared/modules/auth.module';
 import ClubModule from '@/shared/modules/club.module';
@@ -19,7 +18,6 @@ import ClubRequestModule from '@/shared/modules/club-request.module';
 
 @Module({
   imports: [
-    EventEmitterModule.forRoot(),
     AuthModule,
     ClubModule,
     AdminModule,
