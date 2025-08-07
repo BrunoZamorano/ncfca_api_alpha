@@ -2,6 +2,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import { Transport } from '@nestjs/microservices';
 import GlobalExceptionFilter from '@/infraestructure/filters/global-exception-filter';
 
 import { AppModule } from '@/app.module';
@@ -11,11 +12,25 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     rawBody: true,
   });
+
+  app.connectMicroservice({
+    transport: Transport.RMQ,
+    options: {
+      urls: [process.env.RABBITMQ_URL || 'amqp://admin:admin@localhost:5672'],
+      queue: 'club_creation_queue',
+      noAck: false,
+      queueOptions: {
+        durable: true,
+      },
+    },
+  });
+
   app.enableCors({
     origin: process.env.CORS_ORIGIN || '*',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
+
   const config = new DocumentBuilder()
     .setTitle('API NCFCA - Documentação')
     .setDescription('A documentação da API do sistema NCFCA.')
@@ -38,9 +53,12 @@ async function bootstrap() {
       persistAuthorization: true,
     },
   });
+
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
   app.useGlobalFilters(new GlobalExceptionFilter());
   app.set('query parser', 'extended');
+
+  await app.startAllMicroservices();
   await adminSeed(app);
   await app.listen(process.env.PORT ?? 3000);
 }

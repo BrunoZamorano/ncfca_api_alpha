@@ -1,3 +1,4 @@
+export const CLUB_EVENTS_SERVICE = Symbol('CLUB_EVENTS_SERVICE');
 export const HASHING_SERVICE = Symbol('HASHING_SERVICE');
 export const PAYMENT_GATEWAY = Symbol('PAYMENT_GATEWAY');
 export const TOKEN_SERVICE = Symbol('TOKEN_SERVICE');
