@@ -3,6 +3,7 @@ import { ClubRequest as Model } from '@prisma/client';
 import { ClubRequestStatus } from '@/domain/enums/club-request-status.enum';
 import Address from '@/domain/value-objects/address/address';
 import Entity from '@/domain/entities/club-request/club-request.entity';
+import { ClubRequestStatusDto as Dto } from '@/domain/dtos/club-request-status.dto';
 
 export class ClubRequestMapper {
   static modelToEntity(model: Model): Entity {
@@ -44,6 +45,17 @@ export class ClubRequestMapper {
       zip_code: entity.address.zipCode,
       complement: entity.address.complement ?? null,
       neighborhood: entity.address.district,
+    };
+  }
+
+  static entityToDto(entity: Entity): Dto {
+    return {
+      id: entity.id,
+      status: entity.status,
+      clubName: entity.clubName,
+      resolvedAt: entity.resolvedAt,
+      requestedAt: entity.requestedAt,
+      rejectionReason: entity.rejectionReason,
     };
   }
 }

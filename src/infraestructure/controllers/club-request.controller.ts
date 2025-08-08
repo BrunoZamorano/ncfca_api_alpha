@@ -2,8 +2,8 @@ import { Body, Controller, Get, HttpCode, HttpStatus, Inject, Param, Post, Reque
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import ApproveClubRequest from '@/application/use-cases/club-request/approve-club-request/approve-club-request.use-case';
-import RejectClubRequestUseCase from '@/application/use-cases/reject-club-request/reject-club-request.use-case';
-import CreateClubRequestUseCase from '@/application/use-cases/create-club-request/create-club-request.use-case';
+import RejectClubRequestUseCase from '@/application/use-cases/club-request/reject-club-request/reject-club-request.use-case';
+import CreateClubRequestUseCase from '@/application/use-cases/club-request/create-club-request/create-club-request.use-case';
 import GetUserClubRequestsUseCase from '@/application/use-cases/club-request/get-user-club-requests/get-user-club-requests.use-case';
 import ListPendingClubRequestsUseCase from '@/application/use-cases/club-request/list-pending-club-requests/list-pending-club-requests.use-case';
 
@@ -17,12 +17,11 @@ import AuthGuard from '@/shared/guards/auth.guard';
 @Controller('club-requests')
 export default class ClubRequestController {
   constructor(
-    @Inject(CreateClubRequestUseCase) private readonly createClubRequestUseCase: CreateClubRequestUseCase,
-    @Inject(ListPendingClubRequestsUseCase)
     private readonly listPendingClubRequestsUseCase: ListPendingClubRequestsUseCase,
-    @Inject(GetUserClubRequestsUseCase) private readonly getUserClubRequestsUseCase: GetUserClubRequestsUseCase,
-    @Inject(ApproveClubRequest) private readonly approveClubRequestUseCase: ApproveClubRequest,
-    @Inject(RejectClubRequestUseCase) private readonly rejectClubRequestUseCase: RejectClubRequestUseCase,
+    private readonly getUserClubRequestsUseCase: GetUserClubRequestsUseCase,
+    private readonly approveClubRequestUseCase: ApproveClubRequest,
+    private readonly createClubRequestUseCase: CreateClubRequestUseCase,
+    private readonly rejectClubRequestUseCase: RejectClubRequestUseCase,
   ) {}
 
   // User Route

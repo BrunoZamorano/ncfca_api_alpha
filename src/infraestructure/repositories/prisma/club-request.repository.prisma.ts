@@ -15,12 +15,22 @@ export class ClubRequestRepositoryPrisma implements ClubRequestRepository {
   }
 
   async findByRequesterId(requesterId: string): Promise<ClubRequest[]> {
-    const query = await this.prisma.clubRequest.findMany({ where: { requester_id: requesterId } });
-    return query.map(ClubRequestMapper.modelToEntity);
+    try {
+      const query = await this.prisma.clubRequest.findMany({ where: { requester_id: requesterId } });
+      return query.map(ClubRequestMapper.modelToEntity);
+    } catch (e) {
+      console.log(e);
+      return [];
+    }
   }
 
   async listPending(): Promise<ClubRequest[]> {
     const query = await this.prisma.clubRequest.findMany({ where: { status: ClubRequestStatus.PENDING } });
+    return query.map(ClubRequestMapper.modelToEntity);
+  }
+
+  async listPendingByRequesterId(requesterId: string): Promise<ClubRequest[]> {
+    const query = await this.prisma.clubRequest.findMany({ where: { status: ClubRequestStatus.PENDING, requester_id: requesterId } });
     return query.map(ClubRequestMapper.modelToEntity);
   }
 

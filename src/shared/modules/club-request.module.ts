@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import CreateClubRequestUseCase from '@/application/use-cases/create-club-request/create-club-request.use-case';
-import RejectClubRequestUseCase from '@/application/use-cases/reject-club-request/reject-club-request.use-case';
+import CreateClubRequestUseCase from '@/application/use-cases/club-request/create-club-request/create-club-request.use-case';
+import RejectClubRequestUseCase from '@/application/use-cases/club-request/reject-club-request/reject-club-request.use-case';
 import ApproveClubRequest from '@/application/use-cases/club-request/approve-club-request/approve-club-request.use-case';
 import GetUserClubRequestsUseCase from '@/application/use-cases/club-request/get-user-club-requests/get-user-club-requests.use-case';
 import ListPendingClubRequestsUseCase from '@/application/use-cases/club-request/list-pending-club-requests/list-pending-club-requests.use-case';

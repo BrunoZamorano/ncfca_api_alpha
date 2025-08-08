@@ -4,6 +4,7 @@ import { ClubRequestRepository } from '@/domain/repositories/club-request.reposi
 import { CLUB_REQUEST_REPOSITORY } from '@/shared/constants/repository-constants';
 import { ClubRequestStatusDto } from '@/domain/dtos/club-request-status.dto';
 import ClubRequest from '@/domain/entities/club-request/club-request.entity';
+import { ClubRequestMapper } from '@/shared/mappers/club-request.mapper';
 
 @Injectable()
 export default class GetUserClubRequestsUseCase {
@@ -13,17 +14,6 @@ export default class GetUserClubRequestsUseCase {
 
   async execute(requesterId: string): Promise<ClubRequestStatusDto[]> {
     const userRequests = await this.clubRequestRepository.findByRequesterId(requesterId);
-    return userRequests.map(this.mapToDto);
-  }
-
-  private mapToDto(entity: ClubRequest): ClubRequestStatusDto {
-    return {
-      id: entity.id,
-      clubName: entity.clubName,
-      status: entity.status,
-      requestedAt: entity.requestedAt,
-      resolvedAt: entity.resolvedAt,
-      rejectionReason: entity.rejectionReason,
-    };
+    return userRequests.map(ClubRequestMapper.entityToDto);
   }
 }

@@ -28,14 +28,6 @@ export default class Login {
       this.logger.debug(`Usuário não encontrado para o email: ${email}`);
       throw new UnauthorizedException(Login.errorCodes.INVALID_CREDENTIALS);
     }
-    if (user.roles.includes(UserRoles.ADMIN)) {
-      const payload = { sub: user.id, roles: user.roles, email: user.email, familyId: '' };
-      this.logger.debug(`Login bem-sucedido para o usuário admin: ${email}`);
-      return {
-        refreshToken: await this.tokenService.signRefreshToken(payload),
-        accessToken: await this.tokenService.signAccessToken(payload),
-      };
-    }
     if (!this.isValidPassword(password, user.password)) {
       this.logger.debug(`Senha inválida para o usuário: ${email}`);
       throw new UnauthorizedException(Login.errorCodes.INVALID_CREDENTIALS);

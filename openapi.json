@@ -15,6 +15,20 @@
         ]
       }
     },
+    "/approve-club-creation": {
+      "post": {
+        "operationId": "AppController_sendoToQueue",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "App"
+        ]
+      }
+    },
     "/auth/login": {
       "post": {
         "description": "Autentica um usuário com email e senha, retornando tokens de acesso e de atualização em caso de sucesso.",

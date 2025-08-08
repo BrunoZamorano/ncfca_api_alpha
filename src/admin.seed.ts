@@ -9,7 +9,7 @@ import Family from '@/domain/entities/family/family';
 import { FamilyStatus } from '@/domain/enums/family-status';
 
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? 'admin@ncfca.com.br';
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? 'nbxgJMOTh1xQU1n/hPrZ5nBw4dw79hu4tkWgOdppF4U=';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? 'Admin@1234';
 
 export async function adminSeed(app: NestExpressApplication) {
   console.log(`Admin seed app created: ${app}`);

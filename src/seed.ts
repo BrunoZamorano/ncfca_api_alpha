@@ -22,17 +22,7 @@ const prisma = new PrismaClient();
 
 async function main() {
   console.log('Iniciando o processo de seed...');
-
-  console.log('Limpando o banco de dados...');
-  await prisma.$transaction([
-    prisma.clubMembership.deleteMany(),
-    prisma.enrollmentRequest.deleteMany(),
-    prisma.dependant.deleteMany(),
-    prisma.club.deleteMany(),
-    prisma.family.deleteMany(),
-    prisma.user.deleteMany(),
-  ]);
-  console.log('Banco de dados limpo.');
+  
   const cpfGenerator = new CpfGenerator();
 
   const hashinService = new HashingServiceBcrypt();

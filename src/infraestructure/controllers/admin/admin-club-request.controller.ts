@@ -5,7 +5,7 @@ import ApproveClubRequest from '@/application/use-cases/club-request/approve-clu
 
 import { AdminGuard } from '@/shared/guards/admin.guard';
 import AuthGuard from '@/shared/guards/auth.guard';
-import RejectClubRequestUseCase from '@/application/use-cases/reject-club-request/reject-club-request.use-case';
+import RejectClubRequestUseCase from '@/application/use-cases/club-request/reject-club-request/reject-club-request.use-case';
 import { RejectRequestDto } from '@/infraestructure/dtos/reject-request.dto';
 
 @ApiTags('Admin - Gerenciamento de Solicitações de Clube')
