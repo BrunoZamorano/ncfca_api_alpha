@@ -50,7 +50,7 @@ export default class ClubRequestController {
   @Get('/pending')
   @UseGuards(AuthGuard, AdminGuard)
   @ApiBearerAuth('JWT-auth')
-  @ApiOperation({ summary: 'Lista todas as solicitações de clube pendentes (Admin)' })
+  @ApiOperation({ summary:  'Lista todas as solicitações de clube pendentes (Admin)' })
   @ApiResponse({ status: 200, type: [ClubRequestStatusDto] })
   async listPending(): Promise<ClubRequestStatusDto[]> {
     return this.listPendingClubRequestsUseCase.execute();

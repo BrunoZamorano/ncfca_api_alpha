@@ -8,7 +8,7 @@ export default class Cpf {
 
   constructor(value: string = Cpf.VALID_CPF) {
     if (!this.validateCpf(value)) throw new DomainException(Cpf.errorCodes.INVALID_CPF);
-    this._value = value;
+    this._value = value.replace(/\D/g, '');
   }
 
   get value(): string {

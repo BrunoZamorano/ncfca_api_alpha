@@ -1,6 +1,5 @@
 import {
   PrismaClient,
-  UserRole,
   FamilyStatus,
   DependantRelationship,
   Sex,
@@ -46,7 +45,7 @@ async function main() {
         rg: faker.string.numeric(9),
         address: {
           district: faker.location.secondaryAddress(),
-          zipCode: faker.location.zipCode('#####-###'),
+          zipCode: faker.location.zipCode('########'),
           street: faker.location.streetAddress(),
           number: faker.location.buildingNumber(),
           state: faker.location.state({ abbreviated: true }),

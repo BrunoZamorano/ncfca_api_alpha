@@ -1,6 +1,9 @@
 // src/domain/dtos/club.dto.ts
 
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsNotEmpty, IsObject, IsOptional, Min, ValidateNested } from 'class-validator';
+import { AddressDto } from '@/domain/dtos/address.dto';
+import { Type } from 'class-transformer';
 
 export default class ClubDto {
   @ApiProperty({
@@ -16,17 +19,24 @@ export default class ClubDto {
   })
   name: string;
 
-  @ApiProperty({
-    description: 'Cidade de localização do clube.',
-    example: 'Brasília',
+  @ApiPropertyOptional({
+    description: 'Número máximo de membros para o clube.',
+    example: 50,
+    minimum: 2,
   })
-  city: string;
+  @IsOptional()
+  @IsNotEmpty()
+  @Min(2)
+  maxMembers?: number;
 
   @ApiProperty({
-    description: 'Estado de localização do clube.',
-    example: 'DF',
+    description: 'Endereço de localização do clube.',
+    type: AddressDto,
   })
-  state: string;
+  @IsObject()
+  @ValidateNested()
+  @Type(() => AddressDto)
+  address: AddressDto;
 
   @ApiProperty({
     description: 'ID do usuário que é o diretor do clube (principal).',

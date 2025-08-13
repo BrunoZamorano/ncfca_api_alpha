@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards, HttpCode, HttpStatus, Patch, Param, Body, Post } from '@nestjs/common';
+import { Controller, Get, UseGuards, HttpCode, HttpStatus, Patch, Param, Body, Post, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import AuthGuard from '@/shared/guards/auth.guard';
 import { AdminGuard } from '@/shared/guards/admin.guard';
@@ -8,8 +8,8 @@ import AdminManageUserRole from '@/application/use-cases/admin/manage-user-role/
 import { ManageUserRoleDto } from '@/infraestructure/dtos/manage-user-role.dto';
 import AdminViewUserFamily from '@/application/use-cases/admin/view-user-family/view-user-family';
 import AdminListAffiliations from '@/application/use-cases/admin/list-affiliations/list-affiliations';
-import AdminChangeClubDirector from '@/application/use-cases/admin/change-club-director/change-club-director';
-import { ChangeClubDirectorDto } from '@/infraestructure/dtos/change-club-director.dto';
+import AdminChangeClubPrincipal from '@/application/use-cases/admin/change-club-director/change-club-principal';
+import { ChangePrincipalDto } from '@/infraestructure/dtos/change-principal.dto';
 import AdminListAllEnrollments from '@/application/use-cases/admin/list-all-enrollments/list-all-enrollments';
 import { UserDto } from '@/domain/dtos/user.dto';
 import ClubDto from '@/domain/dtos/club.dto';
@@ -21,6 +21,9 @@ import FamilyMapper from '@/shared/mappers/family.mapper';
 import { AffiliationDto } from '@/domain/dtos/affiliation.dto';
 import ListDependants from '@/application/use-cases/list-dependants/list-dependants';
 import { DependantsListItemView } from '@/application/queries/dependant-query/dependants-list-item.view';
+import { SearchUsers } from '@/application/use-cases/search-users/search-users';
+import SearchUsersQueryDto from '@/domain/dtos/search-users-query.dto';
+import { PaginatedUserDto } from '@/domain/dtos/paginated-output.dto';
 
 @ApiTags('Admin')
 @ApiBearerAuth('JWT-auth')
@@ -34,16 +37,16 @@ export default class AdminController {
     private readonly _manageUserRole: AdminManageUserRole,
     private readonly _viewUserFamily: AdminViewUserFamily,
     private readonly _listAffiliations: AdminListAffiliations,
-    private readonly _changeClubDirector: AdminChangeClubDirector,
+    private readonly _changeClubPrincipal: AdminChangeClubPrincipal,
     private readonly _listAllEnrollments: AdminListAllEnrollments,
+    private readonly _searchUsers: SearchUsers,
   ) {}
 
   @Get('/users')
-  @ApiOperation({ summary: 'Lista todos os usuários do sistema' })
-  @ApiResponse({ status: 200, description: 'Lista de usuários retornada com sucesso.', type: [UserDto] })
-  async listUsers() {
-    const users = await this._listUsers.execute();
-    return users.map(UserMapper.entityToDto);
+  @ApiOperation({ summary: 'Busca usuários do sistema com paginação e filtros' })
+  @ApiResponse({ status: 200, description: 'Lista de usuários retornada com sucesso.', type: PaginatedUserDto })
+  async searchUsers(@Query() query: SearchUsersQueryDto): Promise<PaginatedUserDto> {
+    return this._searchUsers.execute(query);
   }
 
   @Get('/clubs')
@@ -93,8 +96,8 @@ export default class AdminController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Altera o diretor (proprietário) de um clube' })
   @ApiResponse({ status: 204, description: 'Diretor do clube alterado com sucesso.' })
-  async changeClubDirector(@Param('clubId') clubId: string, @Body() body: ChangeClubDirectorDto) {
-    await this._changeClubDirector.execute({ clubId, newDirectorId: body.newDirectorId });
+  async changeClubPrincipal(@Param('clubId') clubId: string, @Body() body: ChangePrincipalDto) {
+    await this._changeClubPrincipal.execute({ clubId, newPrincipalId: body.newPrincipalId });
   }
 
   @Get('/enrollments')

@@ -50,10 +50,18 @@ export default class ClubMapper {
     return {
       id: entity.id,
       name: entity.name,
-      city: entity.address.city,
-      state: entity.address.state,
+      address: {
+        city: entity.address.city,
+        state: entity.address.state,
+        street: entity.address.street,
+        number: entity.address.number,
+        zipCode: entity.address.zipCode,
+        district: entity.address.district,
+        complement: entity.address.complement ?? undefined,
+      },
       corum: entity.members.length,
       createdAt: entity.createdAt,
+      maxMembers: entity.maxMembers ?? undefined,
       principalId: entity.principalId,
     };
   }

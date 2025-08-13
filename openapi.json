@@ -248,18 +248,34 @@
     },
     "/admin/users": {
       "get": {
-        "operationId": "AdminController_listUsers",
-        "parameters": [],
+        "operationId": "AdminController_searchUsers",
+        "parameters": [
+          {
+            "name": "filter",
+            "required": false,
+            "in": "query",
+            "description": "Container para os filtros de busca de usuários.",
+            "schema": {
+              "$ref": "#/components/schemas/SearchUsersFilterDto"
+            }
+          },
+          {
+            "name": "pagination",
+            "required": false,
+            "in": "query",
+            "description": "Container para os parâmetros de paginação.",
+            "schema": {
+              "$ref": "#/components/schemas/PaginationDto"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Lista de usuários retornada com sucesso.",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/UserDto"
-                  }
+                  "$ref": "#/components/schemas/PaginatedUserDto"
                 }
               }
             }
@@ -270,7 +286,7 @@
             "JWT-auth": []
           }
         ],
-        "summary": "Lista todos os usuários do sistema",
+        "summary": "Busca usuários do sistema com paginação e filtros",
         "tags": [
           "Admin"
         ]
@@ -1636,6 +1652,54 @@
           }
         }
       },
+      "AddressDto": {
+        "type": "object",
+        "properties": {
+          "zipCode": {
+            "type": "string",
+            "description": "CEP do endereço (somente números).",
+            "example": "69301080"
+          },
+          "street": {
+            "type": "string",
+            "description": "Nome da rua/avenida.",
+            "example": "Avenida Capitão Ene Garcez"
+          },
+          "number": {
+            "type": "string",
+            "description": "Número do imóvel.",
+            "example": "432"
+          },
+          "district": {
+            "type": "string",
+            "description": "Bairro.",
+            "example": "Centro"
+          },
+          "city": {
+            "type": "string",
+            "description": "Cidade.",
+            "example": "Boa Vista"
+          },
+          "state": {
+            "type": "string",
+            "description": "UF do estado (2 caracteres).",
+            "example": "RR"
+          },
+          "complement": {
+            "type": "string",
+            "description": "Complemento do endereço (opcional).",
+            "example": "Apto 101"
+          }
+        },
+        "required": [
+          "zipCode",
+          "street",
+          "number",
+          "district",
+          "city",
+          "state"
+        ]
+      },
       "ClubDto": {
         "type": "object",
         "properties": {
@@ -1650,15 +1714,19 @@
             "description": "Nome oficial do clube.",
             "example": "Clube de Debate Oradores do Amanhã"
           },
-          "city": {
-            "type": "string",
-            "description": "Cidade de localização do clube.",
-            "example": "Brasília"
+          "maxMembers": {
+            "type": "number",
+            "description": "Número máximo de membros para o clube.",
+            "example": 50,
+            "minimum": 2
           },
-          "state": {
-            "type": "string",
-            "description": "Estado de localização do clube.",
-            "example": "DF"
+          "address": {
+            "description": "Endereço de localização do clube.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AddressDto"
+              }
+            ]
           },
           "principalId": {
             "type": "string",
@@ -1681,8 +1749,7 @@
         "required": [
           "id",
           "name",
-          "city",
-          "state",
+          "address",
           "principalId",
           "createdAt",
           "corum"
@@ -1733,53 +1800,40 @@
           "meta"
         ]
       },
-      "AddressDto": {
+      "SearchUsersFilterDto": {
         "type": "object",
         "properties": {
-          "zipCode": {
+          "name": {
             "type": "string",
-            "description": "CEP do endereço (somente números).",
-            "example": "69301080"
+            "description": "Filtra usuários pelo nome (busca parcial, case-insensitive).",
+            "example": "João Silva"
           },
-          "street": {
+          "email": {
             "type": "string",
-            "description": "Nome da rua/avenida.",
-            "example": "Avenida Capitão Ene Garcez"
+            "description": "Filtra usuários pelo email (busca parcial, case-insensitive).",
+            "example": "joao@example.com"
           },
-          "number": {
+          "cpf": {
             "type": "string",
-            "description": "Número do imóvel.",
-            "example": "432"
+            "description": "Filtra usuários pelo CPF (busca exata).",
+            "example": "12345678901"
           },
-          "district": {
+          "rg": {
             "type": "string",
-            "description": "Bairro.",
-            "example": "Centro"
+            "description": "Filtra usuários pelo RG (busca exata).",
+            "example": "123456"
           },
-          "city": {
+          "role": {
             "type": "string",
-            "description": "Cidade.",
-            "example": "Boa Vista"
-          },
-          "state": {
-            "type": "string",
-            "description": "UF do estado (2 caracteres).",
-            "example": "RR"
-          },
-          "complement": {
-            "type": "string",
-            "description": "Complemento do endereço (opcional).",
-            "example": "Apto 101"
+            "description": "Filtra usuários pela função/role.",
+            "enum": [
+              "DONO_DE_CLUBE",
+              "SEM_FUNCAO",
+              "ADMIN"
+            ],
+            "example": "SEM_FUNCAO"
           }
-        },
-        "required": [
-          "zipCode",
-          "street",
-          "number",
-          "district",
-          "city",
-          "state"
-        ]
+        }
       },
       "UserDto": {
         "type": "object",
@@ -1853,6 +1907,24 @@
           "rg",
           "roles",
           "address"
+        ]
+      },
+      "PaginatedUserDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserDto"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/PaginationMetaDto"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
         ]
       },
       "DependantsListItemView": {

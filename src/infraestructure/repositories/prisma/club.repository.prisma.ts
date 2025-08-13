@@ -10,6 +10,7 @@ import SearchClubsQueryDto from '@/domain/dtos/search-clubs-query.dto';
 
 import ClubMembershipMapper from '@/shared/mappers/club-membership.mapper';
 import ClubMapper from '@/shared/mappers/club.mapper';
+import Address from '@/domain/value-objects/address/address';
 
 @Injectable()
 export class ClubRepositoryPrisma implements ClubRepository {
@@ -95,8 +96,16 @@ export class ClubRepositoryPrisma implements ClubRepository {
     const clubDtos = clubsData.map((c) => ({
       id: c.id,
       name: c.name,
-      city: c.city,
-      state: c.state,
+      address: new Address({
+        city: c.city,
+        state: c.state,
+        number: c.number,
+        street: c.street,
+        zipCode: c.zip_code,
+        district: c.neighborhood,
+        complement: c.complement ?? undefined,
+      }),
+      maxMembers: c.max_members ?? undefined,
       corum: c._count.memberships,
       createdAt: c.created_at,
       principalId: c.principal_id,

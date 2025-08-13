@@ -43,4 +43,10 @@ describe('Cpf', () => {
   it('Deve validar como falso um cpf com characteres alfabéticos', () => {
     expect(() => new Cpf('abcdefghijkl')).toThrow(Cpf.errorCodes.INVALID_CPF);
   });
+
+  it('Deve retornar o valor do cpf sem formatação', () => {
+    const validCpf = '033.777.492-76';
+    const cpf = new Cpf(validCpf);
+    expect(cpf.value).toBe('03377749276');
+  });
 });
