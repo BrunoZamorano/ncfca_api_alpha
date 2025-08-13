@@ -17,10 +17,13 @@ export default class ListPendingClubRequestsUseCase {
   private mapToDto(entity: ClubRequest): ClubRequestStatusDto {
     return {
       id: entity.id,
-      clubName: entity.clubName,
       status: entity.status,
-      requestedAt: entity.requestedAt,
+      address: entity.address,
+      clubName: entity.clubName,
+      maxMembers: entity.maxMembers,
       resolvedAt: entity.resolvedAt,
+      requestedAt: entity.requestedAt,
+      requesterId: entity.requesterId,
       rejectionReason: entity.rejectionReason,
     };
   }

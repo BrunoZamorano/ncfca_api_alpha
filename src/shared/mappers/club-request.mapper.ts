@@ -52,8 +52,11 @@ export class ClubRequestMapper {
     return {
       id: entity.id,
       status: entity.status,
+      address: entity.address,
       clubName: entity.clubName,
       resolvedAt: entity.resolvedAt,
+      maxMembers: entity.maxMembers,
+      requesterId: entity.requesterId,
       requestedAt: entity.requestedAt,
       rejectionReason: entity.rejectionReason,
     };

@@ -11,6 +11,7 @@ import AdminListAffiliations from '@/application/use-cases/admin/list-affiliatio
 import AdminChangeClubPrincipal from '@/application/use-cases/admin/change-club-director/change-club-principal';
 import { ChangePrincipalDto } from '@/infraestructure/dtos/change-principal.dto';
 import AdminListAllEnrollments from '@/application/use-cases/admin/list-all-enrollments/list-all-enrollments';
+import AdminGetUser from '@/application/use-cases/admin/get-user/get-user';
 import { UserDto } from '@/domain/dtos/user.dto';
 import ClubDto from '@/domain/dtos/club.dto';
 import { FamilyDto } from '@/domain/dtos/family.dto';
@@ -40,6 +41,7 @@ export default class AdminController {
     private readonly _changeClubPrincipal: AdminChangeClubPrincipal,
     private readonly _listAllEnrollments: AdminListAllEnrollments,
     private readonly _searchUsers: SearchUsers,
+    private readonly _getUser: AdminGetUser,
   ) {}
 
   @Get('/users')
@@ -47,6 +49,15 @@ export default class AdminController {
   @ApiResponse({ status: 200, description: 'Lista de usuários retornada com sucesso.', type: PaginatedUserDto })
   async searchUsers(@Query() query: SearchUsersQueryDto): Promise<PaginatedUserDto> {
     return this._searchUsers.execute(query);
+  }
+
+  @Get('/users/:userId')
+  @ApiOperation({ summary: 'Obtém os detalhes de um usuário específico por ID' })
+  @ApiResponse({ status: 200, description: 'Dados do usuário retornados com sucesso.', type: UserDto })
+  @ApiResponse({ status: 404, description: 'Usuário não encontrado.' })
+  async getUserById(@Param('userId') userId: string): Promise<UserDto> {
+    const user = await this._getUser.execute(userId);
+    return UserMapper.entityToDto(user);
   }
 
   @Get('/clubs')
