@@ -10,6 +10,7 @@ import { UNIT_OF_WORK } from '@/domain/services/unit-of-work';
 import { ENROLLMENT_QUERY } from '@/application/queries/enrollment-query/enrollment.query';
 import { DEPENDANT_QUERY } from '@/application/queries/dependant-query/dependant.query';
 import { TRAINING_QUERY } from '@/application/queries/training-query/training.query';
+import { CLUB_QUERY } from '@/application/queries/club-query/club.query';
 import { QUERY_SERVICE } from '@/application/services/query.service';
 
 import { EnrollmentRequestRepositoryPrisma } from '@/infraestructure/repositories/prisma/enrollment-request.repository.prisma';
@@ -24,6 +25,7 @@ import { UserRepositoryPrisma } from '@/infraestructure/repositories/prisma/user
 import { DependantQueryPrisma } from '@/infraestructure/queries/dependant.query.prisma';
 import { PaymentGatewayMemory } from '@/infraestructure/services/payment-gateway.memory';
 import { TrainingQueryPrisma } from '@/infraestructure/queries/training.query.prisma';
+import { ClubQueryPrisma } from '@/infraestructure/queries/club.query.prisma';
 import { UnitOfWorkPrisma } from '@/infraestructure/services/unit-of-work.prisma';
 import { PrismaService } from '@/infraestructure/database/prisma.service';
 import QueryServicePrisma from '@/infraestructure/services/query.service.prisma';
@@ -61,6 +63,7 @@ const queries = [
   { provide: ENROLLMENT_QUERY, useClass: EnrollmentQueryPrisma },
   { provide: DEPENDANT_QUERY, useClass: DependantQueryPrisma },
   { provide: TRAINING_QUERY, useClass: TrainingQueryPrisma },
+  { provide: CLUB_QUERY, useClass: ClubQueryPrisma },
 ];
 
 const services = [

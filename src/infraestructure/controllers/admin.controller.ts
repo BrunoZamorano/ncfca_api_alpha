@@ -27,8 +27,11 @@ import SearchUsersQueryDto from '@/domain/dtos/search-users-query.dto';
 import { PaginatedUserDto } from '@/domain/dtos/paginated-output.dto';
 import UpdateClubByAdmin from '@/application/use-cases/admin/update-club-by-admin/update-club-by-admin.use-case';
 import { UpdateClubByAdminDto } from '@/infraestructure/dtos/admin/update-club-by-admin.dto';
-import AdminListClubMembersUseCase, { ClubMemberView } from '@/application/use-cases/admin/list-club-members/list-club-members.use-case';
-import AdminListPendingEnrollmentsUseCase, { PendingEnrollmentView } from '@/application/use-cases/admin/list-pending-enrollments/list-pending-enrollments.use-case';
+import AdminListClubMembersUseCase from '@/application/use-cases/admin/list-club-members/list-club-members.use-case';
+import { ClubMemberDto } from '@/application/queries/club-query/club.query';
+import AdminListPendingEnrollmentsUseCase, {
+  PendingEnrollmentView,
+} from '@/application/use-cases/admin/list-pending-enrollments/list-pending-enrollments.use-case';
 import AdminGetClubChartsUseCase from '@/application/use-cases/admin/get-club-charts/get-club-charts.use-case';
 import AdminApproveEnrollmentUseCase from '@/application/use-cases/admin/approve-enrollment/approve-enrollment.use-case';
 import AdminRejectEnrollmentUseCase from '@/application/use-cases/admin/reject-enrollment/reject-enrollment.use-case';
@@ -137,41 +140,43 @@ export default class AdminController {
     return this._listAllEnrollments.execute();
   }
 
-  @Patch('/clubs/:clubId')
-  @HttpCode(HttpStatus.NO_CONTENT)
+  @Post('/clubs/:clubId')
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Atualiza os dados de um clube específico' })
   @ApiResponse({ status: 204, description: 'Dados do clube atualizados com sucesso.' })
   @ApiResponse({ status: 404, description: 'Clube não encontrado.' })
-  async updateClub(@Param('clubId') clubId: string, @Body() data: UpdateClubByAdminDto): Promise<void> {
-    await this._updateClubByAdmin.execute({ clubId, data });
+  async updateClub(@Param('clubId') clubId: string, @Body() data: UpdateClubByAdminDto): Promise<ClubDto> {
+    const club = await this._updateClubByAdmin.execute({ clubId, data });
+    return ClubMapper.entityToDto(club);
   }
 
   @Get('/clubs/:clubId/members')
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'Lista todos os membros de um clube específico',
-    description: 'Retorna uma lista paginada de todos os membros ativos de um clube, incluindo informações do dependente como nome, idade, tipo e dados de contato.'
+    description:
+      'Retorna uma lista paginada de todos os membros ativos de um clube, incluindo informações do dependente como nome, idade, tipo e dados de contato.',
   })
-  @ApiParam({ 
-    name: 'clubId', 
+  @ApiParam({
+    name: 'clubId',
     description: 'ID único do clube',
-    example: 'b5e4e8a1-8f1b-4c9d-9e3f-1a2b3c4d5e6f'
+    example: 'b5e4e8a1-8f1b-4c9d-9e3f-1a2b3c4d5e6f',
   })
-  @ApiQuery({ 
-    name: 'page', 
-    required: false, 
+  @ApiQuery({
+    name: 'page',
+    required: false,
     description: 'Número da página para paginação',
     example: 1,
-    type: Number
+    type: Number,
   })
-  @ApiQuery({ 
-    name: 'limit', 
-    required: false, 
+  @ApiQuery({
+    name: 'limit',
+    required: false,
     description: 'Quantidade de itens por página',
     example: 10,
-    type: Number
+    type: Number,
   })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'Lista de membros retornada com sucesso.',
     schema: {
       type: 'object',
@@ -190,15 +195,15 @@ export default class AdminController {
               dependantEmail: { type: 'string', example: 'joao@email.com', nullable: true },
               dependantPhone: { type: 'string', example: '(11) 99999-9999', nullable: true },
               joinedAt: { type: 'string', format: 'date-time' },
-              status: { type: 'string', example: 'ACTIVE' }
-            }
-          }
+              status: { type: 'string', example: 'ACTIVE' },
+            },
+          },
         },
         total: { type: 'number', example: 25 },
         page: { type: 'number', example: 1 },
-        limit: { type: 'number', example: 10 }
-      }
-    }
+        limit: { type: 'number', example: 10 },
+      },
+    },
   })
   @ApiResponse({ status: 401, description: 'Token de autenticação não fornecido ou inválido.' })
   @ApiResponse({ status: 403, description: 'Usuário não possui permissão de administrador.' })
@@ -208,7 +213,7 @@ export default class AdminController {
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 10,
   ): Promise<{
-    members: ClubMemberView[];
+    members: ClubMemberDto[];
     total: number;
     page: number;
     limit: number;
@@ -218,17 +223,18 @@ export default class AdminController {
   }
 
   @Get('/clubs/:clubId/enrollments/pending')
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'Lista todas as solicitações de matrícula pendentes de um clube',
-    description: 'Retorna todas as solicitações de matrícula com status PENDING para um clube específico, incluindo informações do dependente solicitante.'
+    description:
+      'Retorna todas as solicitações de matrícula com status PENDING para um clube específico, incluindo informações do dependente solicitante.',
   })
-  @ApiParam({ 
-    name: 'clubId', 
+  @ApiParam({
+    name: 'clubId',
     description: 'ID único do clube',
-    example: 'b5e4e8a1-8f1b-4c9d-9e3f-1a2b3c4d5e6f'
+    example: 'b5e4e8a1-8f1b-4c9d-9e3f-1a2b3c4d5e6f',
   })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'Lista de solicitações pendentes retornada com sucesso.',
     schema: {
       type: 'array',
@@ -244,10 +250,10 @@ export default class AdminController {
           dependantEmail: { type: 'string', example: 'maria@email.com', nullable: true },
           dependantPhone: { type: 'string', example: '(11) 88888-8888', nullable: true },
           requestedAt: { type: 'string', format: 'date-time' },
-          status: { type: 'string', example: 'PENDING' }
-        }
-      }
-    }
+          status: { type: 'string', example: 'PENDING' },
+        },
+      },
+    },
   })
   @ApiResponse({ status: 401, description: 'Token de autenticação não fornecido ou inválido.' })
   @ApiResponse({ status: 403, description: 'Usuário não possui permissão de administrador.' })
@@ -258,17 +264,18 @@ export default class AdminController {
   }
 
   @Get('/clubs/:clubId/charts')
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'Obtém dados de gráficos para o dashboard do clube',
-    description: 'Retorna dados agregados para exibição em gráficos no dashboard administrativo, incluindo distribuição de membros por tipo/sexo e histórico de matrículas.'
+    description:
+      'Retorna dados agregados para exibição em gráficos no dashboard administrativo, incluindo distribuição de membros por tipo/sexo e histórico de matrículas.',
   })
-  @ApiParam({ 
-    name: 'clubId', 
+  @ApiParam({
+    name: 'clubId',
     description: 'ID único do clube',
-    example: 'b5e4e8a1-8f1b-4c9d-9e3f-1a2b3c4d5e6f'
+    example: 'b5e4e8a1-8f1b-4c9d-9e3f-1a2b3c4d5e6f',
   })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'Dados de gráficos retornados com sucesso.',
     schema: {
       type: 'object',
@@ -279,9 +286,9 @@ export default class AdminController {
             type: 'object',
             properties: {
               type: { type: 'string', example: 'STUDENT' },
-              count: { type: 'number', example: 15 }
-            }
-          }
+              count: { type: 'number', example: 15 },
+            },
+          },
         },
         memberCountBySex: {
           type: 'array',
@@ -289,9 +296,9 @@ export default class AdminController {
             type: 'object',
             properties: {
               sex: { type: 'string', example: 'MALE' },
-              count: { type: 'number', example: 12 }
-            }
-          }
+              count: { type: 'number', example: 12 },
+            },
+          },
         },
         enrollmentsOverTime: {
           type: 'array',
@@ -299,14 +306,14 @@ export default class AdminController {
             type: 'object',
             properties: {
               month: { type: 'string', example: '2024-01' },
-              count: { type: 'number', example: 5 }
-            }
-          }
+              count: { type: 'number', example: 5 },
+            },
+          },
         },
         totalActiveMembers: { type: 'number', example: 25 },
-        totalPendingEnrollments: { type: 'number', example: 3 }
-      }
-    }
+        totalPendingEnrollments: { type: 'number', example: 3 },
+      },
+    },
   })
   @ApiResponse({ status: 401, description: 'Token de autenticação não fornecido ou inválido.' })
   @ApiResponse({ status: 403, description: 'Usuário não possui permissão de administrador.' })
@@ -318,19 +325,20 @@ export default class AdminController {
 
   @Post('/clubs/:clubId/enrollments/:enrollmentId/approve')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'Aprova uma solicitação de matrícula',
-    description: 'Permite que um administrador aprove uma solicitação de matrícula pendente, adicionando o dependente como membro ativo do clube. Não requer autorização do proprietário do clube.'
+    description:
+      'Permite que um administrador aprove uma solicitação de matrícula pendente, adicionando o dependente como membro ativo do clube. Não requer autorização do proprietário do clube.',
   })
-  @ApiParam({ 
-    name: 'clubId', 
+  @ApiParam({
+    name: 'clubId',
     description: 'ID único do clube',
-    example: 'b5e4e8a1-8f1b-4c9d-9e3f-1a2b3c4d5e6f'
+    example: 'b5e4e8a1-8f1b-4c9d-9e3f-1a2b3c4d5e6f',
   })
-  @ApiParam({ 
-    name: 'enrollmentId', 
+  @ApiParam({
+    name: 'enrollmentId',
     description: 'ID único da solicitação de matrícula',
-    example: 'a1b2c3d4-e5f6-7890-1234-567890abcdef'
+    example: 'a1b2c3d4-e5f6-7890-1234-567890abcdef',
   })
   @ApiResponse({ status: 204, description: 'Solicitação aprovada com sucesso.' })
   @ApiResponse({ status: 400, description: 'Solicitação não está pendente ou família não está afiliada.' })
@@ -338,29 +346,26 @@ export default class AdminController {
   @ApiResponse({ status: 403, description: 'Usuário não possui permissão de administrador.' })
   @ApiResponse({ status: 404, description: 'Clube ou solicitação de matrícula não encontrada.' })
   @ApiResponse({ status: 422, description: 'Clube atingiu o número máximo de membros.' })
-  async approveEnrollment(
-    @Param('clubId') clubId: string,
-    @Param('enrollmentId') enrollmentId: string,
-  ): Promise<void> {
+  async approveEnrollment(@Param('clubId') clubId: string, @Param('enrollmentId') enrollmentId: string): Promise<void> {
     const command = new AdminApproveEnrollmentCommand(clubId, enrollmentId);
     await this._approveEnrollment.execute(command);
   }
 
   @Post('/clubs/:clubId/enrollments/:enrollmentId/reject')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'Rejeita uma solicitação de matrícula',
-    description: 'Permite que um administrador rejeite uma solicitação de matrícula pendente, com motivo opcional.'
+    description: 'Permite que um administrador rejeite uma solicitação de matrícula pendente, com motivo opcional.',
   })
-  @ApiParam({ 
-    name: 'clubId', 
+  @ApiParam({
+    name: 'clubId',
     description: 'ID único do clube',
-    example: 'b5e4e8a1-8f1b-4c9d-9e3f-1a2b3c4d5e6f'
+    example: 'b5e4e8a1-8f1b-4c9d-9e3f-1a2b3c4d5e6f',
   })
-  @ApiParam({ 
-    name: 'enrollmentId', 
+  @ApiParam({
+    name: 'enrollmentId',
     description: 'ID único da solicitação de matrícula',
-    example: 'a1b2c3d4-e5f6-7890-1234-567890abcdef'
+    example: 'a1b2c3d4-e5f6-7890-1234-567890abcdef',
   })
   @ApiBody({
     description: 'Dados opcionais para rejeição',
@@ -368,13 +373,13 @@ export default class AdminController {
     schema: {
       type: 'object',
       properties: {
-        rejectionReason: { 
-          type: 'string', 
+        rejectionReason: {
+          type: 'string',
           example: 'Documentação incompleta',
-          description: 'Motivo da rejeição (opcional). Se não fornecido, será usado o motivo padrão.' 
-        }
-      }
-    }
+          description: 'Motivo da rejeição (opcional). Se não fornecido, será usado o motivo padrão.',
+        },
+      },
+    },
   })
   @ApiResponse({ status: 204, description: 'Solicitação rejeitada com sucesso.' })
   @ApiResponse({ status: 400, description: 'Solicitação não está pendente ou não pertence ao clube especificado.' })
