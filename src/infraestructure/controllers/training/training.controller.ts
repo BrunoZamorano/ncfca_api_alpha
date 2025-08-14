@@ -8,11 +8,7 @@ import { CreateTraining } from '@/application/use-cases/training/create-training
 import { UpdateTraining } from '@/application/use-cases/training/update-training/update-training.use.case';
 import { DeleteTraining } from '@/application/use-cases/training/delete-training/delete-training.use-case';
 import { ListTrainings } from '@/application/use-cases/training/list-training/list-trainings.use-case';
-import {
-  CreateTrainingDto,
-  TrainingResponseDto,
-  UpdateTrainingDto,
-} from '@/application/use-cases/training/training.dto';
+import { CreateTrainingDto, TrainingResponseDto, UpdateTrainingDto } from '@/application/use-cases/training/training.dto';
 
 import AuthGuard from '@/shared/guards/auth.guard';
 import { Roles } from '@/shared/decorators/role.decorator';
@@ -61,10 +57,7 @@ export class TrainingController {
   @ApiResponse({ status: 200, description: 'Treinamento atualizado com sucesso', type: TrainingResponseDto })
   @Roles(UserRoles.ADMIN)
   @UseGuards(RolesGuard)
-  async updateTraining(
-    @Param('id') id: string,
-    @Body() updateTrainingDto: UpdateTrainingDto,
-  ): Promise<TrainingResponseDto> {
+  async updateTraining(@Param('id') id: string, @Body() updateTrainingDto: UpdateTrainingDto): Promise<TrainingResponseDto> {
     const training = await this._updateTraining.execute(id, updateTrainingDto);
     return {
       id: training.id,

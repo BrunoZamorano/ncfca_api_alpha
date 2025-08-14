@@ -15,7 +15,7 @@ export class UpdateClubDto {
   @IsString()
   @MinLength(3)
   name?: string;
-  
+
   @ApiPropertyOptional({
     description: 'Número máximo de membros permitidos no clube. Deve ser um número inteiro. Ex: 100',
     example: '30',

@@ -33,9 +33,7 @@ describe('ClubMembership Entity', () => {
     it('Deve lançar uma exceção ao tentar revogar um membro já revogado', () => {
       const membership = ClubMembership.create(createProps, mockIdGenerator);
       membership.revoke();
-      expect(() => membership.revoke()).toThrow(
-        new InvalidOperationException('Cannot revoke a membership that is not active.'),
-      );
+      expect(() => membership.revoke()).toThrow(new InvalidOperationException('Cannot revoke a membership that is not active.'));
     });
   });
 
@@ -50,9 +48,7 @@ describe('ClubMembership Entity', () => {
 
     it('Deve lançar uma exceção ao tentar reativar um membro que já está ativo', () => {
       const membership = ClubMembership.create(createProps, mockIdGenerator);
-      expect(() => membership.reinstate()).toThrow(
-        new InvalidOperationException('Cannot reinstate a membership that is not revoked.'),
-      );
+      expect(() => membership.reinstate()).toThrow(new InvalidOperationException('Cannot reinstate a membership that is not revoked.'));
     });
   });
 });

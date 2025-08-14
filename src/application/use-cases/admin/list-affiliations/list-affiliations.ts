@@ -9,15 +9,14 @@ export default class AdminListAffiliations {
   constructor(@Inject(UNIT_OF_WORK) private readonly uow: UnitOfWork) {}
   async execute(): Promise<Output> {
     const families = await this.uow.familyRepository.findAll();
-    const affiliations = families
-      .map(async (family) => {
-        const holder = await this.uow.userRepository.find(family.holderId);
-        if (!holder) throw new Error(`Holder not found for family with ID: ${family.id}`);
-        return {
-          ...FamilyMapper.entityToDto(family),
-          holder: UserMapper.entityToDto(holder),
-        };
-      });
+    const affiliations = families.map(async (family) => {
+      const holder = await this.uow.userRepository.find(family.holderId);
+      if (!holder) throw new Error(`Holder not found for family with ID: ${family.id}`);
+      return {
+        ...FamilyMapper.entityToDto(family),
+        holder: UserMapper.entityToDto(holder),
+      };
+    });
     return Promise.all(affiliations);
   }
 }

@@ -52,15 +52,11 @@ class MockUserQuery implements UserQuery {
 
     // Apply filters
     if (query.filter?.name) {
-      filteredUsers = filteredUsers.filter((user) =>
-        `${user.firstName} ${user.lastName}`.toLowerCase().includes(query.filter!.name!.toLowerCase())
-      );
+      filteredUsers = filteredUsers.filter((user) => `${user.firstName} ${user.lastName}`.toLowerCase().includes(query.filter!.name!.toLowerCase()));
     }
 
     if (query.filter?.email) {
-      filteredUsers = filteredUsers.filter((user) =>
-        user.email.toLowerCase().includes(query.filter!.email!.toLowerCase())
-      );
+      filteredUsers = filteredUsers.filter((user) => user.email.toLowerCase().includes(query.filter!.email!.toLowerCase()));
     }
 
     if (query.filter?.cpf) {
@@ -113,9 +109,9 @@ describe('Search Users', function () {
   });
 
   it('Deve filtrar usuários por nome', async function () {
-    const input: SearchUsersQueryDto = { 
-      filter: { name: 'John' }, 
-      pagination: { page: 1, limit: 10 } 
+    const input: SearchUsersQueryDto = {
+      filter: { name: 'John' },
+      pagination: { page: 1, limit: 10 },
     };
     const output = await searchUsers.execute(input);
 
@@ -125,9 +121,9 @@ describe('Search Users', function () {
   });
 
   it('Deve filtrar usuários por email', async function () {
-    const input: SearchUsersQueryDto = { 
-      filter: { email: 'jane.smith' }, 
-      pagination: { page: 1, limit: 10 } 
+    const input: SearchUsersQueryDto = {
+      filter: { email: 'jane.smith' },
+      pagination: { page: 1, limit: 10 },
     };
     const output = await searchUsers.execute(input);
 
@@ -137,9 +133,9 @@ describe('Search Users', function () {
   });
 
   it('Deve filtrar usuários por CPF', async function () {
-    const input: SearchUsersQueryDto = { 
-      filter: { cpf: '12345678901' }, 
-      pagination: { page: 1, limit: 10 } 
+    const input: SearchUsersQueryDto = {
+      filter: { cpf: '12345678901' },
+      pagination: { page: 1, limit: 10 },
     };
     const output = await searchUsers.execute(input);
 
@@ -149,9 +145,9 @@ describe('Search Users', function () {
   });
 
   it('Deve filtrar usuários por RG', async function () {
-    const input: SearchUsersQueryDto = { 
-      filter: { rg: '654321' }, 
-      pagination: { page: 1, limit: 10 } 
+    const input: SearchUsersQueryDto = {
+      filter: { rg: '654321' },
+      pagination: { page: 1, limit: 10 },
     };
     const output = await searchUsers.execute(input);
 
@@ -161,9 +157,9 @@ describe('Search Users', function () {
   });
 
   it('Deve filtrar usuários por role', async function () {
-    const input: SearchUsersQueryDto = { 
-      filter: { role: UserRoles.ADMIN }, 
-      pagination: { page: 1, limit: 10 } 
+    const input: SearchUsersQueryDto = {
+      filter: { role: UserRoles.ADMIN },
+      pagination: { page: 1, limit: 10 },
     };
     const output = await searchUsers.execute(input);
 
@@ -173,9 +169,9 @@ describe('Search Users', function () {
   });
 
   it('Deve retornar lista vazia quando não há correspondências', async function () {
-    const input: SearchUsersQueryDto = { 
-      filter: { name: 'nonexistent' }, 
-      pagination: { page: 1, limit: 10 } 
+    const input: SearchUsersQueryDto = {
+      filter: { name: 'nonexistent' },
+      pagination: { page: 1, limit: 10 },
     };
     const output = await searchUsers.execute(input);
 
@@ -195,9 +191,9 @@ describe('Search Users', function () {
   });
 
   it('Deve combinar múltiplos filtros', async function () {
-    const input: SearchUsersQueryDto = { 
-      filter: { name: 'Jane', role: UserRoles.ADMIN }, 
-      pagination: { page: 1, limit: 10 } 
+    const input: SearchUsersQueryDto = {
+      filter: { name: 'Jane', role: UserRoles.ADMIN },
+      pagination: { page: 1, limit: 10 },
     };
     const output = await searchUsers.execute(input);
 

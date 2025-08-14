@@ -13,16 +13,14 @@ export class ChangePasswordDto {
   oldPassword: string;
 
   @ApiProperty({
-    description:
-      'Nova senha. Deve conter pelo menos uma letra maiúscula, uma minúscula, um número e ter no mínimo 8 caracteres.',
+    description: 'Nova senha. Deve conter pelo menos uma letra maiúscula, uma minúscula, um número e ter no mínimo 8 caracteres.',
     example: 'NewStrongPassword@456',
     pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$',
   })
   @IsString()
   @IsNotEmpty()
   @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/, {
-    message:
-      'Password must contain at least one uppercase letter, one lowercase letter, one number, and be at least 8 characters long.',
+    message: 'Password must contain at least one uppercase letter, one lowercase letter, one number, and be at least 8 characters long.',
   })
   newPassword: string;
 }

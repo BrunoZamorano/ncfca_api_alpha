@@ -5,6 +5,6 @@ export default interface ClubMembershipRepository {
   findByMemberAndClub(memberId: string, clubId: string): Promise<ClubMembership | null>;
   findByClub(clubId: string): Promise<ClubMembership[]>;
   save(membership: ClubMembership): Promise<ClubMembership>;
-}
+};;;;;;;;;;
 
 export const CLUB_MEMBERSHIP_REPOSITORY = Symbol('CLUB_MEMBERSHIP_REPOSITORY');

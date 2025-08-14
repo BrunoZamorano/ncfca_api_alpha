@@ -69,10 +69,7 @@ describe('UNIT AdminListPendingEnrollmentsUseCase', () => {
     };
 
     const moduleRef = await Test.createTestingModule({
-      providers: [
-        AdminListPendingEnrollmentsUseCase,
-        { provide: UNIT_OF_WORK, useValue: mockUnitOfWork },
-      ],
+      providers: [AdminListPendingEnrollmentsUseCase, { provide: UNIT_OF_WORK, useValue: mockUnitOfWork }],
     }).compile();
 
     useCase = moduleRef.get(AdminListPendingEnrollmentsUseCase);

@@ -26,12 +26,12 @@ export default tseslint.config(
   },
   {
     rules: {
-      semi: ['always', 'always'],
+      semi: ['error', 'always'],
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-floating-promises': 'warn',
       '@typescript-eslint/no-unsafe-argument': 'warn',
-      'lines-between-class-members': ['error', 'always', { exceptAfterSingleLine: true }],
-      'lines-around-class-methods': ['error', 'never'],
+      'lines-between-class-members': 'off',
+      'lines-around-class-methods': 'off',
     },
   },
 );

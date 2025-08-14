@@ -28,20 +28,18 @@ export default class AdminListPendingEnrollmentsUseCase {
 
     // Buscar solicitações pendentes do clube
     const enrollmentRequests = await this.uow.enrollmentRequestRepository.findByClubId(query.clubId);
-    const pendingRequests = enrollmentRequests.filter(req => req.status === EnrollmentStatus.PENDING);
+    const pendingRequests = enrollmentRequests.filter((req) => req.status === EnrollmentStatus.PENDING);
 
     // Buscar informações dos dependentes
-    const dependantIds = pendingRequests.map(req => req.dependantId);
-    const dependants = await Promise.all(
-      dependantIds.map(id => this.uow.familyRepository.findDependant(id))
-    );
+    const dependantIds = pendingRequests.map((req) => req.dependantId);
+    const dependants = await Promise.all(dependantIds.map((id) => this.uow.familyRepository.findDependant(id)));
 
     // Mapear para a view
     const pendingEnrollments: PendingEnrollmentView[] = [];
     for (let i = 0; i < pendingRequests.length; i++) {
       const request = pendingRequests[i];
       const dependant = dependants[i];
-      
+
       if (dependant) {
         pendingEnrollments.push({
           id: request.id,

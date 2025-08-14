@@ -36,11 +36,7 @@ describe('E2E Logout', () => {
   });
 
   it('Deve retornar 204 para um usuário autenticado', async () => {
-    await request(app.getHttpServer())
-      .post('/auth/logout')
-      .set('Authorization', `Bearer ${accessToken}`)
-      .send()
-      .expect(HttpStatus.NO_CONTENT);
+    await request(app.getHttpServer()).post('/auth/logout').set('Authorization', `Bearer ${accessToken}`).send().expect(HttpStatus.NO_CONTENT);
   });
 
   it('Não deve permitir o acesso sem um token de autenticação', async () => {

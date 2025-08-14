@@ -94,9 +94,7 @@ describe('User Entity', () => {
     it('deve atribuir roles, garantindo SEM_FUNCAO e sem duplicatas', () => {
       user.assignRoles([UserRoles.ADMIN, UserRoles.DONO_DE_CLUBE, UserRoles.ADMIN]);
       expect(user.roles).toHaveLength(3);
-      expect(user.roles).toEqual(
-        expect.arrayContaining([UserRoles.ADMIN, UserRoles.DONO_DE_CLUBE, UserRoles.SEM_FUNCAO]),
-      );
+      expect(user.roles).toEqual(expect.arrayContaining([UserRoles.ADMIN, UserRoles.DONO_DE_CLUBE, UserRoles.SEM_FUNCAO]));
     });
 
     it('deve revogar uma role com sucesso', () => {
@@ -107,9 +105,7 @@ describe('User Entity', () => {
     });
 
     it('deve lançar uma exceção ao tentar revogar a role SEM_FUNCAO', () => {
-      expect(() => user.revokeRole(UserRoles.SEM_FUNCAO)).toThrow(
-        new DomainException('Cannot revoke the default role.'),
-      );
+      expect(() => user.revokeRole(UserRoles.SEM_FUNCAO)).toThrow(new DomainException('Cannot revoke the default role.'));
     });
 
     it('deve atualizar o perfil do usuário corretamente', () => {

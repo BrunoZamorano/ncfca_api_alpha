@@ -14,7 +14,7 @@ import TokenService, { Payload } from '@/application/services/token-service';
 @Injectable()
 export default class CreateClub {
   private readonly logger = new Logger(CreateClub.name);
-  
+
   constructor(
     @Inject(TOKEN_SERVICE) private readonly _tokenService: TokenService,
     @Inject(ID_GENERATOR) private readonly _idGenerator: IdGenerator,

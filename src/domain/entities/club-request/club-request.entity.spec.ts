@@ -73,9 +73,7 @@ describe('ClubRequest', () => {
       });
 
       expect(() => clubRequest.approve()).toThrow(InvalidOperationException);
-      expect(() => clubRequest.approve()).toThrow(
-        'Cannot approve a club request that is already in status APPROVED.',
-      );
+      expect(() => clubRequest.approve()).toThrow('Cannot approve a club request that is already in status APPROVED.');
     });
 
     it('should throw InvalidOperationException when trying to approve a rejected request', () => {
@@ -85,9 +83,7 @@ describe('ClubRequest', () => {
       });
 
       expect(() => clubRequest.approve()).toThrow(InvalidOperationException);
-      expect(() => clubRequest.approve()).toThrow(
-        'Cannot approve a club request that is already in status REJECTED.',
-      );
+      expect(() => clubRequest.approve()).toThrow('Cannot approve a club request that is already in status REJECTED.');
     });
   });
 
@@ -112,9 +108,7 @@ describe('ClubRequest', () => {
       });
 
       expect(() => clubRequest.reject('reason')).toThrow(InvalidOperationException);
-      expect(() => clubRequest.reject('reason')).toThrow(
-        'Cannot reject a club request that is already in status APPROVED.',
-      );
+      expect(() => clubRequest.reject('reason')).toThrow('Cannot reject a club request that is already in status APPROVED.');
     });
 
     it('should throw InvalidOperationException when trying to reject an already rejected request', () => {
@@ -124,9 +118,7 @@ describe('ClubRequest', () => {
       });
 
       expect(() => clubRequest.reject('reason')).toThrow(InvalidOperationException);
-      expect(() => clubRequest.reject('reason')).toThrow(
-        'Cannot reject a club request that is already in status REJECTED.',
-      );
+      expect(() => clubRequest.reject('reason')).toThrow('Cannot reject a club request that is already in status REJECTED.');
     });
 
     it('should throw DomainException when rejecting with empty reason', () => {
@@ -184,4 +176,4 @@ describe('ClubRequest', () => {
       expect(clubRequest.isRejected()).toBe(true);
     });
   });
-}); 
+});

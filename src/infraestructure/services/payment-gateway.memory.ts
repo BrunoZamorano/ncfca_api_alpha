@@ -4,13 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { PaymentGateway } from '@/application/services/payment-gateway';
 import { PaymentMethod } from '@/domain/enums/payment-method';
 import { PaymentStatus } from '@/domain/enums/payment-status';
-import {
-  CreditCardPaymentData,
-  PaymentItem,
-  PaymentPayer,
-  PaymentResult,
-  PaymentTransaction,
-} from '@/domain/types/payment';
+import { CreditCardPaymentData, PaymentItem, PaymentPayer, PaymentResult, PaymentTransaction } from '@/domain/types/payment';
 
 @Injectable()
 export class PaymentGatewayMemory implements PaymentGateway {
@@ -21,11 +15,7 @@ export class PaymentGatewayMemory implements PaymentGateway {
    * Cria uma nova transação em memória.
    * Simula a criação de uma transação num gateway real.
    */
-  async createTransaction(
-    paymentMethod: PaymentMethod,
-    items: PaymentItem[],
-    payer: PaymentPayer,
-  ): Promise<PaymentTransaction> {
+  async createTransaction(paymentMethod: PaymentMethod, items: PaymentItem[], payer: PaymentPayer): Promise<PaymentTransaction> {
     const transactionId = crypto.randomUUID();
     const amount = items.reduce((total, item) => total + item.price_cents * item.quantity, 0);
     const now = new Date();

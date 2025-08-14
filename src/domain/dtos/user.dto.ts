@@ -22,7 +22,7 @@ export class UserDto {
 
   @ApiProperty({ description: 'CPF do usuário.', example: '12345678900' })
   cpf: string;
-  
+
   @ApiProperty({ description: 'Rg do usuário.', example: '123456' })
   rg: string;
 

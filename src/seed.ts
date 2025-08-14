@@ -1,11 +1,4 @@
-import {
-  PrismaClient,
-  FamilyStatus,
-  DependantRelationship,
-  Sex,
-  MembershipStatus,
-  EnrollmentStatus,
-} from '@prisma/client';
+import { PrismaClient, FamilyStatus, DependantRelationship, Sex, MembershipStatus, EnrollmentStatus } from '@prisma/client';
 import { faker } from '@faker-js/faker';
 import { CpfGenerator } from '@/infraestructure/services/cpf-generator.service';
 import Dependant from '@/domain/entities/dependant/dependant';
@@ -21,7 +14,7 @@ const prisma = new PrismaClient();
 
 async function main() {
   console.log('Iniciando o processo de seed...');
-  
+
   const cpfGenerator = new CpfGenerator();
 
   const hashinService = new HashingServiceBcrypt();

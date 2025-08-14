@@ -17,7 +17,7 @@ describe('UpdateClubByAdmin', () => {
     district: 'Centro',
     city: 'Cidade Teste',
     state: 'SP',
-    complement: 'Apto 1'
+    complement: 'Apto 1',
   });
 
   const mockClub = {
@@ -115,9 +115,7 @@ describe('UpdateClubByAdmin', () => {
 
     jest.spyOn(unitOfWork.clubRepository, 'find').mockResolvedValue(null);
 
-    await expect(useCase.execute(input)).rejects.toThrow(
-      new EntityNotFoundException('Club', 'for clubId: nonexistent-club')
-    );
+    await expect(useCase.execute(input)).rejects.toThrow(new EntityNotFoundException('Club', 'for clubId: nonexistent-club'));
 
     expect(unitOfWork.clubRepository.find).toHaveBeenCalledWith('nonexistent-club');
     expect(unitOfWork.clubRepository.save).not.toHaveBeenCalled();

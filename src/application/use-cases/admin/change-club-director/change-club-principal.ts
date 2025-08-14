@@ -10,8 +10,7 @@ export default class AdminChangeClubPrincipal {
     return this.uow.executeInTransaction(async () => {
       const club = await this.uow.clubRepository.find(input.clubId);
       if (!club) throw new EntityNotFoundException('Club', input.clubId);
-      if (club.principalId === input.newPrincipalId)
-        throw new InvalidOperationException('New principal is the same as the current principal.');
+      if (club.principalId === input.newPrincipalId) throw new InvalidOperationException('New principal is the same as the current principal.');
       const newPrincipal = await this.uow.userRepository.find(input.newPrincipalId);
       if (!newPrincipal) throw new EntityNotFoundException('User', input.newPrincipalId);
       if (!newPrincipal.roles.includes(UserRoles.DONO_DE_CLUBE)) newPrincipal.assignRoles([UserRoles.DONO_DE_CLUBE]);

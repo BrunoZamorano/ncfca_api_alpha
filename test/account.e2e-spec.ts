@@ -75,9 +75,7 @@ describe('AccountController (e2e)', () => {
 
     beforeEach(async () => {
       await request(app.getHttpServer()).post('/account/user').send(testUser);
-      const loginResponse = await request(app.getHttpServer())
-        .post('/auth/login')
-        .send({ email: testUser.email, password: testUser.password });
+      const loginResponse = await request(app.getHttpServer()).post('/auth/login').send({ email: testUser.email, password: testUser.password });
       accessToken = loginResponse.body.accessToken;
     });
 
@@ -87,11 +85,7 @@ describe('AccountController (e2e)', () => {
         phone: '11999999999',
       };
 
-      await request(app.getHttpServer())
-        .patch('/account/profile')
-        .set('Authorization', `Bearer ${accessToken}`)
-        .send(updatePayload)
-        .expect(204);
+      await request(app.getHttpServer()).patch('/account/profile').set('Authorization', `Bearer ${accessToken}`).send(updatePayload).expect(204);
 
       const updatedUser = await userRepository.findByEmail(testUser.email);
       expect(updatedUser).toBeDefined();
@@ -112,9 +106,7 @@ describe('AccountController (e2e)', () => {
         .send(changePasswordPayload)
         .expect(204);
 
-      const loginAttempt = await request(app.getHttpServer())
-        .post('/auth/login')
-        .send({ email: testUser.email, password: 'NewPassword@456' });
+      const loginAttempt = await request(app.getHttpServer()).post('/auth/login').send({ email: testUser.email, password: 'NewPassword@456' });
 
       expect(loginAttempt.status).toBe(200);
       expect(loginAttempt.body.accessToken).toBeDefined();

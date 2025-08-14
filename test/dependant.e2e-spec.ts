@@ -56,9 +56,7 @@ describe('DependantController (e2e)', () => {
     familyRepo = app.get<FamilyRepository>(FAMILY_REPOSITORY);
     const registrationResponse = await request(app.getHttpServer()).post('/account/user').send(testUser);
     accessToken = registrationResponse.body.accessToken;
-    const myFamilyResponse = await request(app.getHttpServer())
-      .get('/dependants/my-family')
-      .set('Authorization', `Bearer ${accessToken}`);
+    const myFamilyResponse = await request(app.getHttpServer()).get('/dependants/my-family').set('Authorization', `Bearer ${accessToken}`);
     const myFamily: FamilyDto = myFamilyResponse.body;
     familyId = myFamily.id;
   });

@@ -1,7 +1,7 @@
 import { Inject, Injectable, NotImplementedException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 
-import EnrollmentRequestRepository, {  ENROLLMENT_REQUEST_REPOSITORY} from '@/domain/repositories/enrollment-request-repository';
+import EnrollmentRequestRepository, { ENROLLMENT_REQUEST_REPOSITORY } from '@/domain/repositories/enrollment-request-repository';
 import ClubMembershipRepository, { CLUB_MEMBERSHIP_REPOSITORY } from '@/domain/repositories/club-membership.repository';
 import { ClubRequestRepository } from '@/domain/repositories/club-request.repository';
 import TransactionRepository from '@/domain/repositories/transaction.repository';

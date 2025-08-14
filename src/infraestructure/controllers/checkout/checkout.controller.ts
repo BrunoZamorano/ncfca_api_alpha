@@ -21,10 +21,7 @@ export default class CheckoutController {
   @ApiResponse({ status: 400, description: 'Dados de pagamento inválidos.' })
   @ApiResponse({ status: 401, description: 'Não autorizado.' })
   @ApiResponse({ status: 404, description: 'Usuário ou família não encontrado.' })
-  async createCheckout(
-    @Body() checkoutInputDto: CheckoutInputDto,
-    @Request() req: { user: { id: string } },
-  ): Promise<PaymentTransaction> {
+  async createCheckout(@Body() checkoutInputDto: CheckoutInputDto, @Request() req: { user: { id: string } }): Promise<PaymentTransaction> {
     const userId = req.user.id;
     return this.checkout.execute({ ...checkoutInputDto, userId });
   }

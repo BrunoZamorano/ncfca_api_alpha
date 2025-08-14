@@ -1,4 +1,3 @@
-
 import { Body, Controller, Post, Patch, UseGuards, Request, HttpCode, HttpStatus } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import RegisterUser from '@/application/use-cases/register-user/register-user';

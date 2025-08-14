@@ -36,20 +36,14 @@ describe('E2E ValidateToken', () => {
   });
 
   it('Deve validar um access token ativo e retornar o payload', async () => {
-    const response = await request(app.getHttpServer())
-      .post('/auth/validate-token')
-      .send({ token: accessToken })
-      .expect(HttpStatus.OK);
+    const response = await request(app.getHttpServer()).post('/auth/validate-token').send({ token: accessToken }).expect(HttpStatus.OK);
 
     expect(response.body).toHaveProperty('sub', userId);
     expect(response.body).toHaveProperty('email', testEmail);
   });
 
   it('Não deve validar um access token inválido ou expirado', async () => {
-    await request(app.getHttpServer())
-      .post('/auth/validate-token')
-      .send({ token: 'invalid-token' })
-      .expect(HttpStatus.UNAUTHORIZED);
+    await request(app.getHttpServer()).post('/auth/validate-token').send({ token: 'invalid-token' }).expect(HttpStatus.UNAUTHORIZED);
   });
 
   it('Não deve validar se nenhum token for fornecido', async () => {

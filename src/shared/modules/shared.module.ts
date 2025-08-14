@@ -39,13 +39,7 @@ import {
   TRANSACTION_REPOSITORY,
   USER_REPOSITORY,
 } from '@/shared/constants/repository-constants';
-import {
-  HASHING_SERVICE,
-  ID_GENERATOR,
-  PAYMENT_GATEWAY,
-  QUEUE_SERVICE,
-  TOKEN_SERVICE,
-} from '@/shared/constants/service-constants';
+import { HASHING_SERVICE, ID_GENERATOR, PAYMENT_GATEWAY, QUEUE_SERVICE, TOKEN_SERVICE } from '@/shared/constants/service-constants';
 import { ClubRequestRepositoryPrisma } from '@/infraestructure/repositories/prisma/club-request.repository.prisma';
 
 const repositories = [

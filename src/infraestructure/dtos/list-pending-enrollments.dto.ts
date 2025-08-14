@@ -1,4 +1,3 @@
-
 import { ApiProperty } from '@nestjs/swagger';
 import { EnrollmentStatus } from '@/domain/enums/enrollment-status';
 

@@ -13,8 +13,7 @@ export default class UpdateClubInfo {
     return this.uow.executeInTransaction(async () => {
       const club = await this.uow.clubRepository.findByPrincipalId(input.principalId);
       if (!club) throw new EntityNotFoundException('Club', `for principalId: ${input.principalId}`);
-      if (club.principalId !== input.principalId)
-        throw new ForbiddenException('User is not authorized to edit this club.');
+      if (club.principalId !== input.principalId) throw new ForbiddenException('User is not authorized to edit this club.');
       club.updateInfo({ ...input, address: input.address ? new Address(input.address) : undefined });
       await this.uow.clubRepository.save(club);
     });

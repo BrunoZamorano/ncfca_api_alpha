@@ -15,12 +15,7 @@ import { UnitOfWorkMemory } from '@/infraestructure/services/unit-of-work.memory
 import FamilyRepositoryMemory from '@/infraestructure/repositories/family.repository-memory';
 import TransactionRepositoryMemory from '@/infraestructure/repositories/transaction.memory-repository';
 
-import {
-  USER_REPOSITORY,
-  FAMILY_REPOSITORY,
-  TRANSACTION_REPOSITORY,
-  CLUB_REPOSITORY,
-} from '@/shared/constants/repository-constants';
+import { USER_REPOSITORY, FAMILY_REPOSITORY, TRANSACTION_REPOSITORY, CLUB_REPOSITORY } from '@/shared/constants/repository-constants';
 
 import ProcessPaymentUpdate from './process-payment-update';
 import { ENROLLMENT_REQUEST_REPOSITORY } from '@/domain/repositories/enrollment-request-repository';

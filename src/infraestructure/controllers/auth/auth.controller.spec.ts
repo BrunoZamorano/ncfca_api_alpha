@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
-import ValidateToken from '@/application/use-cases/validate-token/validate-token';
-import RefreshToken from '@/application/use-cases/refresh-token/refresh-token';
-import Login from '@/application/use-cases/login/login';
+import ValidateToken from '@/application/use-cases/auth/validate-token/validate-token';
+import RefreshToken from '@/application/use-cases/auth/refresh-token/refresh-token';
+import Login from '@/application/use-cases/auth/login/login.use-case';
 
 import User from '@/domain/entities/user/user';
 
@@ -17,7 +17,7 @@ import AuthController from '@/infraestructure/controllers/auth/auth.controller';
 
 import { FAMILY_REPOSITORY, USER_REPOSITORY } from '@/shared/constants/repository-constants';
 import { HASHING_SERVICE, ID_GENERATOR, TOKEN_SERVICE } from '@/shared/constants/service-constants';
-import Logout from '@/application/use-cases/logout/logout';
+import Logout from '@/application/use-cases/auth/logout/logout';
 import { USER_FACTORY } from '@/shared/constants/factories-constants';
 import UserFactory from '@/domain/factories/user.factory';
 import UuidGenerator from '@/infraestructure/services/uuid-generator';

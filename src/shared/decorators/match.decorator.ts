@@ -1,12 +1,6 @@
 // src/infraestructure/decorators/match.decorator.ts
 
-import {
-  registerDecorator,
-  ValidationArguments,
-  ValidationOptions,
-  ValidatorConstraint,
-  ValidatorConstraintInterface,
-} from 'class-validator';
+import { registerDecorator, ValidationArguments, ValidationOptions, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator';
 
 @ValidatorConstraint({ name: 'Match' })
 export class MatchConstraint implements ValidatorConstraintInterface {

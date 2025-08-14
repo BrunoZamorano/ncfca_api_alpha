@@ -5,8 +5,7 @@ import { PrismaService } from '@/infraestructure/database/prisma.service';
 import { Inject } from '@nestjs/common';
 
 export class EnrollmentQueryPrisma implements EnrollmentQuery {
-  constructor(@Inject(PrismaService) private readonly prisma: PrismaService) {
-  }
+  constructor(@Inject(PrismaService) private readonly prisma: PrismaService) {}
 
   async myRequests(userId: string): Promise<MyEnrollmentRequestItemView[]> {
     return await this.prisma.$queryRaw<MyEnrollmentRequestItemView[]>`

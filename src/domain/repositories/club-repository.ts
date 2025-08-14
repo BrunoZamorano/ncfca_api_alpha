@@ -8,4 +8,4 @@ export default interface ClubRepository {
   find(id: string): Promise<Club | null>;
   findAll(): Promise<Club[]>;
   findByPrincipalId(ownerId: string): Promise<Club | null>;
-}
+};;;;;;;;;;

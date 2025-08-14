@@ -61,12 +61,14 @@ export class UserQueryPrisma implements UserQuery {
     }
 
     if (filter?.role) {
-      conditions.push(`(roles = $${params.length + 1} OR roles LIKE $${params.length + 2} OR roles LIKE $${params.length + 3} OR roles LIKE $${params.length + 4})`);
+      conditions.push(
+        `(roles = $${params.length + 1} OR roles LIKE $${params.length + 2} OR roles LIKE $${params.length + 3} OR roles LIKE $${params.length + 4})`,
+      );
       params.push(
         filter.role, // exact match
         `${filter.role},%`, // role at beginning
         `%,${filter.role},%`, // role in middle
-        `%,${filter.role}` // role at end
+        `%,${filter.role}`, // role at end
       );
     }
 

@@ -24,9 +24,7 @@ export default class EnrollmentRequest {
 
   public approve(): void {
     if (this.status !== EnrollmentStatus.PENDING)
-      throw new InvalidOperationException(
-        `Cannot approve an enrollment request that is already in status ${this.status}.`,
-      );
+      throw new InvalidOperationException(`Cannot approve an enrollment request that is already in status ${this.status}.`);
     this.status = EnrollmentStatus.APPROVED;
     this.resolvedAt = new Date();
     this.rejectionReason = null;
@@ -35,9 +33,7 @@ export default class EnrollmentRequest {
 
   public reject(reason: string): void {
     if (this.status !== EnrollmentStatus.PENDING) {
-      throw new InvalidOperationException(
-        `Cannot reject an enrollment request that is already in status ${this.status}.`,
-      );
+      throw new InvalidOperationException(`Cannot reject an enrollment request that is already in status ${this.status}.`);
     }
     if (!reason || reason.length < 10) {
       throw new DomainException('A rejection reason with at least 10 characters is required.');

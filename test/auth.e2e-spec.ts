@@ -22,7 +22,7 @@ import User from '@/domain/entities/user/user';
 import InMemoryDatabase from '@/infraestructure/database/in-memory.database';
 
 describe('AuthController (e2e)', () => {
-  let db = InMemoryDatabase.getInstance();
+  const db = InMemoryDatabase.getInstance();
   let app: INestApplication<App>;
   let tokenService: TokenService;
 
@@ -156,9 +156,7 @@ describe('AuthController (e2e)', () => {
 
     beforeEach(async () => {
       await request(app.getHttpServer()).post('/account/user').send(testUser);
-      const loginResponse = await request(app.getHttpServer())
-        .post('/auth/login')
-        .send({ email: testUser.email, password: testUser.password });
+      const loginResponse = await request(app.getHttpServer()).post('/auth/login').send({ email: testUser.email, password: testUser.password });
       accessToken = loginResponse.body.accessToken;
     });
 

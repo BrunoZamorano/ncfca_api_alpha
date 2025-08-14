@@ -187,9 +187,7 @@ describe('UNIT AdminApproveEnrollmentUseCase', () => {
 
     // Act & Assert
     await expect(useCase.execute(command)).rejects.toThrow(InvalidOperationException);
-    await expect(useCase.execute(command)).rejects.toThrow(
-      'Cannot approve enrollment for a family that is not affiliated.',
-    );
+    await expect(useCase.execute(command)).rejects.toThrow('Cannot approve enrollment for a family that is not affiliated.');
   });
 
   it('Não deve aprovar quando clube atingiu capacidade máxima', async () => {

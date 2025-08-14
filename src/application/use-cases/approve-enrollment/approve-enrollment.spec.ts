@@ -77,11 +77,7 @@ describe('UNIT ApproveEnrollment', () => {
     } as any;
 
     const moduleRef = await Test.createTestingModule({
-      providers: [
-        ApproveEnrollment,
-        { provide: UNIT_OF_WORK, useValue: mockUnitOfWork },
-        { provide: ID_GENERATOR, useValue: mockIdGenerator },
-      ],
+      providers: [ApproveEnrollment, { provide: UNIT_OF_WORK, useValue: mockUnitOfWork }, { provide: ID_GENERATOR, useValue: mockIdGenerator }],
     }).compile();
 
     useCase = moduleRef.get(ApproveEnrollment);
@@ -208,9 +204,7 @@ describe('UNIT ApproveEnrollment', () => {
 
     // Act & Assert
     await expect(useCase.execute(unauthorizedInput)).rejects.toThrow(ForbiddenException);
-    await expect(useCase.execute(unauthorizedInput)).rejects.toThrow(
-      'User is not authorized to manage this enrollment request.',
-    );
+    await expect(useCase.execute(unauthorizedInput)).rejects.toThrow('User is not authorized to manage this enrollment request.');
   });
 
   it('Não deve aprovar quando família não está afiliada', async () => {
@@ -234,9 +228,7 @@ describe('UNIT ApproveEnrollment', () => {
 
     // Act & Assert
     await expect(useCase.execute(input)).rejects.toThrow(InvalidOperationException);
-    await expect(useCase.execute(input)).rejects.toThrow(
-      'Cannot approve enrollment for a family that is not affiliated.',
-    );
+    await expect(useCase.execute(input)).rejects.toThrow('Cannot approve enrollment for a family that is not affiliated.');
   });
 
   it('Não deve aprovar quando clube atingiu capacidade máxima', async () => {

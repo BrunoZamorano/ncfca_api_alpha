@@ -12,9 +12,7 @@ export class WebhookGuard implements CanActivate {
     }
     const rawBody = request.rawBody;
     if (!rawBody) {
-      throw new UnauthorizedException(
-        'Corpo da requisição "cru" não encontrado. Verifique a configuração do rawBody no main.ts.',
-      );
+      throw new UnauthorizedException('Corpo da requisição "cru" não encontrado. Verifique a configuração do rawBody no main.ts.');
     }
     const secret = process.env.PAYMENT_WEBHOOK_SECRET;
     if (!secret) {

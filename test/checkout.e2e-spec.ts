@@ -58,9 +58,7 @@ describe('CheckoutController (e2e)', () => {
     // Antes de cada teste neste bloco, cria um usuário e faz login para obter o token
     beforeEach(async () => {
       await request(app.getHttpServer()).post('/account/user').send(testUser);
-      const loginResponse = await request(app.getHttpServer())
-        .post('/auth/login')
-        .send({ email: testUser.email, password: testUser.password });
+      const loginResponse = await request(app.getHttpServer()).post('/auth/login').send({ email: testUser.email, password: testUser.password });
       accessToken = loginResponse.body.accessToken;
     });
 
@@ -120,9 +118,7 @@ describe('CheckoutController (e2e)', () => {
         .expect(HttpStatus.BAD_REQUEST)
         .expect((res) => {
           expect(res.body.message).toEqual(expect.any(Array));
-          expect(res.body.message).toContain(
-            'O método de pagamento deve ser um dos seguintes: credit_card, pix, bank_slip',
-          );
+          expect(res.body.message).toContain('O método de pagamento deve ser um dos seguintes: credit_card, pix, bank_slip');
         });
     });
   });

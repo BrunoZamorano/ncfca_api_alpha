@@ -8,9 +8,7 @@ import { ClubRequestMapper } from '@/shared/mappers/club-request.mapper';
 
 @Injectable()
 export default class GetUserClubRequestsUseCase {
-  constructor(
-    @Inject(CLUB_REQUEST_REPOSITORY) private readonly clubRequestRepository: ClubRequestRepository,
-  ) {}
+  constructor(@Inject(CLUB_REQUEST_REPOSITORY) private readonly clubRequestRepository: ClubRequestRepository) {}
 
   async execute(requesterId: string): Promise<ClubRequestStatusDto[]> {
     const userRequests = await this.clubRequestRepository.findByRequesterId(requesterId);

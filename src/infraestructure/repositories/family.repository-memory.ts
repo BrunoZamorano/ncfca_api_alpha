@@ -46,8 +46,6 @@ export default class FamilyRepositoryMemory implements FamilyRepository {
   }
 
   private populate(): Family[] {
-    return new Array(10)
-      .fill(0)
-      .map((_, i) => new Family({ id: `${++i}`, holderId: `${i}`, status: FamilyStatus.NOT_AFFILIATED }));
+    return new Array(10).fill(0).map((_, i) => new Family({ id: `${++i}`, holderId: `${i}`, status: FamilyStatus.NOT_AFFILIATED }));
   }
 }

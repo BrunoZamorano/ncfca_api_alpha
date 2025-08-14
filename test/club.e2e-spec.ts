@@ -55,9 +55,7 @@ describe('ClubController (e2e)', () => {
 
     beforeEach(async () => {
       await request(app.getHttpServer()).post('/account/user').send(testUser);
-      const loginResponse = await request(app.getHttpServer())
-        .post('/auth/login')
-        .send({ email: testUser.email, password: testUser.password });
+      const loginResponse = await request(app.getHttpServer()).post('/auth/login').send({ email: testUser.email, password: testUser.password });
       accessToken = loginResponse.body.accessToken;
       await request(app.getHttpServer()).post('/checkout').send({ token: 'valid-token' });
     });
@@ -76,10 +74,7 @@ describe('ClubController (e2e)', () => {
     });
 
     it('NÃO deve permitir que um usuário crie um segundo clube', async () => {
-      await request(app.getHttpServer())
-        .post('/club')
-        .set('Authorization', `Bearer ${accessToken}`)
-        .send(createClubDto);
+      await request(app.getHttpServer()).post('/club').set('Authorization', `Bearer ${accessToken}`).send(createClubDto);
       await request(app.getHttpServer())
         .post('/club')
         .set('Authorization', `Bearer ${accessToken}`)
@@ -108,9 +103,7 @@ describe('ClubController (e2e)', () => {
         phone: '55566677788',
       };
       await request(app.getHttpServer()).post('/account/user').send(user);
-      const loginResponse = await request(app.getHttpServer())
-        .post('/auth/login')
-        .send({ email: user.email, password: user.password });
+      const loginResponse = await request(app.getHttpServer()).post('/auth/login').send({ email: user.email, password: user.password });
       accessToken = loginResponse.body.accessToken;
       const clubRepository = app.get<ClubRepositoryMemory>(CLUB_REPOSITORY);
       db.clubs.push(...clubRepository.populate(250));

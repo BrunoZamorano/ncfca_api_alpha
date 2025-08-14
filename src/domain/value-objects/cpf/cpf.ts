@@ -21,7 +21,7 @@ export default class Cpf {
     if (this.isCpfHomogeneous(cpf)) return false;
     const digit1 = this.calculateDigit(cpf, this.FIRST_DIGIT_FACTOR);
     const digit2 = this.calculateDigit(cpf, this.SECOND_DIGIT_FACTOR);
-    let checkDigit = this.extractCheckDigits(cpf);
+    const checkDigit = this.extractCheckDigits(cpf);
     return checkDigit === `${digit1}${digit2}`;
   }
 
@@ -39,12 +39,12 @@ export default class Cpf {
 
   private calculateDigit(cpf: string, factor: number): number {
     let total = 0;
-    for (let digit of cpf) {
+    for (const digit of cpf) {
       if (factor > 1) {
         total += parseInt(digit) * factor--;
       }
     }
-    let rest = total % 11;
+    const rest = total % 11;
     return rest < 2 ? 0 : 11 - rest;
   }
 

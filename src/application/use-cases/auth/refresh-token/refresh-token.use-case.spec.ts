@@ -50,8 +50,18 @@ describe('UNIT RefreshToken', () => {
     // Assert
     expect(result).toEqual({ accessToken: 'new-access-token', refreshToken: 'new-refresh-token' });
     expect(tokenService.verifyRefreshToken).toHaveBeenCalledWith(validRefreshToken);
-    expect(tokenService.signAccessToken).toHaveBeenCalledWith({ sub: decodedToken.sub, email: decodedToken.email, roles: decodedToken.roles, familyId: decodedToken.familyId });
-    expect(tokenService.signRefreshToken).toHaveBeenCalledWith({ sub: decodedToken.sub, email: decodedToken.email, roles: decodedToken.roles, familyId: decodedToken.familyId });
+    expect(tokenService.signAccessToken).toHaveBeenCalledWith({
+      sub: decodedToken.sub,
+      email: decodedToken.email,
+      roles: decodedToken.roles,
+      familyId: decodedToken.familyId,
+    });
+    expect(tokenService.signRefreshToken).toHaveBeenCalledWith({
+      sub: decodedToken.sub,
+      email: decodedToken.email,
+      roles: decodedToken.roles,
+      familyId: decodedToken.familyId,
+    });
   });
 
   it('Deve lançar uma exceção para um refresh token inválido', async () => {
@@ -60,8 +70,6 @@ describe('UNIT RefreshToken', () => {
     jest.spyOn(tokenService, 'verifyRefreshToken').mockResolvedValue(null as any); // Simulate invalid token
 
     // Act & Assert
-    await expect(refreshTokenUseCase.execute(invalidRefreshToken)).rejects.toThrow(
-      new UnauthorizedException(RefreshToken.errorCodes.INVALID_TOKEN),
-    );
+    await expect(refreshTokenUseCase.execute(invalidRefreshToken)).rejects.toThrow(new UnauthorizedException(RefreshToken.errorCodes.INVALID_TOKEN));
   });
 });

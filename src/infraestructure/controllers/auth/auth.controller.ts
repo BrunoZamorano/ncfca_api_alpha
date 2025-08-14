@@ -1,10 +1,10 @@
 import { Body, Controller, HttpCode, Post, UseGuards, HttpStatus } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 
-import ValidateToken from '@/application/use-cases/validate-token/validate-token';
-import RefreshToken from '@/application/use-cases/refresh-token/refresh-token';
-import Logout from '@/application/use-cases/logout/logout';
-import Login from '@/application/use-cases/login/login';
+import ValidateToken from '@/application/use-cases/auth/validate-token/validate-token';
+import RefreshToken from '@/application/use-cases/auth/refresh-token/refresh-token';
+import Logout from '@/application/use-cases/auth/logout/logout';
+import Login from '@/application/use-cases/auth/login/login.use-case';
 
 import { LoginInputDto, LoginOutputDto } from '@/infraestructure/dtos/login.dto';
 import { RefreshTokenInputDto, RefreshTokenOutputDto } from '@/infraestructure/dtos/refresh-token.dto';
@@ -26,8 +26,7 @@ export default class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Realiza a autenticação do usuário',
-    description:
-      'Autentica um usuário com email e senha, retornando tokens de acesso e de atualização em caso de sucesso.',
+    description: 'Autentica um usuário com email e senha, retornando tokens de acesso e de atualização em caso de sucesso.',
   })
   @ApiResponse({ status: 200, description: 'Autenticação bem-sucedida, retorna tokens.', type: LoginOutputDto })
   @ApiResponse({ status: 401, description: 'Credenciais inválidas.' })

@@ -1,17 +1,5 @@
 import { AddDependantDto } from '@/infraestructure/dtos/add-dependant.dto';
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Param,
-  Patch,
-  Post,
-  Request,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import AddDependant from '@/application/use-cases/add-dependant/add-dependant';
 import AuthGuard from '@/shared/guards/auth.guard';

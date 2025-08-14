@@ -96,33 +96,21 @@ describe('E2E AdminRoutes', () => {
     try {
       await prisma.clubMembership.deleteMany({ where: { member_id: testDependantId } });
       await prisma.enrollmentRequest.deleteMany({ where: { member_id: testDependantId } });
-      await prisma.dependant.deleteMany({ 
-        where: { 
-          OR: [
-            { family_id: adminUser.familyId }, 
-            { family_id: familyUser.familyId }, 
-            { family_id: clubOwner.familyId }
-          ] 
-        } 
+      await prisma.dependant.deleteMany({
+        where: {
+          OR: [{ family_id: adminUser.familyId }, { family_id: familyUser.familyId }, { family_id: clubOwner.familyId }],
+        },
       });
       await prisma.club.deleteMany({ where: { id: testClubId } });
-      await prisma.family.deleteMany({ 
-        where: { 
-          OR: [
-            { id: adminUser.familyId }, 
-            { id: familyUser.familyId }, 
-            { id: clubOwner.familyId }
-          ] 
-        } 
+      await prisma.family.deleteMany({
+        where: {
+          OR: [{ id: adminUser.familyId }, { id: familyUser.familyId }, { id: clubOwner.familyId }],
+        },
       });
-      await prisma.user.deleteMany({ 
-        where: { 
-          OR: [
-            { id: adminUser.userId }, 
-            { id: familyUser.userId }, 
-            { id: clubOwner.userId }
-          ] 
-        } 
+      await prisma.user.deleteMany({
+        where: {
+          OR: [{ id: adminUser.userId }, { id: familyUser.userId }, { id: clubOwner.userId }],
+        },
       });
     } catch (error) {
       console.warn('Cleanup error:', error);
@@ -158,9 +146,7 @@ describe('E2E AdminRoutes', () => {
 
     it('Não deve listar membros sem token de autorização', async () => {
       // Act & Assert
-      await request(app.getHttpServer())
-        .get(`/admin/clubs/${testClubId}/members`)
-        .expect(HttpStatus.UNAUTHORIZED);
+      await request(app.getHttpServer()).get(`/admin/clubs/${testClubId}/members`).expect(HttpStatus.UNAUTHORIZED);
     });
   });
 
@@ -182,9 +168,7 @@ describe('E2E AdminRoutes', () => {
 
     it('Não deve listar sem token de autorização', async () => {
       // Act & Assert
-      await request(app.getHttpServer())
-        .get(`/admin/clubs/${testClubId}/enrollments/pending`)
-        .expect(HttpStatus.UNAUTHORIZED);
+      await request(app.getHttpServer()).get(`/admin/clubs/${testClubId}/enrollments/pending`).expect(HttpStatus.UNAUTHORIZED);
     });
   });
 
@@ -205,9 +189,7 @@ describe('E2E AdminRoutes', () => {
 
     it('Não deve obter gráficos sem token de autorização', async () => {
       // Act & Assert
-      await request(app.getHttpServer())
-        .get(`/admin/clubs/${testClubId}/charts`)
-        .expect(HttpStatus.UNAUTHORIZED);
+      await request(app.getHttpServer()).get(`/admin/clubs/${testClubId}/charts`).expect(HttpStatus.UNAUTHORIZED);
     });
   });
 

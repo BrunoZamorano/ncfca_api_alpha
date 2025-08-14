@@ -85,9 +85,7 @@ export default class Family {
     }
     const newFirstName = info.firstName ?? dependantToUpdate.firstName;
     const newLastName = info.lastName ?? dependantToUpdate.lastName;
-    const hasDuplicateName = this._dependants.some(
-      (d) => d.id !== dependantId && d.firstName === newFirstName && d.lastName === newLastName,
-    );
+    const hasDuplicateName = this._dependants.some((d) => d.id !== dependantId && d.firstName === newFirstName && d.lastName === newLastName);
 
     if (hasDuplicateName) {
       throw new DomainException(`A dependant named ${newFirstName} ${newLastName} already exists in this family.`);

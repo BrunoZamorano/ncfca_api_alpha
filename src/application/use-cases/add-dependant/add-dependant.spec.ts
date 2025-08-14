@@ -10,12 +10,7 @@ import { UnitOfWorkMemory } from '@/infraestructure/services/unit-of-work.memory
 import UuidGenerator from '@/infraestructure/services/uuid-generator';
 import { Test, TestingModule } from '@nestjs/testing';
 import InMemoryDatabase from '@/infraestructure/database/in-memory.database';
-import {
-  CLUB_REPOSITORY,
-  FAMILY_REPOSITORY,
-  TRANSACTION_REPOSITORY,
-  USER_REPOSITORY,
-} from '@/shared/constants/repository-constants';
+import { CLUB_REPOSITORY, FAMILY_REPOSITORY, TRANSACTION_REPOSITORY, USER_REPOSITORY } from '@/shared/constants/repository-constants';
 import UserRepositoryMemory from '@/infraestructure/repositories/user-repository-memory';
 import FamilyRepositoryMemory from '@/infraestructure/repositories/family.repository-memory';
 import TransactionRepositoryMemory from '@/infraestructure/repositories/transaction.memory-repository';

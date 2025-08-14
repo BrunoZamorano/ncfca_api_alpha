@@ -84,11 +84,7 @@ describe('UNIT RequestEnrollment', () => {
     } as any;
 
     const moduleRef = await Test.createTestingModule({
-      providers: [
-        RequestEnrollment,
-        { provide: UNIT_OF_WORK, useValue: mockUnitOfWork },
-        { provide: ID_GENERATOR, useValue: mockIdGenerator },
-      ],
+      providers: [RequestEnrollment, { provide: UNIT_OF_WORK, useValue: mockUnitOfWork }, { provide: ID_GENERATOR, useValue: mockIdGenerator }],
     }).compile();
 
     useCase = moduleRef.get(RequestEnrollment);
@@ -226,9 +222,7 @@ describe('UNIT RequestEnrollment', () => {
 
     // Act & Assert
     await expect(useCase.execute(input)).rejects.toThrow(InvalidOperationException);
-    await expect(useCase.execute(input)).rejects.toThrow(
-      'Uma solicitação de matrícula pendente já existe para este dependente neste clube.',
-    );
+    await expect(useCase.execute(input)).rejects.toThrow('Uma solicitação de matrícula pendente já existe para este dependente neste clube.');
   });
 
   it('Não deve criar solicitação quando dependente já é membro ativo', async () => {

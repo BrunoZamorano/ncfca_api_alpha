@@ -67,11 +67,7 @@ describe('Enrollment Journey (e2e)', () => {
       paymentMethod: PaymentMethod.CREDIT_CARD,
       paymentToken: 'valid-token',
     };
-    await request(app.getHttpServer())
-      .post('/checkout')
-      .set('Authorization', `Bearer ${accessToken}`)
-      .send(checkoutDto)
-      .expect(HttpStatus.OK);
+    await request(app.getHttpServer()).post('/checkout').set('Authorization', `Bearer ${accessToken}`).send(checkoutDto).expect(HttpStatus.OK);
 
     const affiliatedFamily = db.families.find((f) => f.id === familyId)!;
     expect(affiliatedFamily.status).toBe(FamilyStatus.AFFILIATED);

@@ -1,10 +1,6 @@
 import Club from './club';
 import ClubMembership from '../club-membership/club-membership.entity';
-import {
-  DomainException,
-  EntityNotFoundException,
-  InvalidOperationException,
-} from '@/domain/exceptions/domain-exception';
+import { DomainException, EntityNotFoundException, InvalidOperationException } from '@/domain/exceptions/domain-exception';
 import IdGenerator from '@/application/services/id-generator';
 import { MembershipStatus } from '@/domain/enums/membership-status';
 

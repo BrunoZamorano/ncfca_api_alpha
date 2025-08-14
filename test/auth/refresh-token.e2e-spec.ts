@@ -27,10 +27,8 @@ describe('E2E RefreshToken', () => {
     await createTestUser(testEmail, [UserRoles.SEM_FUNCAO], prisma, app);
 
     // Login to get a valid refresh token
-    const loginResponse = await request(app.getHttpServer())
-      .post('/auth/login')
-      .send({ email: testEmail, password: testPassword });
-    
+    const loginResponse = await request(app.getHttpServer()).post('/auth/login').send({ email: testEmail, password: testPassword });
+
     refreshToken = loginResponse.body.refreshToken;
     const userInDb = await prisma.user.findUnique({ where: { email: testEmail } });
     userId = userInDb!.id;
@@ -43,10 +41,7 @@ describe('E2E RefreshToken', () => {
   });
 
   it('Deve gerar um novo par de tokens com um refresh token válido', async () => {
-    const response = await request(app.getHttpServer())
-      .post('/auth/refresh-token')
-      .send({ token: refreshToken })
-      .expect(HttpStatus.OK);
+    const response = await request(app.getHttpServer()).post('/auth/refresh-token').send({ token: refreshToken }).expect(HttpStatus.OK);
 
     expect(response.body).toHaveProperty('accessToken');
     expect(response.body).toHaveProperty('refreshToken');
@@ -54,10 +49,7 @@ describe('E2E RefreshToken', () => {
   });
 
   it('Não deve gerar tokens com um refresh token inválido ou expirado', async () => {
-    await request(app.getHttpServer())
-      .post('/auth/refresh-token')
-      .send({ token: 'invalid-token' })
-      .expect(HttpStatus.UNAUTHORIZED);
+    await request(app.getHttpServer()).post('/auth/refresh-token').send({ token: 'invalid-token' }).expect(HttpStatus.UNAUTHORIZED);
   });
 
   it('Não deve gerar tokens se nenhum token for fornecido', async () => {

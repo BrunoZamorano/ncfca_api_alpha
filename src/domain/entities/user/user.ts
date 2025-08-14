@@ -33,10 +33,10 @@ export default class User {
     this._rg = props.rg;
     this._id = props.id;
   }
-  //todo: 
+  //todo:
   public static create(props: CreateUserProps, idGenerator: IdGenerator, hashingService: HashingService): User {
-    const id = props.id ?? idGenerator!.generate();
-    const password = Password.create(props.password ?? User.DEFAULT_PASSWORD, hashingService!);
+    const id = props.id ?? idGenerator.generate();
+    const password = Password.create(props.password ?? User.DEFAULT_PASSWORD, hashingService);
     const roles = props.roles ?? [UserRoles.SEM_FUNCAO];
     if (!roles.includes(UserRoles.SEM_FUNCAO)) roles.push(UserRoles.SEM_FUNCAO);
     return new User({

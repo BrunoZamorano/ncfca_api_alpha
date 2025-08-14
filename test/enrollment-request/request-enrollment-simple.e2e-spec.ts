@@ -32,7 +32,7 @@ describe('E2E RequestEnrollment', () => {
     await app.init();
 
     prisma = app.get(PrismaService);
-    
+
     // Criar usuários de teste
     user = await createTestUser(`user-simple-${crypto.randomUUID()}@test.com`, [UserRoles.SEM_FUNCAO], prisma, app);
     clubOwner = await createTestUser(`owner-${crypto.randomUUID()}@test.com`, [UserRoles.DONO_DE_CLUBE], prisma, app);
@@ -55,7 +55,7 @@ describe('E2E RequestEnrollment', () => {
     // Afiliar família do usuário
     await prisma.family.update({
       where: { id: user.familyId },
-      data: { status: FamilyStatus.AFFILIATED, affiliation_expires_at: new Date(Date.now() + 86400000) }
+      data: { status: FamilyStatus.AFFILIATED, affiliation_expires_at: new Date(Date.now() + 86400000) },
     });
 
     // Criar dependente de teste
@@ -87,7 +87,7 @@ describe('E2E RequestEnrollment', () => {
     // Arrange
     const enrollmentRequestDto = {
       dependantId: testDependantId,
-      clubId: testClubId
+      clubId: testClubId,
     };
 
     // Act & Assert
@@ -99,7 +99,7 @@ describe('E2E RequestEnrollment', () => {
 
     // Verificar no banco de dados
     const createdRequest = await prisma.enrollmentRequest.findFirst({
-      where: { member_id: testDependantId, club_id: testClubId }
+      where: { member_id: testDependantId, club_id: testClubId },
     });
     expect(createdRequest).toBeTruthy();
     expect(createdRequest?.status).toBe('PENDING');
@@ -109,7 +109,7 @@ describe('E2E RequestEnrollment', () => {
     // Arrange
     const enrollmentRequestDto = {
       dependantId: 'fake-dependant-id',
-      clubId: 'fake-club-id'
+      clubId: 'fake-club-id',
     };
 
     // Act
@@ -119,21 +119,20 @@ describe('E2E RequestEnrollment', () => {
       .send(enrollmentRequestDto);
 
     // Assert
-    expect([HttpStatus.BAD_REQUEST, HttpStatus.NOT_FOUND, HttpStatus.UNPROCESSABLE_ENTITY, HttpStatus.FORBIDDEN]).toContain(enrollmentResponse.status);
+    expect([HttpStatus.BAD_REQUEST, HttpStatus.NOT_FOUND, HttpStatus.UNPROCESSABLE_ENTITY, HttpStatus.FORBIDDEN]).toContain(
+      enrollmentResponse.status,
+    );
   });
 
   it('Não deve criar solicitação sem token de autorização', async () => {
     // Arrange
     const enrollmentRequestDto = {
       dependantId: 'any-dependant-id',
-      clubId: 'any-club-id'
+      clubId: 'any-club-id',
     };
 
     // Act & Assert
-    await request(app.getHttpServer())
-      .post('/enrollments')
-      .send(enrollmentRequestDto)
-      .expect(HttpStatus.UNAUTHORIZED);
+    await request(app.getHttpServer()).post('/enrollments').send(enrollmentRequestDto).expect(HttpStatus.UNAUTHORIZED);
   });
 
   it('Não deve criar solicitação sem dependantId', async () => {

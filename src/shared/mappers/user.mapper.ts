@@ -59,7 +59,7 @@ export default class UserMapper {
       zip_code: entity.address.zipCode,
     };
   }
-  
+
   static entityToDto(entity: Entity): UserDto {
     return {
       id: entity.id,

@@ -26,7 +26,7 @@ describe('AdminController (e2e)', () => {
     await app.init();
 
     prisma = app.get(PrismaService);
-    
+
     // Criar usuário admin e regular
     adminUser = await createTestUser(`admin-${crypto.randomUUID()}@test.com`, [UserRoles.ADMIN], prisma, app);
     regularUser = await createTestUser(`regular-${crypto.randomUUID()}@test.com`, [UserRoles.SEM_FUNCAO], prisma, app);
@@ -43,7 +43,7 @@ describe('AdminController (e2e)', () => {
       zip_code: '12345678',
       neighborhood: 'Test Neighborhood',
     };
-    
+
     const club = await prisma.club.create({ data: clubData });
     testClubId = club.id;
   });
@@ -70,7 +70,7 @@ describe('AdminController (e2e)', () => {
     it('Deve atualizar apenas o nome do clube', async () => {
       const originalClub = await prisma.club.findUnique({ where: { id: testClubId } });
       const originalMaxMembers = originalClub?.max_members;
-      
+
       const updateData = {
         name: 'Apenas Nome Novo',
       };
@@ -95,7 +95,7 @@ describe('AdminController (e2e)', () => {
           district: 'Bairro Novo',
           city: 'Cidade Nova',
           state: 'SP',
-          complement: 'Complemento Novo'
+          complement: 'Complemento Novo',
         },
       };
 
@@ -127,10 +127,7 @@ describe('AdminController (e2e)', () => {
         name: 'Tentativa sem auth',
       };
 
-      await request(app.getHttpServer())
-        .patch(`/admin/clubs/${testClubId}`)
-        .send(updateData)
-        .expect(HttpStatus.UNAUTHORIZED);
+      await request(app.getHttpServer()).patch(`/admin/clubs/${testClubId}`).send(updateData).expect(HttpStatus.UNAUTHORIZED);
     });
 
     it('Deve retornar 403 quando usuário não é admin', async () => {

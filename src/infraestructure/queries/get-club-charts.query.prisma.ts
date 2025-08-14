@@ -24,7 +24,7 @@ export class GetClubChartsQueryPrisma {
 
   async execute(clubId: string): Promise<ClubChartsData> {
     // Buscar contagem de membros por tipo
-    const memberCountByType = await this.prisma.$queryRaw<Array<{ type: string; count: BigInt }>>`
+    const memberCountByType = await this.prisma.$queryRaw<Array<{ type: string; count: bigint }>>`
       SELECT d.type, COUNT(*) as count
       FROM "ClubMembership" cm
       INNER JOIN "Dependant" d ON cm.member_id = d.id
@@ -33,7 +33,7 @@ export class GetClubChartsQueryPrisma {
     `;
 
     // Buscar matrículas nos últimos 12 meses
-    const enrollmentsOverTime = await this.prisma.$queryRaw<Array<{ month: string; count: BigInt }>>`
+    const enrollmentsOverTime = await this.prisma.$queryRaw<Array<{ month: string; count: bigint }>>`
       SELECT 
         TO_CHAR(DATE_TRUNC('month', requested_at), 'YYYY-MM') as month,
         COUNT(*) as count
@@ -46,7 +46,7 @@ export class GetClubChartsQueryPrisma {
     `;
 
     // Buscar contagem de membros por sexo
-    const memberCountBySex = await this.prisma.$queryRaw<Array<{ sex: string; count: BigInt }>>`
+    const memberCountBySex = await this.prisma.$queryRaw<Array<{ sex: string; count: bigint }>>`
       SELECT d.sex, COUNT(*) as count
       FROM "ClubMembership" cm
       INNER JOIN "Dependant" d ON cm.member_id = d.id
@@ -71,15 +71,15 @@ export class GetClubChartsQueryPrisma {
     });
 
     return {
-      memberCountByType: memberCountByType.map(item => ({
+      memberCountByType: memberCountByType.map((item) => ({
         type: item.type,
         count: Number(item.count),
       })),
-      enrollmentsOverTime: enrollmentsOverTime.map(item => ({
+      enrollmentsOverTime: enrollmentsOverTime.map((item) => ({
         month: item.month,
         count: Number(item.count),
       })),
-      memberCountBySex: memberCountBySex.map(item => ({
+      memberCountBySex: memberCountBySex.map((item) => ({
         sex: item.sex,
         count: Number(item.count),
       })),

@@ -51,9 +51,7 @@ describe('AdminGetUser', () => {
     const userId = 'nonexistent-user';
     jest.spyOn(unitOfWork.userRepository, 'find').mockResolvedValue(null);
 
-    await expect(useCase.execute(userId)).rejects.toThrow(
-      new EntityNotFoundException('User', userId)
-    );
+    await expect(useCase.execute(userId)).rejects.toThrow(new EntityNotFoundException('User', userId));
 
     expect(unitOfWork.userRepository.find).toHaveBeenCalledWith(userId);
   });

@@ -69,10 +69,7 @@ describe('UNIT AdminListClubMembersUseCase', () => {
     };
 
     const moduleRef = await Test.createTestingModule({
-      providers: [
-        AdminListClubMembersUseCase,
-        { provide: UNIT_OF_WORK, useValue: mockUnitOfWork },
-      ],
+      providers: [AdminListClubMembersUseCase, { provide: UNIT_OF_WORK, useValue: mockUnitOfWork }],
     }).compile();
 
     useCase = moduleRef.get(AdminListClubMembersUseCase);
@@ -129,9 +126,7 @@ describe('UNIT AdminListClubMembersUseCase', () => {
 
     mockUnitOfWork.clubRepository.find.mockResolvedValue(mockClub);
     mockUnitOfWork.clubMembershipRepository.findByClub.mockResolvedValue([mockMembership, secondMembership]);
-    mockUnitOfWork.familyRepository.findDependant
-      .mockResolvedValueOnce(mockDependant)
-      .mockResolvedValueOnce(secondDependant);
+    mockUnitOfWork.familyRepository.findDependant.mockResolvedValueOnce(mockDependant).mockResolvedValueOnce(secondDependant);
 
     // Act
     const result = await useCase.execute(query);

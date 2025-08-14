@@ -29,9 +29,7 @@ export default class RequestEnrollment {
       const existingRequests = await this.uow.enrollmentRequestRepository.findByDependantAndClub(dependant.id, club.id);
       const pendingRequests = existingRequests.filter((p) => p.status === EnrollmentStatus.PENDING);
       if (pendingRequests.length > 0) {
-        throw new InvalidOperationException(
-          'Uma solicitação de matrícula pendente já existe para este dependente neste clube.',
-        );
+        throw new InvalidOperationException('Uma solicitação de matrícula pendente já existe para este dependente neste clube.');
       }
       const existingMembership = await this.uow.clubMembershipRepository.findByMemberAndClub(dependant.id, club.id);
       if (existingMembership && existingMembership.status === MembershipStatus.ACTIVE) {

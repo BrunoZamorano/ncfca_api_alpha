@@ -11,22 +11,22 @@ export class ClubQueryPrisma implements ClubQuery {
     const result = await this.prisma.clubMembership.findMany({
       where: {
         club_id: clubId,
-        status: 'ACTIVE'
+        status: 'ACTIVE',
       },
       include: {
         dependant: true,
         family: {
           include: {
-            holder: true
-          }
-        }
+            holder: true,
+          },
+        },
       },
       orderBy: {
-        created_at: 'desc'
-      }
+        created_at: 'desc',
+      },
     });
 
-    return result.map(membership => ({
+    return result.map((membership) => ({
       id: membership.id,
       dependantId: membership.dependant.id,
       dependantName: `${membership.dependant.first_name} ${membership.dependant.last_name}`,
@@ -44,8 +44,8 @@ export class ClubQueryPrisma implements ClubQuery {
         lastName: membership.family.holder.last_name,
         email: membership.family.holder.email,
         phone: membership.family.holder.phone,
-        cpf: membership.family.holder.cpf
-      }
+        cpf: membership.family.holder.cpf,
+      },
     }));
   }
 }

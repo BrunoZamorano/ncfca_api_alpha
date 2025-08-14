@@ -4,7 +4,7 @@ export default interface TokenService {
   decode(token: string): Promise<DecodedToken>;
   verifyAccessToken(token: string): Promise<DecodedToken>;
   verifyRefreshToken(token: string): Promise<DecodedToken>;
-}
+};;;;;;;;;;
 
 export interface Payload {
   familyId: string;

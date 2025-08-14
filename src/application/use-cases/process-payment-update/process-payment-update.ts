@@ -35,17 +35,13 @@ export default class ProcessPaymentUpdate {
       const family = await this.uow.familyRepository.find(transaction.familyId);
       if (!family) throw new EntityNotFoundException('Family', transaction.familyId);
       if (family.status === FamilyStatus.AFFILIATED) {
-        this.logger.log(
-          `Família ${transaction.familyId} já está com o status ${family.status}. Transação Salva. Nenhuma ação necessária.`,
-        );
+        this.logger.log(`Família ${transaction.familyId} já está com o status ${family.status}. Transação Salva. Nenhuma ação necessária.`);
         return void 0;
       }
       family.activateAffiliation();
       await this.uow.familyRepository.save(family);
       await this.uow.transactionRepository.save(transaction);
-      this.logger.log(
-        `Afiliação da família ${family.id} ativada. Transação ${transaction.id} atualizada para ${newStatus}.`,
-      );
+      this.logger.log(`Afiliação da família ${family.id} ativada. Transação ${transaction.id} atualizada para ${newStatus}.`);
       return void 0;
     });
   }

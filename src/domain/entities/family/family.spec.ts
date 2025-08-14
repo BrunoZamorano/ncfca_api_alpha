@@ -54,9 +54,7 @@ describe('Família', function () {
     const family = new Family({ holderId: '1', id: '1' });
     const dependant = createValidDependant('dep-1');
     family.addDependant(dependant);
-    expect(() => family.addDependant(dependant)).toThrow(
-      new DomainException('Dependant is already a member of this family.'),
-    );
+    expect(() => family.addDependant(dependant)).toThrow(new DomainException('Dependant is already a member of this family.'));
   });
 
   it('Deve remover um dependente da família', () => {

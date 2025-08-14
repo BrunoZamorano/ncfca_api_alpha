@@ -14,7 +14,7 @@ export default class ClubRequest {
   private _rejectionReason: string | null;
 
   constructor(props: ClubRequestProps) {
-    if ( props.maxMembers && props.maxMembers < 1) throw new InvalidOperationException('Max members must be greater than 0.');
+    if (props.maxMembers && props.maxMembers < 1) throw new InvalidOperationException('Max members must be greater than 0.');
     this._id = props.id;
     this._clubName = props.clubName;
     this._address = props.address;

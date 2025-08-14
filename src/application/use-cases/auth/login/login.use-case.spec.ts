@@ -1,4 +1,4 @@
-na import { Test, TestingModule } from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 import Login from './login';
 import TokenService from '@/application/services/token-service';
 import UserRepository from '@/domain/repositories/user-repository';

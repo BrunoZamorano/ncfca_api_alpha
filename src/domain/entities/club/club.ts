@@ -1,8 +1,4 @@
-import {
-  DomainException,
-  EntityNotFoundException,
-  InvalidOperationException,
-} from '@/domain/exceptions/domain-exception';
+import { DomainException, EntityNotFoundException, InvalidOperationException } from '@/domain/exceptions/domain-exception';
 import IdGenerator from '@/application/services/id-generator';
 import ClubMembership from '@/domain/entities/club-membership/club-membership.entity';
 import Address from '@/domain/value-objects/address/address';
@@ -48,7 +44,7 @@ export default class Club {
   }
 
   public addMember(memberId: string, familyId: string, idGenerator: IdGenerator): void {
-    let membership = this.findMembershipByDependantId(memberId);
+    const membership = this.findMembershipByDependantId(memberId);
     if (membership?.isActive()) {
       throw new InvalidOperationException(`Dependant ${memberId} is already an active member of this club.`);
     }

@@ -23,7 +23,7 @@ export default class Dependant {
     this._id = props.id;
     this._sex = props.sex;
     this._type = props.type ?? DependantType.STUDENT;
-    this._email = props.email ?? new Email(`${crypto.randomUUID()}@ex.com`); 
+    this._email = props.email ?? new Email(`${crypto.randomUUID()}@ex.com`);
     this._phone = props.phone;
     this._lastName = props.lastName;
     this._familyId = props.familyId ?? 'id_family';
