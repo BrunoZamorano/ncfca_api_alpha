@@ -3,7 +3,6 @@ project:
   summary: >
     Backend API built with NestJS. Manages users, families, clubs, and enrollments.
     TypeScript + PostgreSQL (Prisma), async tasks with RabbitMQ, API docs via Swagger/OpenAPI.
-
 folders:
   - path: "./"
     purpose: "Root configuration and docs."

@@ -1,143 +1,103 @@
-  ```yaml
-  test_standards:
-    - id: use_jest
-      rule: "Use Jest as the testing framework."
-      config_example: |
-        // jest.config.ts
-        import type { Config } from 'jest';
-        const config: Config = {
-          preset: 'ts-jest',
-          testEnvironment: 'node',
-          roots: ['<rootDir>/tests'],
-          moduleFileExtensions: ['ts', 'js', 'json'],
-          clearMocks: true,
-        };
-        export default config;
-      test_example: |
-        // Example test file (TypeScript)
-        import { approveCandidate } from '@/application/use-cases/approve-candidate';
-        
-        describe('UNIT ApproveCandidate', () => {
-          it('Deve aprovar candidato válido', async () => {
-            const result = await approveCandidate({ cpf: '12345678909' });
-            expect(result.approved).toBe(true);
-          });
-        });
+test_standards:
+  - code-standards: @code.standards.yml
+  - utilize jest
+  - id: arrange_act_assert
+    rule: "Follow the Arrange–Act–Assert steps."
+    bad_example: |
+      it("creates a club", async () => {
+        const result = await createClub({ name: "Chess" });
+        expect(result.id).toBeDefined();
+        const found = await repo.findByName("Chess");
+        expect(found).not.toBeNull(); // Mixed flow, no clear phases
+      });
+    good_example: |
+      it("creates a club", async () => {
+        // Arrange
+        const input = { name: "Chess" };
 
-    - id: describe_naming
-      rule: "Top-level describe must follow the pattern: '(UNIT | INT | E2E) <UseCaseName>'. Do NOT include HTTP/method details (e.g., '(POST)') even for E2E."
-      bad_example: |
-        describe('E2E (POST) /candidates/approve', () => {
-          // ...
-        });
-      good_example: |
-        describe('E2E ApproveCandidate', () => {
-          // ...
-        });
+        // Act
+        const result = await createClub(input);
 
-    - id: it_naming_pt_br_business_rule
-      rule: "Every test (it) must describe exactly ONE business rule, in Portuguese (ubíqua), starting with 'Deve ...' or 'Não deve ...'."
-      bad_example: |
-        it('should approve successfully when payload ok and also returns welcome email', async () => { /* ... */ });
-        it('POST approves candidate', async () => { /* ... */ });
-      good_example: |
-        it('Deve aprovar candidato válido', async () => { /* ... */ });
-        it('Não deve aprovar candidato com CPF inválido', async () => { /* ... */ });
+        // Assert
+        expect(result.id).toBeDefined();
+        await expect(repo.findByName("Chess")).resolves.toMatchObject(input);
+      })
 
-    - id: arrange_act_assert
-      rule: "Follow the Arrange–Act–Assert steps."
-      bad_example: |
-        it('Deve criar clube', async () => {
-          const result = await createClub({ name: 'Xadrez' });
-          expect(result.id).toBeDefined();
-          const found = await repo.findByName('Xadrez');
-          expect(found).not.toBeNull(); // fluxo misturado, sem fases claras
-        });
-      good_example: |
-        it('Deve criar clube', async () => {
-          // Arrange
-          const input = { name: 'Xadrez' };
-        
-          // Act
-          const result = await createClub(input);
-        
-          // Assert
-          expect(result.id).toBeDefined();
-          await expect(repo.findByName('Xadrez')).resolves.toMatchObject(input);
-        });
+  - id: independent_tests
+    rule: "Tests should be independent from one another."
+    bad_example: |
+      let createdId: string;
 
-    - id: independent_tests
-      rule: "Tests must be independent from one another."
-      bad_example: |
-        let createdId: string;
-        
-        it('Deve criar clube (A)', async () => {
-          createdId = (await createClub({ name: 'Música' })).id; // estado compartilhado
-        });
-        
-        it('Deve buscar o clube criado (B)', async () => {
-          const c = await repo.findById(createdId); // depende do teste A
-          expect(c?.name).toBe('Música');
-        });
-      good_example: |
-        it('Deve criar clube', async () => {
-          const { id } = await createClub({ name: 'Música' });
-          const found = await repo.findById(id);
-          expect(found?.name).toBe('Música');
-        });
-        
-        it('Deve localizar clube por nome', async () => {
-          await createClub({ name: 'Arte' });
-          const found = await repo.findByName('Arte');
-          expect(found?.name).toBe('Arte');
-        });
+      it("A) creates a club", async () => {
+        createdId = (await createClub({ name: "Music" })).id; // shared mutable state
+      });
 
-    - id: one_behavior_per_test
-      rule: "Test only one behavior per test."
-      bad_example: |
-        it('Deve criar e excluir clube', async () => {
-          const c = await createClub({ name: 'Teatro' });
-          expect(c.id).toBeDefined();
-          await deleteClub(c.id);
-          await expect(repo.findById(c.id)).resolves.toBeNull();
-        });
-      good_example: |
-        it('Deve criar clube', async () => {
-          const c = await createClub({ name: 'Teatro' });
-          expect(c.id).toBeDefined();
-        });
-        
-        it('Deve excluir clube', async () => {
-          const c = await createClub({ name: 'Teatro' });
-          await deleteClub(c.id);
-          await expect(repo.findById(c.id)).resolves.toBeNull();
-        });
+      it("B) finds the previously created club", async () => {
+        const c = await repo.findById(createdId); // depends on test A
+        expect(c?.name).toBe("Music");
+      });
+    good_example: |
+      it("creates a club", async () => {
+        const { id } = await createClub({ name: "Music" });
+        const found = await repo.findById(id);
+        expect(found?.name).toBe("Music");
+      });
 
-    - id: prepare_environment_beforeEach
-      rule: "Prepare the environment in beforeEach."
-      example: |
-        beforeEach(async () => {
-          await db.reset();       // limpa tabelas
-          jest.clearAllMocks();   // reseta spies/mocks
-        });
-        
-        it('Deve persistir clube', async () => {
-          const c = await createClub({ name: 'Board Games' });
-          expect(await repo.findById(c.id)).toBeTruthy();
-        });
+      it("finds a club by name", async () => {
+        await createClub({ name: "Art" });
+        const found = await repo.findByName("Art");
+        expect(found?.name).toBe("Art");
+      });
 
-    - id: close_connections_afterAll_or_afterEach
-      rule: "Always close open connections in afterAll/afterEach."
-      example: |
-        import { server } from '@/infra/http/server';
-        import { db } from '@/infra/db';
-        
-        afterEach(async () => {
-          await db.releaseTransactionIfAny(); // limpeza por teste, se necessário
-        });
-        
-        afterAll(async () => {
-          await db.disconnect();  // encerra pool do DB
-          await new Promise<void>((resolve) => server.close(() => resolve()));
-        });
-    ```
+  - id: one_behavior_per_test
+    rule: "Test only one behavior per test case."
+    bad_example: |
+      it("creates and deletes a club", async () => {
+        const c = await createClub({ name: "Drama" });
+        expect(c.id).toBeDefined();
+        await deleteClub(c.id);
+        await expect(repo.findById(c.id)).resolves.toBeNull();
+      });
+    good_example: |
+      it("creates a club", async () => {
+        const c = await createClub({ name: "Drama" });
+        expect(c.id).toBeDefined();
+      });
+
+      it("deletes a club", async () => {
+        const c = await createClub({ name: "Drama" });
+        await deleteClub(c.id);
+        await expect(repo.findById(c.id)).resolves.toBeNull();
+      });
+
+  - id: prepare_environment_beforeEach
+    rule: "Prepare the environment in beforeEach."
+    example: |
+      beforeEach(async () => {
+        await db.reset();       // clear tables
+        jest.clearAllMocks();   // reset spies/mocks
+      });
+
+      it("persists a club", async () => {
+        const c = await createClub({ name: "Board Games" });
+        expect(await repo.findById(c.id)).toBeTruthy();
+      });
+
+  - id: close_connections_afterAll_or_afterEach
+    rule: "Always close open connections in afterAll/afterEach."
+    example: |
+      import { server } from "@/infra/http/server";
+      import { db } from "@/infra/db";
+
+      afterEach(async () => {
+        await db.releaseTransactionIfAny(); // per-test cleanup if needed
+      });
+
+      afterAll(async () => {
+        await db.disconnect();  // close DB pool
+        await new Promise<void>((resolve) => server.close(() => resolve()));
+      });
+      
+      - o formato da descrição do teste deve ser assim
+      - ter um describe com o nome do teste "(UNIT | INT | E2E ) ApproveCandidate" nome do teste (geralmente nome do use case)
+      - os testes e2e não devem ter (POST) parara não não, nada desses dertalhes que não servem de nada. um teste garante uma regra de negócio, ponto. então os nomes dos it('[business-rule]') deve ser 1 em português, obedecendo a linguagem ubíqua do projeto e sepre assim 'Deve poder,fazer,deixar,aprovar,etc...' ou 'Não Deve ...' sempre que possível. 
