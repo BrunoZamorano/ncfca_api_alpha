@@ -1,0 +1,8 @@
+-- AlterTable
+ALTER TABLE "Club" ALTER COLUMN "city" SET DEFAULT '',
+ALTER COLUMN "state" SET DEFAULT '',
+ALTER COLUMN "complement" SET DEFAULT '',
+ALTER COLUMN "neighborhood" SET DEFAULT '',
+ALTER COLUMN "number" SET DEFAULT '',
+ALTER COLUMN "street" SET DEFAULT '',
+ALTER COLUMN "zip_code" SET DEFAULT '';

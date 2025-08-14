@@ -68,7 +68,6 @@ const services = [
   { provide: UNIT_OF_WORK, useClass: UnitOfWorkPrisma, scope: Scope.REQUEST },
   { provide: HASHING_SERVICE, useClass: HashingServiceBcrypt },
   { provide: PAYMENT_GATEWAY, useClass: PaymentGatewayMemory },
-  { provide: QUEUE_SERVICE, useClass: QueryServicePrisma },
   { provide: QUERY_SERVICE, useClass: QueryServicePrisma },
   { provide: TOKEN_SERVICE, useClass: TokenServiceJwt },
   { provide: ID_GENERATOR, useClass: UuidGenerator },

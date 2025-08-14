@@ -1,0 +1,121 @@
+task: "Implement Admin Routes"
+description: "Create and implement the administration endpoints to manage clubs, including listing members, pending enrollments, chart data, and approving/rejecting enrollments, following the existing CQRS architecture and project standards. All implementation will strictly adhere to the guidelines specified in 'code.standards.yml' and 'test.standards.yml'."
+
+phases:
+  - name: "Phase 1: Setup and Query Use Cases (Read Operations)"
+    steps:
+      - action: "create_file"
+        file: "src/application/use-cases/admin/list-club-members/list-club-members.query.ts"
+        details: "Define the ListClubMembersQuery class with clubId and pagination parameters."
+        purpose: "Create the query object for the list members use case."
+
+      - action: "create_file"
+        file: "src/application/use-cases/admin/list-club-members/list-club-members.use-case.ts"
+        details: "Implement the ListClubMembersUseCase, which will use the QueryService to execute the query and return the club members."
+        purpose: "Encapsulate the business logic for listing members of a specific club."
+
+      - action: "create_file"
+        file: "src/application/use-cases/admin/list-club-members/list-club-members.use-case.spec.ts"
+        details: "Create a unit test for ListClubMembersUseCase, mocking the QueryService."
+        purpose: "Ensure the use case works as expected."
+
+      - action: "create_file"
+        file: "src/application/use-cases/admin/list-pending-enrollments/list-pending-enrollments.query.ts"
+        details: "Define the ListPendingEnrollmentsQuery class with clubId."
+        purpose: "Create the query object for the list pending enrollments use case."
+
+      - action: "create_file"
+        file: "src/application/use-cases/admin/list-pending-enrollments/list-pending-enrollments.use-case.ts"
+        details: "Implement the ListPendingEnrollmentsUseCase to fetch enrollments with PENDING status for a club."
+        purpose: "Encapsulate the business logic for listing pending enrollments."
+
+      - action: "create_file"
+        file: "src/application/use-cases/admin/list-pending-enrollments/list-pending-enrollments.use-case.spec.ts"
+        details: "Create a unit test for the ListPendingEnrollmentsUseCase."
+        purpose: "Ensure the correct functionality of the use case."
+
+      - action: "create_file"
+        file: "src/application/use-cases/admin/get-club-charts/get-club-charts.query.ts"
+        details: "Define the GetClubChartsQuery class with clubId."
+        purpose: "Create the query object for the chart data."
+
+      - action: "create_file"
+        file: "src/infraestructure/queries/get-club-charts.query.prisma.ts"
+        details: "Implement the SQL or Prisma query to aggregate the necessary data for the charts (e.g., member count by type, enrollments over time)."
+        purpose: "Create a performant query for the dashboard."
+
+      - action: "create_file"
+        file: "src/application/use-cases/admin/get-club-charts/get-club-charts.use-case.ts"
+        details: "Implement the GetClubChartsUseCase that executes the GetClubChartsQuery."
+        purpose: "Encapsulate the business logic to obtain chart data."
+
+      - action: "create_file"
+        file: "src/application/use-cases/admin/get-club-charts/get-club-charts.use-case.spec.ts"
+        details: "Create a unit test for the GetClubChartsUseCase."
+        purpose: "Verify the correctness of the charts use case."
+
+  - name: "Phase 2: Command Use Cases (Write Operations)"
+    steps:
+      - action: "create_file"
+        file: "src/application/use-cases/admin/approve-enrollment/approve-enrollment.command.ts"
+        details: "Define the ApproveEnrollmentCommand with clubId and enrollmentId."
+        purpose: "Create the command object to approve an enrollment."
+
+      - action: "create_file"
+        file: "src/application/use-cases/admin/approve-enrollment/approve-enrollment.use-case.ts"
+        details: "Implement the ApproveEnrollmentUseCase, which will find the enrollment, change its status to APPROVED, and persist the change. It will reuse logic from the existing ApproveEnrollment if applicable, but with an admin context."
+        purpose: "Encapsulate the business logic for approving enrollments by an admin."
+
+      - action: "create_file"
+        file: "src/application/use-cases/admin/approve-enrollment/approve-enrollment.use-case.spec.ts"
+        details: "Create a unit test for the ApproveEnrollmentUseCase, mocking the repository."
+        purpose: "Ensure that the enrollment approval works correctly."
+
+      - action: "create_file"
+        file: "src/application/use-cases/admin/reject-enrollment/reject-enrollment.command.ts"
+        details: "Define the RejectEnrollmentCommand with clubId and enrollmentId."
+        purpose: "Create the command object to reject an enrollment."
+
+      - action: "create_file"
+        file: "src/application/use-cases/admin/reject-enrollment/reject-enrollment.use-case.ts"
+        details: "Implement the RejectEnrollmentUseCase, which will find the enrollment, change its status to REJECTED, and persist the change."
+        purpose: "Encapsulate the business logic for rejecting enrollments by an admin."
+
+      - action: "create_file"
+        file: "src/application/use-cases/admin/reject-enrollment/reject-enrollment.use-case.spec.ts"
+        details: "Create a unit test for the RejectEnrollmentUseCase."
+        purpose: "Ensure that the enrollment rejection works correctly."
+
+  - name: "Phase 3: Integration and Verification"
+    steps:
+      - action: "update_file"
+        file: "src/shared/modules/admin.module.ts"
+        details: "Register all new UseCases and Query Handlers in the AdminModule."
+        purpose: "Make the new services available for dependency injection."
+
+      - action: "update_file"
+        file: "src/infraestructure/controllers/admin.controller.ts"
+        details: "Inject and use the new use cases to create the 5 endpoints: GET /clubs/{clubId}/members, GET /clubs/{clubId}/enrollments/pending, GET /clubs/{clubId}/charts, POST /clubs/{clubId}/enrollments/{enrollmentId}/approve, POST /clubs/{clubId}/enrollments/{enrollmentId}/reject."
+        purpose: "Expose the new functionality through the REST API."
+
+      - action: "create_file"
+        file: "test/admin-routes.e2e-spec.ts"
+        details: "Create E2E tests for the 5 new endpoints. The tests should cover the full flow: create test data (club, members, enrollments), call the endpoint, and verify the response."
+        purpose: "Ensure the endpoints work correctly in an integrated environment."
+
+      - action: "run_command"
+        command: "pnpm run test:unit"
+        details: "Run all unit tests to ensure no existing functionality was broken."
+        purpose: "Regression check."
+
+      - action: "run_command"
+        command: "pnpm run test:e2e -- test/admin-routes.e2e-spec.ts"
+        details: "Run the new E2E tests to validate the complete implementation."
+        purpose: "Final validation of the new feature."
+
+  - name: "Phase 4: Reporting"
+    steps:
+      - action: "create_report"
+        file: "tasks/04.admin-routes.report.md"
+        details: "Generate a report containing the file tree with all files created in this task."
+        purpose: "Document the changes made."

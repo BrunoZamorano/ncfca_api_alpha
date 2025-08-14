@@ -9,8 +9,14 @@ import AdminChangeClubPrincipal from '@/application/use-cases/admin/change-club-
 import AdminListAllEnrollments from '@/application/use-cases/admin/list-all-enrollments/list-all-enrollments';
 import AdminGetUser from '@/application/use-cases/admin/get-user/get-user';
 import UpdateClubByAdmin from '@/application/use-cases/admin/update-club-by-admin/update-club-by-admin.use-case';
+import AdminListClubMembersUseCase from '@/application/use-cases/admin/list-club-members/list-club-members.use-case';
+import AdminListPendingEnrollmentsUseCase from '@/application/use-cases/admin/list-pending-enrollments/list-pending-enrollments.use-case';
+import AdminGetClubChartsUseCase from '@/application/use-cases/admin/get-club-charts/get-club-charts.use-case';
+import AdminApproveEnrollmentUseCase from '@/application/use-cases/admin/approve-enrollment/approve-enrollment.use-case';
+import AdminRejectEnrollmentUseCase from '@/application/use-cases/admin/reject-enrollment/reject-enrollment.use-case';
 
 import AdminController from '@/infraestructure/controllers/admin.controller';
+import { GetClubChartsQueryPrisma } from '@/infraestructure/queries/get-club-charts.query.prisma';
 
 import SharedModule from './shared.module';
 import ListDependants from '@/application/use-cases/list-dependants/list-dependants';
@@ -33,6 +39,12 @@ import { UserQueryPrisma } from '@/infraestructure/queries/user.query.prisma';
     SearchUsers,
     AdminGetUser,
     UpdateClubByAdmin,
+    AdminListClubMembersUseCase,
+    AdminListPendingEnrollmentsUseCase,
+    AdminGetClubChartsUseCase,
+    AdminApproveEnrollmentUseCase,
+    AdminRejectEnrollmentUseCase,
+    GetClubChartsQueryPrisma,
     {
       provide: USER_QUERY,
       useClass: UserQueryPrisma,

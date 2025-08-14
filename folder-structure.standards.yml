@@ -1,0 +1,60 @@
+project:
+  name: "NCFCA API"
+  summary: >
+    Backend API built with NestJS. Manages users, families, clubs, and enrollments.
+    TypeScript + PostgreSQL (Prisma), async tasks with RabbitMQ, API docs via Swagger/OpenAPI.
+
+folders:
+  - path: "./"
+    purpose: "Root configuration and docs."
+    files:
+      - ".gitignore"
+      - "package.json"
+      - "tsconfig.json"
+      - "nest-cli.json"
+      - "eslint.config.mjs"
+      - "README.md"
+      - "GEMINI.md"
+
+  - path: "prisma/"
+    purpose: "Database schema and migrations (Prisma)."
+    files:
+      - "schema.prisma"
+    dirs:
+      - "scripts/: DB helpers (seed/reset)"
+
+  - path: "src/"
+    purpose: "Application source code."
+    files:
+      - "main.ts"
+      - "app.module.ts"
+    dirs:
+      - path: "application/"
+        purpose: "Use cases and app services."
+        dirs:
+          - "use-cases/: Business actions (e.g., approve-candidate, create-club)"
+          - "services/: App-level services (e.g., token-service, payment-gateway)"
+          - "dtos/: application dtos"
+      - path: "domain/"
+        purpose: "Domain entities, DTOs, and repository contracts."
+        dirs:
+          - "entities/: Domain classes (e.g., User, Club)"
+          - "dtos/: domain dtos"
+          - "repositories/: Interfaces/contracts"
+      - path: "infrastructure/"
+        purpose: "Concrete implementations and integrations."
+        dirs:
+          - "controllers/: NestJS HTTP controllers"
+          - "database/: Prisma service/module"
+          - "dtos/: infra dtos"
+          - "repositories/: Prisma repository implementations"
+      - path: "shared/"
+        purpose: "Shared modules/utilities (guards, decorators, utils)."
+
+  - path: "tasks/"
+    purpose: "Project task docs/planning."
+
+  - path: "test/"
+    purpose: "E2E tests"
+
+
