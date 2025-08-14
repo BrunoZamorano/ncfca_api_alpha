@@ -1,0 +1,141 @@
+code_standards:
+  - id: variables_methods_camelCase
+    rule: "Variables and methods must use camelCase."
+    bad_example: |
+      const user_name = "Ana";
+      function Get_User() {
+        return user_name;
+      }
+    good_example: |
+      const userName = "Ana";
+      function getUser() {
+        return userName;
+      }
+
+  - id: classes_interfaces_PascalCase
+    rule: "Classes and interfaces must use PascalCase."
+    bad_example: |
+      class userService {}
+      interface club {}
+    good_example: |
+      class UserService {}
+      interface Club {}
+
+  - id: files_kebab_case
+    rule: "File names must use kebab-case."
+    bad_filenames:
+      - userService.ts
+      - ClubRepositoryPrisma.ts
+    good_filenames:
+      - user-service.ts
+      - club-repository-prisma.ts
+
+  - id: interfaces_no_I_prefix
+    rule: "Interfaces must NOT start with the letter 'I'. Use a semantic name."
+    bad_example: |
+      interface IClubService {
+        getClub(id: string): Club;
+      }
+      class ClubRepositoryPrisma implements IClubRepository {}
+    good_example: |
+      interface ClubService {
+        getClub(id: string): Club;
+      }
+      class ClubRepositoryPrisma implements ClubRepository {}
+
+  - id: no_blank_lines_inside_methods
+    rule: "Do not leave blank lines inside methods/algorithms."
+    bad_example: |
+      function total(items: number[]) {
+
+        let sum = 0;
+
+        for (const n of items) {
+
+          sum += n;
+
+        }
+
+        return sum;
+
+      }
+    good_example: |
+      function total(items: number[]) {
+        let sum = 0;
+        for (const n of items) {
+          sum += n;
+        }
+        return sum;
+      }
+
+  - id: avoid_magic_numbers
+    rule: "Avoid magic numbers; extract them into constants."
+    bad_example: |
+      if (status === 7) {
+        retry(3);
+      }
+    good_example: |
+      const STATUS_APPROVED = 7;
+      const MAX_RETRIES = 3;
+      if (status === STATUS_APPROVED) {
+        retry(MAX_RETRIES);
+      }
+
+  - id: never_use_var_prefer_let
+    rule: "Never use 'var'; prefer 'let'."
+    bad_example: |
+      var count = 0;
+      for (var i = 0; i < 10; i++) {
+        count += i;
+      }
+    good_example: |
+      let count = 0;
+      for (let i = 0; i < 10; i++) {
+        count += i;
+      }
+
+  - id: prefer_const_over_let
+    rule: "Prefer 'const' instead of 'let' whenever possible."
+    bad_example: |
+      let timeoutMs = 5000; // never reassigned
+      setTimeout(fn, timeoutMs);
+    good_example: |
+      const TIMEOUT_MS = 5000;
+      setTimeout(fn, TIMEOUT_MS);
+
+  - id: import_order
+    rule: "Order imports: framework → domain → application → infra → shared → local ('./'). Separate groups with a blank line."
+    bad_example: |
+      import { formatMoney } from "@/shared/money";
+      import { CreateClub } from "@/application/use-cases/create-club";
+      import express from "express";
+      import { Club } from "@/domain/club";
+      import { prisma } from "@/infra/db";
+      import { toTitle } from "./utils";
+    good_example: |
+      import express from "express";
+
+      import { Club } from "@/domain/club";
+
+      import { CreateClub } from "@/application/use-cases/create-club";
+
+      import { prisma } from "@/infra/db";
+
+      import { formatMoney } from "@/shared/money";
+
+      import { toTitle } from "./utils";
+
+  - id: touch_only_assigned_scope
+    rule: "Only change what you were assigned. If extra work is needed, stop and ask."
+    bad_example: |
+      # Task: Fix login bug.
+      # Changes:
+      #  - auth/login.controller.ts (ok)
+      #  - profile/profile.service.ts (unrelated refactor)
+      #  - billing/* (drive-by rename)
+    good_example: |
+      # Task: Fix login bug.
+      # Changes:
+      #  - auth/login.controller.ts (fix null-check)
+      #  - auth/login.spec.ts (add regression test)
+      # If more is needed (e.g., profile module), pause and request approval.

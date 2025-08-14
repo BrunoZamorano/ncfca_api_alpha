@@ -33,6 +33,9 @@ export default class ApproveEnrollment {
       if (!family || !family.isAffiliated()) {
         throw new InvalidOperationException('Cannot approve enrollment for a family that is not affiliated.');
       }
+      if (club.isAtMaxCapacity()) {
+        throw new InvalidOperationException('O clube já atingiu o número máximo de membros.');
+      }
       club.addMember(request.dependantId, request.familyId, this._idGenerator);
       request.approve();
       await this._uow.clubRepository.save(club);

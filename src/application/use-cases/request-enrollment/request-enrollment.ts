@@ -37,6 +37,9 @@ export default class RequestEnrollment {
       if (existingMembership && existingMembership.status === MembershipStatus.ACTIVE) {
         throw new InvalidOperationException('O Dependente já é membro ativo deste clube.');
       }
+      if (club.isAtMaxCapacity()) {
+        throw new InvalidOperationException('O clube já atingiu o número máximo de membros.');
+      }
       const request = new EnrollmentRequest({
         dependantId: dependant.id,
         familyId: family.id,

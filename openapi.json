@@ -292,6 +292,45 @@
         ]
       }
     },
+    "/admin/users/{userId}": {
+      "get": {
+        "operationId": "AdminController_getUserById",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dados do usuário retornados com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Usuário não encontrado."
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Obtém os detalhes de um usuário específico por ID",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
     "/admin/clubs": {
       "get": {
         "operationId": "AdminController_listClubs",
@@ -459,7 +498,7 @@
     },
     "/admin/clubs/{clubId}/director": {
       "patch": {
-        "operationId": "AdminController_changeClubDirector",
+        "operationId": "AdminController_changeClubPrincipal",
         "parameters": [
           {
             "name": "clubId",
@@ -475,7 +514,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ChangeClubDirectorDto"
+                "$ref": "#/components/schemas/ChangePrincipalDto"
               }
             }
           }
@@ -521,6 +560,48 @@
           }
         ],
         "summary": "Lista todas as solicitações de matrícula do sistema",
+        "tags": [
+          "Admin"
+        ]
+      }
+    },
+    "/admin/clubs/{clubId}": {
+      "patch": {
+        "operationId": "AdminController_updateClub",
+        "parameters": [
+          {
+            "name": "clubId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateClubByAdminDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Dados do clube atualizados com sucesso."
+          },
+          "404": {
+            "description": "Clube não encontrado."
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Atualiza os dados de um clube específico",
         "tags": [
           "Admin"
         ]
@@ -1647,7 +1728,6 @@
             "type": "number",
             "description": "Número de itens por página.",
             "minimum": 1,
-            "maximum": 100,
             "default": 10
           }
         }
@@ -2176,10 +2256,10 @@
           "dependants"
         ]
       },
-      "ChangeClubDirectorDto": {
+      "ChangePrincipalDto": {
         "type": "object",
         "properties": {
-          "newDirectorId": {
+          "newPrincipalId": {
             "type": "string",
             "description": "ID do usuário que será o novo diretor do clube.",
             "example": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
@@ -2187,7 +2267,7 @@
           }
         },
         "required": [
-          "newDirectorId"
+          "newPrincipalId"
         ]
       },
       "EnrollmentRequestDto": {
@@ -2257,6 +2337,29 @@
           "resolvedAt",
           "rejectionReason"
         ]
+      },
+      "UpdateClubByAdminDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Clube de Debate Renovado",
+            "description": "Nome do clube"
+          },
+          "maxMembers": {
+            "type": "number",
+            "example": 25,
+            "description": "Número máximo de membros do clube"
+          },
+          "address": {
+            "description": "Endereço do clube",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AddressDto"
+              }
+            ]
+          }
+        }
       },
       "RegisterUserInputDto": {
         "type": "object",
@@ -3072,34 +3175,70 @@
         "properties": {
           "id": {
             "type": "string",
-            "format": "uuid"
+            "description": "ID único da solicitação de criação do clube.",
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "requesterId": {
+            "type": "string",
+            "description": "ID do usuário que fez a solicitação de criação do clube.",
+            "format": "uuid",
+            "example": "550e8400-e29b-41d4-a716-446655440001"
           },
           "clubName": {
-            "type": "string"
+            "type": "string",
+            "description": "Nome do clube solicitado.",
+            "example": "Clube de Oratória Brasília"
           },
           "status": {
             "type": "string",
+            "description": "Status atual da solicitação de criação do clube.",
             "enum": [
               "PENDING",
               "APPROVED",
               "REJECTED"
+            ],
+            "example": "PENDING"
+          },
+          "maxMembers": {
+            "type": "number",
+            "description": "Número máximo de membros permitidos no clube.",
+            "example": 50,
+            "minimum": 1
+          },
+          "address": {
+            "description": "Endereço onde o clube será localizado.",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AddressDto"
+              }
             ]
           },
           "requestedAt": {
             "format": "date-time",
-            "type": "string"
+            "type": "string",
+            "description": "Data e hora em que a solicitação foi criada.",
+            "example": "2024-01-15T10:30:00Z"
           },
           "resolvedAt": {
-            "type": "object"
+            "format": "date-time",
+            "type": "string",
+            "description": "Data e hora em que a solicitação foi resolvida (aprovada ou rejeitada).",
+            "example": "2024-01-20T14:45:00Z"
           },
           "rejectionReason": {
-            "type": "object"
+            "type": "object",
+            "description": "Motivo da rejeição da solicitação, se aplicável.",
+            "example": "Documentação incompleta"
           }
         },
         "required": [
           "id",
+          "requesterId",
           "clubName",
           "status",
+          "maxMembers",
+          "address",
           "requestedAt"
         ]
       },

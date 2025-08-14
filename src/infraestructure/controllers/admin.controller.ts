@@ -25,6 +25,8 @@ import { DependantsListItemView } from '@/application/queries/dependant-query/de
 import { SearchUsers } from '@/application/use-cases/search-users/search-users';
 import SearchUsersQueryDto from '@/domain/dtos/search-users-query.dto';
 import { PaginatedUserDto } from '@/domain/dtos/paginated-output.dto';
+import UpdateClubByAdmin from '@/application/use-cases/admin/update-club-by-admin/update-club-by-admin.use-case';
+import { UpdateClubByAdminDto } from '@/infraestructure/dtos/admin/update-club-by-admin.dto';
 
 @ApiTags('Admin')
 @ApiBearerAuth('JWT-auth')
@@ -42,6 +44,7 @@ export default class AdminController {
     private readonly _listAllEnrollments: AdminListAllEnrollments,
     private readonly _searchUsers: SearchUsers,
     private readonly _getUser: AdminGetUser,
+    private readonly _updateClubByAdmin: UpdateClubByAdmin,
   ) {}
 
   @Get('/users')
@@ -103,7 +106,7 @@ export default class AdminController {
     return await this._listAffiliations.execute();
   }
 
-  @Patch('/clubs/:clubId/director')
+  @Post('/clubs/:clubId/director')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Altera o diretor (proprietário) de um clube' })
   @ApiResponse({ status: 204, description: 'Diretor do clube alterado com sucesso.' })
@@ -116,5 +119,15 @@ export default class AdminController {
   @ApiResponse({ status: 200, description: 'Lista de matrículas retornada com sucesso.', type: [EnrollmentRequestDto] })
   async listAllEnrollments() {
     return this._listAllEnrollments.execute();
+  }
+
+  @Post('/clubs/:clubId')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Atualiza os dados de um clube específico' })
+  @ApiResponse({ status: 200, description: 'Dados do clube atualizados com sucesso.' })
+  @ApiResponse({ status: 404, description: 'Clube não encontrado.' })
+  async updateClub(@Param('clubId') clubId: string, @Body() data: UpdateClubByAdminDto): Promise<ClubDto> {
+    const club = await this._updateClubByAdmin.execute({ clubId, data });
+    return ClubMapper.entityToDto(club);
   }
 }

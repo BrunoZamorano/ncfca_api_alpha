@@ -52,6 +52,9 @@ export default class Club {
     if (membership?.isActive()) {
       throw new InvalidOperationException(`Dependant ${memberId} is already an active member of this club.`);
     }
+    if (this.isAtMaxCapacity()) {
+      throw new InvalidOperationException('O clube já atingiu o número máximo de membros.');
+    }
     if (membership) {
       membership.reinstate();
     } else {
@@ -93,6 +96,15 @@ export default class Club {
 
   private findMembershipByDependantId(dependantId: string): ClubMembership | undefined {
     return this._members.find((m) => m.memberId === dependantId);
+  }
+
+  public getActiveMembersCount(): number {
+    return this._members.filter((m) => m.isActive()).length;
+  }
+
+  public isAtMaxCapacity(): boolean {
+    if (!this._maxMembers) return false;
+    return this.getActiveMembersCount() >= this._maxMembers;
   }
 
   get members(): Readonly<ClubMembership[]> {

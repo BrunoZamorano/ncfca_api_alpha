@@ -8,6 +8,7 @@ import AdminListAffiliations from '@/application/use-cases/admin/list-affiliatio
 import AdminChangeClubPrincipal from '@/application/use-cases/admin/change-club-director/change-club-principal';
 import AdminListAllEnrollments from '@/application/use-cases/admin/list-all-enrollments/list-all-enrollments';
 import AdminGetUser from '@/application/use-cases/admin/get-user/get-user';
+import UpdateClubByAdmin from '@/application/use-cases/admin/update-club-by-admin/update-club-by-admin.use-case';
 
 import AdminController from '@/infraestructure/controllers/admin.controller';
 
@@ -31,6 +32,7 @@ import { UserQueryPrisma } from '@/infraestructure/queries/user.query.prisma';
     AdminListAllEnrollments,
     SearchUsers,
     AdminGetUser,
+    UpdateClubByAdmin,
     {
       provide: USER_QUERY,
       useClass: UserQueryPrisma,
