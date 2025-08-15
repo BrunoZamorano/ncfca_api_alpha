@@ -1,9 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import RefreshToken from './refresh-token';
-import TokenService, { DecodedToken } from '@/application/services/token-service';
-import { TOKEN_SERVICE } from '@/shared/constants/service-constants';
 import { UnauthorizedException } from '@nestjs/common';
+
 import { UserRoles } from '@/domain/enums/user-roles';
+
+import TokenService, { DecodedToken } from '@/application/services/token-service';
+
+import { TOKEN_SERVICE } from '@/shared/constants/service-constants';
+
+import RefreshToken from './refresh-token.use-case';
 
 describe('UNIT RefreshToken', () => {
   let refreshTokenUseCase: RefreshToken;
@@ -49,13 +53,16 @@ describe('UNIT RefreshToken', () => {
 
     // Assert
     expect(result).toEqual({ accessToken: 'new-access-token', refreshToken: 'new-refresh-token' });
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(tokenService.verifyRefreshToken).toHaveBeenCalledWith(validRefreshToken);
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(tokenService.signAccessToken).toHaveBeenCalledWith({
       sub: decodedToken.sub,
       email: decodedToken.email,
       roles: decodedToken.roles,
       familyId: decodedToken.familyId,
     });
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(tokenService.signRefreshToken).toHaveBeenCalledWith({
       sub: decodedToken.sub,
       email: decodedToken.email,

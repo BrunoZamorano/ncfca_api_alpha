@@ -6,4 +6,4 @@ export default interface UserRepository {
   findAll(): Promise<User[]>;
   find(id: string): Promise<User | null>;
   save(user: User): Promise<User>;
-};;;;;;;;;;
+}

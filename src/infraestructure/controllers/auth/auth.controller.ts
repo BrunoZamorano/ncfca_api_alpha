@@ -1,9 +1,9 @@
 import { Body, Controller, HttpCode, Post, UseGuards, HttpStatus } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 
-import ValidateToken from '@/application/use-cases/auth/validate-token/validate-token';
-import RefreshToken from '@/application/use-cases/auth/refresh-token/refresh-token';
-import Logout from '@/application/use-cases/auth/logout/logout';
+import ValidateToken from '@/application/use-cases/auth/validate-token/validate-token.use-case';
+import RefreshToken from '@/application/use-cases/auth/refresh-token/refresh-token.use-case';
+import Logout from '@/application/use-cases/auth/logout/logout.use-case';
 import Login from '@/application/use-cases/auth/login/login.use-case';
 
 import { LoginInputDto, LoginOutputDto } from '@/infraestructure/dtos/login.dto';

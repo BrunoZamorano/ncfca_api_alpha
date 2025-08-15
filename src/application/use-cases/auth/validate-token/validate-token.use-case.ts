@@ -1,5 +1,7 @@
-import TokenService, { DecodedToken } from '@/application/services/token-service';
 import { Inject, UnauthorizedException } from '@nestjs/common';
+
+import TokenService, { DecodedToken } from '@/application/services/token-service';
+
 import { TOKEN_SERVICE } from '@/shared/constants/service-constants';
 
 export default class ValidateToken {
@@ -8,7 +10,7 @@ export default class ValidateToken {
   async execute(token: string): Promise<DecodedToken> {
     try {
       return await this._tokenSevice.verifyAccessToken(token);
-    } catch (error) {
+    } catch {
       throw new UnauthorizedException('Invalid token');
     }
   }

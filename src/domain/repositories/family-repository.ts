@@ -7,4 +7,4 @@ export default interface FamilyRepository {
   save(family: Family): Promise<Family>;
   find(id: string): Promise<Family | null>;
   findAll(): Promise<Family[]>;
-};;;;;;;;;;
+}

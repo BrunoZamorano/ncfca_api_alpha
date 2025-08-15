@@ -1,4 +1,4 @@
-import Logout from './logout';
+import Logout from './logout.use-case';
 
 describe('UNIT Logout', () => {
   it('Deve executar sem lançar erros', async () => {

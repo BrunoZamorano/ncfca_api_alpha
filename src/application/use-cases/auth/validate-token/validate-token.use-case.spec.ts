@@ -1,9 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import ValidateToken from './validate-token';
-import TokenService, { DecodedToken } from '@/application/services/token-service';
-import { TOKEN_SERVICE } from '@/shared/constants/service-constants';
 import { UnauthorizedException } from '@nestjs/common';
+
 import { UserRoles } from '@/domain/enums/user-roles';
+
+import TokenService, { DecodedToken } from '@/application/services/token-service';
+
+import { TOKEN_SERVICE } from '@/shared/constants/service-constants';
+
+import ValidateToken from './validate-token.use-case';
 
 describe('UNIT ValidateToken', () => {
   let validateTokenUseCase: ValidateToken;
@@ -45,6 +49,7 @@ describe('UNIT ValidateToken', () => {
 
     // Assert
     expect(result).toEqual(decodedToken);
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(tokenService.verifyAccessToken).toHaveBeenCalledWith(validAccessToken);
   });
 

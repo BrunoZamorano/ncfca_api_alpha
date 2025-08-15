@@ -1,15 +1,14 @@
 import { Inject, Logger, UnauthorizedException } from '@nestjs/common';
 
 import HashingService from '@/domain/services/hashing-service';
-import TokenService from '@/application/services/token-service';
-
-import { InvalidOperationException } from '@/domain/exceptions/domain-exception';
 import FamilyRepository from '@/domain/repositories/family-repository';
 import UserRepository from '@/domain/repositories/user-repository';
+import { InvalidOperationException } from '@/domain/exceptions/domain-exception';
+
+import TokenService from '@/application/services/token-service';
 
 import { FAMILY_REPOSITORY, USER_REPOSITORY } from '@/shared/constants/repository-constants';
 import { HASHING_SERVICE, TOKEN_SERVICE } from '@/shared/constants/service-constants';
-import { UserRoles } from '@/domain/enums/user-roles';
 
 export default class Login {
   private readonly logger = new Logger(Login.name);

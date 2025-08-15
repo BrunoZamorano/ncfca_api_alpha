@@ -1,21 +1,25 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import Login from './login';
-import TokenService from '@/application/services/token-service';
-import UserRepository from '@/domain/repositories/user-repository';
+import { UnauthorizedException } from '@nestjs/common';
+
 import User from '@/domain/entities/user/user';
-import { InvalidOperationException } from '@/domain/exceptions/domain-exception';
 import Password from '@/domain/value-objects/password/password';
 import HashingService from '@/domain/services/hashing-service';
 import Email from '@/domain/value-objects/email/email';
 import Cpf from '@/domain/value-objects/cpf/cpf';
 import Address from '@/domain/value-objects/address/address';
 import { UserRoles } from '@/domain/enums/user-roles';
-import { FAMILY_REPOSITORY, USER_REPOSITORY } from '@/shared/constants/repository-constants';
-import { HASHING_SERVICE, TOKEN_SERVICE } from '@/shared/constants/service-constants';
+import { InvalidOperationException } from '@/domain/exceptions/domain-exception';
+import UserRepository from '@/domain/repositories/user-repository';
 import FamilyRepository from '@/domain/repositories/family-repository';
 import { FamilyStatus } from '@/domain/enums/family-status';
 import Family from '@/domain/entities/family/family';
-import { UnauthorizedException } from '@nestjs/common';
+
+import TokenService from '@/application/services/token-service';
+
+import { FAMILY_REPOSITORY, USER_REPOSITORY } from '@/shared/constants/repository-constants';
+import { HASHING_SERVICE, TOKEN_SERVICE } from '@/shared/constants/service-constants';
+
+import Login from './login.use-case';
 
 const mockHashingService: HashingService = {
   hash: jest.fn((value) => `hashed_${value}`),
@@ -90,8 +94,11 @@ describe('UNIT Login', () => {
 
     // Assert
     expect(result).toEqual({ accessToken: 'access-token', refreshToken: 'refresh-token' });
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(userRepository.findByEmail).toHaveBeenCalledWith(userEmail);
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(familyRepository.findByHolderId).toHaveBeenCalledWith(user.id);
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(tokenService.signAccessToken).toHaveBeenCalledWith({
       sub: user.id,
       email: user.email,
