@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 
-import SearchClubs from '@/application/use-cases/search-clubs/search-clubs';
-import GetClubInfo from '@/application/use-cases/get-club-info/get-club-info';
-import CreateClub from '@/application/use-cases/create-club/create-club';
+import SearchClubs from '@/application/use-cases/club/search-clubs/search-clubs';
+import GetClubInfo from '@/application/use-cases/club/get-club-info/get-club-info';
+import CreateClub from '@/application/use-cases/club/create-club/create-club';
 
 import ClubController from '@/infraestructure/controllers/club/club.controller';
 
 import SharedModule from '@/shared/modules/shared.module';
-import ListClubMembers from '@/application/use-cases/list-club-members/list-club-members';
+import ListClubMembers from '@/application/use-cases/club/list-club-members/list-club-members';
 
 @Module({
   imports: [SharedModule],

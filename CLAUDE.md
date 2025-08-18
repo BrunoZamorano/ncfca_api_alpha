@@ -1,5 +1,9 @@
 # CLAUDE.md
-me responda em pt-br
+sempre responda em pt-br
+follow @code.standards.yml
+follow @folder-structure.standards.yml
+follow @test.standards.yml
+
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project Overview

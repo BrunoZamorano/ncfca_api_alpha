@@ -5,7 +5,7 @@ import RejectClubRequestUseCase from '@/application/use-cases/club-request/rejec
 import ApproveClubRequest from '@/application/use-cases/club-request/approve-club-request/approve-club-request.use-case';
 import GetUserClubRequestsUseCase from '@/application/use-cases/club-request/get-user-club-requests/get-user-club-requests.use-case';
 import ListPendingClubRequestsUseCase from '@/application/use-cases/club-request/list-pending-club-requests/list-pending-club-requests.use-case';
-import CreateClub from '@/application/use-cases/create-club/create-club';
+import CreateClub from '@/application/use-cases/club/create-club/create-club';
 import SharedModule from './shared.module';
 import { CLUB_EVENTS_SERVICE } from '@/shared/constants/service-constants';
 import { ClubEventsListener } from '@/infraestructure/controllers/listeners/club-events.listener';

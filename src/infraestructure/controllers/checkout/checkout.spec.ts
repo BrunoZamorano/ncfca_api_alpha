@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import CheckoutController from './checkout.controller';
-import Checkout from '@/application/use-cases/checkout/checkout';
+import Checkout from '@/application/use-cases/checkout/checkout.use-case';
 import { CheckoutInputDto } from '@/infraestructure/dtos/checkout.dto';
 import { PaymentMethod } from '@/domain/enums/payment-method';
 import { PaymentStatus } from '@/domain/enums/payment-status';

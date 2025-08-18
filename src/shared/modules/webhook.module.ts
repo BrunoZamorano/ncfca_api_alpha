@@ -1,7 +1,7 @@
 // src/shared/modules/webhook.module.ts
 
 import { Module } from '@nestjs/common';
-import ProcessPaymentUpdate from '@/application/use-cases/process-payment-update/process-payment-update';
+import ProcessPaymentUpdate from '@/application/use-cases/payment/process-payment-update/process-payment-update';
 import SharedModule from '@/shared/modules/shared.module';
 import WebhookController from '@/infraestructure/controllers/webhook/webhook.controller';
 

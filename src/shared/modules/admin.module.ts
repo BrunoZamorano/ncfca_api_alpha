@@ -19,8 +19,8 @@ import AdminController from '@/infraestructure/controllers/admin.controller';
 import { GetClubChartsQueryPrisma } from '@/infraestructure/queries/get-club-charts.query.prisma';
 
 import SharedModule from './shared.module';
-import ListDependants from '@/application/use-cases/list-dependants/list-dependants';
-import { SearchUsers } from '@/application/use-cases/search-users/search-users';
+import ListDependants from '@/application/use-cases/admin/list-dependants/list-dependants';
+import { SearchUsers } from '@/application/use-cases/admin/search-users/search-users';
 import { USER_QUERY } from '@/application/queries/user-query/user-query.interface';
 import { UserQueryPrisma } from '@/infraestructure/queries/user.query.prisma';
 

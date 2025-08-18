@@ -2,8 +2,8 @@ import { Controller, Post, Body, UseGuards, Request, HttpCode, HttpStatus, Get }
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { MyEnrollmentRequestItemView } from '@/application/queries/enrollment-query/my-enrollment-request-item.view';
-import ListMyEnrollmentRequests from '@/application/use-cases/list-my-enrollment-requests/list-my-enrollment-requests';
-import RequestEnrollment from '@/application/use-cases/request-enrollment/request-enrollment';
+import ListMyEnrollmentRequests from '@/application/use-cases/enrollment/list-my-enrollment-requests/list-my-enrollment-requests';
+import RequestEnrollment from '@/application/use-cases/enrollment/request-enrollment/request-enrollment';
 
 import AuthGuard from '@/shared/guards/auth.guard';
 

@@ -1,7 +1,7 @@
 import { Controller, Inject } from '@nestjs/common';
 import { Ctx, EventPattern, MessagePattern, Payload, RmqContext } from '@nestjs/microservices';
 import { ClubRequestApprovedEvent } from '@/domain/events/club-request-approved.event';
-import CreateClub from '@/application/use-cases/create-club/create-club';
+import CreateClub from '@/application/use-cases/club/create-club/create-club';
 
 @Controller()
 export class ClubEventsListener {

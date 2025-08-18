@@ -1,8 +1,8 @@
 import { Body, Controller, Post, Patch, UseGuards, Request, HttpCode, HttpStatus } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import RegisterUser from '@/application/use-cases/register-user/register-user';
-import EditUserProfile from '@/application/use-cases/edit-user-profile/edit-user-profile';
-import ChangeUserPassword from '@/application/use-cases/change-user-password/change-user-password';
+import RegisterUser from '@/application/use-cases/account/register-user/register-user';
+import EditUserProfile from '@/application/use-cases/account/edit-user-profile/edit-user-profile';
+import ChangeUserPassword from '@/application/use-cases/account/change-user-password/change-user-password';
 import { RegisterUserInputDto, RegisterUserOutputDto } from '@/infraestructure/dtos/register-user.dto';
 import AuthGuard from '@/shared/guards/auth.guard';
 import { UpdateProfileDto } from '@/infraestructure/dtos/update-profile.dto';

@@ -1,6 +1,9 @@
 # Project Overview
 
 sempre responda em pt-br
+follow @code.standards.yml
+follow @folder-structure.standards.yml
+follow @test.standards.yml
 
 This is a NestJS application that serves as the backend API for the NCFCA system. It manages users, families, clubs, enrollments, and other related entities. The application uses a PostgreSQL database with Prisma as the ORM. It also integrates with a RabbitMQ message broker for handling asynchronous tasks.
 

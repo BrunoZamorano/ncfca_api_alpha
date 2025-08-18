@@ -98,6 +98,54 @@ test_standards:
         await new Promise<void>((resolve) => server.close(() => resolve()));
       });
       
-      - o formato da descrição do teste deve ser assim
-      - ter um describe com o nome do teste "(UNIT | INT | E2E ) ApproveCandidate" nome do teste (geralmente nome do use case)
-      - os testes e2e não devem ter (POST) parara não não, nada desses dertalhes que não servem de nada. um teste garante uma regra de negócio, ponto. então os nomes dos it('[business-rule]') deve ser 1 em português, obedecendo a linguagem ubíqua do projeto e sepre assim 'Deve poder,fazer,deixar,aprovar,etc...' ou 'Não Deve ...' sempre que possível. 
+  - id: surgical_cleanup
+    rule: "Test cleanup must be scoped and surgical. Each test suite is responsible for cleaning up only the data it creates, typically in an `afterAll` hook. Global, non-specific cleanup (like TRUNCATE) is forbidden."
+    bad_example: |
+      // FORBIDDEN: This cleans the entire database, breaking the principle of
+      // surgical cleanup and potentially affecting other tests or local development data.
+      beforeEach(async () => {
+        await db.reset(); // Wipes all tables
+      });
+    good_example: |
+      // CORRECT: The test suite tracks the IDs of created root entities (e.g., users)
+      // and uses a specific `afterAll` hook to remove only related data.
+      describe('E2E ApproveClubRequest', () => {
+        let admin: { userId: string; ... };
+        let regularUser: { userId: string; ... };
+
+        beforeAll(async () => {
+          // Create specific users for this test suite
+          admin = await createTestUser(...);
+          regularUser = await createTestUser(...);
+        });
+
+        afterAll(async () => {
+          // Surgically remove only the data related to the users created above.
+          await prisma.club.deleteMany({ where: { principal_id: { in: [admin.userId, regularUser.userId] } } });
+          await prisma.family.deleteMany({ where: { holder_id: { in: [admin.userId, regularUser.userId] } } });
+          await prisma.user.deleteMany({ where: { id: { in: [admin.userId, regularUser.userId] } } });
+        });
+
+        // ... tests ...
+      });
+
+  - id: describe_naming_convention
+    rule: "The `describe` block must follow the format '(SCOPE) NameUseCase', where SCOPE is UNIT, INT, or E2E."
+    bad_example: |
+      describe('Testing the approval of candidates', ...)
+      describe('ApproveCandidate', ...)
+    good_example: |
+      describe('(E2E) ApproveCandidate', ...)
+      describe('(UNIT) Club', ...)
+
+  - id: it_naming_convention
+    rule: "The `it` block must describe a single business rule in Portuguese, starting with 'Deve' or 'Não deve'."
+    description: "The test description must not contain implementation details like HTTP methods (e.g., POST). It must focus on the business rule being tested, using the project's ubiquitous language."
+    bad_example: |
+      it('POST /candidates/:id/approve should approve a candidate', ...)
+      it('returns 204 on success', ...)
+      it('test approval logic', ...)
+    good_example: |
+      it('Deve aprovar uma candidatura válida', ...)
+      it('Não deve aprovar uma candidatura com documentação pendente', ...)
+      it('Deve poder remover um membro do clube', ...) 

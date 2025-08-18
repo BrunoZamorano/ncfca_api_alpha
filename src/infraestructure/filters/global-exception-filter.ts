@@ -2,7 +2,7 @@ import { ArgumentsHost, BadRequestException, ExceptionFilter, ForbiddenException
 import { JsonWebTokenError } from '@nestjs/jwt';
 import { Request, Response } from 'express';
 
-import { EntityNotFoundException, InvalidOperationException } from '@/domain/exceptions/domain-exception';
+import { DomainException, EntityNotFoundException, InvalidOperationException } from '@/domain/exceptions/domain-exception';
 
 export default class GlobalExceptionFilter implements ExceptionFilter {
   catch(exception: Error, host: ArgumentsHost) {
@@ -15,6 +15,9 @@ export default class GlobalExceptionFilter implements ExceptionFilter {
       status = HttpStatus.NOT_FOUND;
       body = { message: exception.message };
     } else if (exception instanceof InvalidOperationException) {
+      status = HttpStatus.BAD_REQUEST;
+      body = { message: exception.message };
+    } else if (exception instanceof DomainException) {
       status = HttpStatus.BAD_REQUEST;
       body = { message: exception.message };
     } else if (exception instanceof JsonWebTokenError) {

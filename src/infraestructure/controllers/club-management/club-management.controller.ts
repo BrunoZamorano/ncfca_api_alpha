@@ -1,22 +1,22 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Param, Patch, Post, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import ListPendingEnrollments from '@/application/use-cases/list-pending-enrollments/list-pending-enrollments';
-import ApproveEnrollment from '@/application/use-cases/approve-enrollment/approve-enrollment';
-import RejectEnrollment from '@/application/use-cases/reject-enrollment/reject-enrollment';
-import RemoveClubMember from '@/application/use-cases/remove-club-member/remove-club-member';
-import UpdateClubInfo from '@/application/use-cases/update-club-info/update-club-info';
-import GetMyClubInfo from '@/application/use-cases/get-my-club-info/get-my-club-info';
+import ListPendingEnrollments from '@/application/use-cases/club-management/list-pending-enrollments/list-pending-enrollments';
+import ApproveEnrollment from '@/application/use-cases/club-management/approve-enrollment/approve-enrollment';
+import RejectEnrollment from '@/application/use-cases/club-management/reject-enrollment/reject-enrollment';
+import RemoveClubMember from '@/application/use-cases/club/remove-club-member/remove-club-member';
+import UpdateClubInfo from '@/application/use-cases/club/update-club-info/update-club-info';
+import GetMyClubInfo from '@/application/use-cases/club/get-my-club-info/get-my-club-info';
 import { UserRoles } from '@/domain/enums/user-roles';
 import { RejectEnrollmentDto } from '@/infraestructure/dtos/reject-enrollment.dto';
 import { UpdateClubDto } from '@/infraestructure/dtos/update-club.dto';
 import { RolesGuard } from '@/shared/guards/roles.guard';
 import { Roles } from '@/shared/decorators/role.decorator';
 import AuthGuard from '@/shared/guards/auth.guard';
-import ListMembersOfMyClub from '@/application/use-cases/list-members-of-my-club/list-members-of-my-club';
+import ListMembersOfMyClub from '@/application/use-cases/club/list-members-of-my-club/list-members-of-my-club';
 import ClubDto from '@/domain/dtos/club.dto';
 import { EnrollmentRequestDto } from '@/domain/dtos/enrollment-request.dto';
 import { ClubMemberDto } from '@/domain/dtos/club-member.dto';
-import ListAllEnrollments from '@/application/use-cases/list-all-enrollments/list-all-enrollments';
+import ListAllEnrollments from '@/application/use-cases/club-management/list-all-enrollments/list-all-enrollments';
 import { ListPendingEnrollmentsOutputDto } from '@/infraestructure/dtos/list-pending-enrollments.dto';
 
 @ApiTags('Gestão de Clube (Diretor)')

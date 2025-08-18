@@ -1,7 +1,7 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { ApiExcludeController } from '@nestjs/swagger';
 
-import ProcessPaymentUpdate from '@/application/use-cases/process-payment-update/process-payment-update';
+import ProcessPaymentUpdate from '@/application/use-cases/payment/process-payment-update/process-payment-update';
 import { PaymentUpdateInputDto } from '@/infraestructure/dtos/payment-update.dto';
 
 // Exclui este controlador da documentação OpenAPI, pois não é uma API pública para consumo geral.

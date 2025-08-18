@@ -1,18 +1,18 @@
 import { AddDependantDto } from '@/infraestructure/dtos/add-dependant.dto';
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import AddDependant from '@/application/use-cases/add-dependant/add-dependant';
+import AddDependant from '@/application/use-cases/family/add-dependant/add-dependant';
 import AuthGuard from '@/shared/guards/auth.guard';
 import DependantDto from '@/domain/dtos/dependant.dto';
 import DependantMapper from '@/shared/mappers/dependant.mapper';
-import ListUserDependants from '@/application/use-cases/list-user-dependants/list-user-dependants';
-import UpdateDependant from '@/application/use-cases/update-dependant/update-dependant';
-import DeleteDependant from '@/application/use-cases/delete-dependant/delete-dependant';
+import ListUserDependants from '@/application/use-cases/family/list-user-dependants/list-user-dependants';
+import UpdateDependant from '@/application/use-cases/family/update-dependant/update-dependant';
+import DeleteDependant from '@/application/use-cases/family/delete-dependant/delete-dependant';
 import { UpdateDependantDto } from '@/infraestructure/dtos/update-dependant.dto';
-import ViewMyFamily from '@/application/use-cases/view-my-family/view-my-family';
+import ViewMyFamily from '@/application/use-cases/family/view-my-family/view-my-family';
 import FamilyMapper from '@/shared/mappers/family.mapper';
 import { FamilyDto } from '@/domain/dtos/family.dto';
-import ViewDependant from '@/application/use-cases/view-dependant/view-dependant';
+import ViewDependant from '@/application/use-cases/family/view-dependant/view-dependant';
 import { ViewDependantOutputDto } from '@/infraestructure/dtos/view-dependant.dto';
 
 @ApiTags('Família e Dependentes')

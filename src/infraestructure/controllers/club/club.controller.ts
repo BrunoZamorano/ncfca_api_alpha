@@ -1,8 +1,8 @@
 import { Controller, Get, Post, Body, HttpCode, HttpStatus, Query, UseGuards, Request, Param } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import SearchClubs from '@/application/use-cases/search-clubs/search-clubs';
-import GetClubInfo from '@/application/use-cases/get-club-info/get-club-info';
-import CreateClub from '@/application/use-cases/create-club/create-club';
+import SearchClubs from '@/application/use-cases/club/search-clubs/search-clubs';
+import GetClubInfo from '@/application/use-cases/club/get-club-info/get-club-info';
+import CreateClub from '@/application/use-cases/club/create-club/create-club';
 import SearchClubsQueryDto from '@/domain/dtos/search-clubs-query.dto';
 import ClubDto from '@/domain/dtos/club.dto';
 import { PaginatedClubDto } from '@/domain/dtos/paginated-output.dto';

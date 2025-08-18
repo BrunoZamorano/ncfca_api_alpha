@@ -28,20 +28,20 @@ describe('Club Request Creation (e2e)', () => {
     user = await createTestUser(`${crypto.randomUUID()}@test.com`, [UserRoles.SEM_FUNCAO], prisma, app);
   });
 
-  // afterAll(async () => {
-  //   await prisma.clubRequest.deleteMany({ where: { requester_id: user.userId } });
-  //   await prisma.clubMembership.deleteMany({ where: { club: { principal_id: user.userId } } });
-  //   await prisma.enrollmentRequest.deleteMany({ where: { club: { principal_id: user.userId } } });
-  //   await prisma.club.deleteMany({ where: { principal_id: user.userId } });
-  //   await prisma.family.delete({ where: { holder_id: user.userId } });
-  //   await prisma.user.deleteMany({ where: { id: user.userId } });
-  //   await app.close();
-  // });
-  //
-  // afterEach(async () => {
-  //   await prisma.clubRequest.deleteMany({ where: { requester_id: user.userId } });
-  //   await prisma.club.deleteMany({ where: { principal_id: user.userId } });
-  // });
+  afterAll(async () => {
+    await prisma.clubRequest.deleteMany({ where: { requester_id: user.userId } });
+    await prisma.clubMembership.deleteMany({ where: { club: { principal_id: user.userId } } });
+    await prisma.enrollmentRequest.deleteMany({ where: { club: { principal_id: user.userId } } });
+    await prisma.club.deleteMany({ where: { principal_id: user.userId } });
+    await prisma.family.delete({ where: { holder_id: user.userId } });
+    await prisma.user.deleteMany({ where: { id: user.userId } });
+    await app.close();
+  });
+
+  afterEach(async () => {
+    await prisma.clubRequest.deleteMany({ where: { requester_id: user.userId } });
+    await prisma.club.deleteMany({ where: { principal_id: user.userId } });
+  });
 
   const createRequestDto = {
     clubName: 'Meu Clube E2E',
