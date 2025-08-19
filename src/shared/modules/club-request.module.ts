@@ -19,7 +19,7 @@ import ClubRequestController from '@/infraestructure/controllers/club-request.co
         name: CLUB_EVENTS_SERVICE,
         transport: Transport.RMQ,
         options: {
-          urls: [process.env.RABBITMQ_URL || 'amqp://admin:admin@localhost:5672'],
+          urls: [process.env.RABBITMQ_URL || ''],
           queue: 'ClubRequest',
           queueOptions: {
             durable: true,

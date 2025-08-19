@@ -9,11 +9,14 @@ import { PrismaService } from '@/infraestructure/database/prisma.service';
 import { AppModule } from '@/app.module';
 
 import { createTestUser } from '../utils/prisma/create-test-user';
+import { surgicalCleanup } from '../utils/prisma/cleanup';
+import { FamilyStatus } from '@/domain/enums/family-status';
 
 describe('Club Request Creation (e2e)', () => {
   let app: INestApplication;
   let prisma: PrismaService;
   let user: { userId: string; familyId: string; accessToken: string };
+  const testUsers: string[] = [];
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -25,23 +28,19 @@ describe('Club Request Creation (e2e)', () => {
     await app.init();
 
     prisma = app.get(PrismaService);
-    user = await createTestUser(`${crypto.randomUUID()}@test.com`, [UserRoles.SEM_FUNCAO], prisma, app);
+    user = await createTestUser(`${crypto.randomUUID()}@test.com`, [UserRoles.SEM_FUNCAO], prisma, app, FamilyStatus.AFFILIATED);
+    testUsers.push(user.userId);
   });
 
-  afterAll(async () => {
-    await prisma.clubRequest.deleteMany({ where: { requester_id: user.userId } });
-    await prisma.clubMembership.deleteMany({ where: { club: { principal_id: user.userId } } });
-    await prisma.enrollmentRequest.deleteMany({ where: { club: { principal_id: user.userId } } });
-    await prisma.club.deleteMany({ where: { principal_id: user.userId } });
-    await prisma.family.delete({ where: { holder_id: user.userId } });
-    await prisma.user.deleteMany({ where: { id: user.userId } });
-    await app.close();
-  });
+  // afterAll(async () => {
+  //   await surgicalCleanup(prisma, testUsers);
+  //   await app.close();
+  // });
 
-  afterEach(async () => {
-    await prisma.clubRequest.deleteMany({ where: { requester_id: user.userId } });
-    await prisma.club.deleteMany({ where: { principal_id: user.userId } });
-  });
+  // afterEach(async () => {
+  //   await prisma.clubRequest.deleteMany({ where: { requester_id: user.userId } });
+  //   await prisma.club.deleteMany({ where: { principal_id: user.userId } });
+  // });
 
   const createRequestDto = {
     clubName: 'Meu Clube E2E',

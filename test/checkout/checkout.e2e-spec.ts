@@ -4,6 +4,7 @@ import AllExceptionsFilter from '@/infraestructure/filters/global-exception-filt
 import * as request from 'supertest';
 import { AppModule } from '@/app.module';
 import { createTestUser } from '../utils/prisma/create-test-user';
+import { surgicalCleanup } from '../utils/prisma/cleanup';
 import { PrismaService } from '@/infraestructure/database/prisma.service';
 import { PaymentMethod } from '@/domain/enums/payment-method';
 import { FamilyStatus } from '@/domain/enums/family-status';
@@ -14,6 +15,7 @@ import { randomUUID } from 'crypto';
 describe('E2E CheckoutUseCase', () => {
   let app: INestApplication;
   let prisma: PrismaService;
+  const createdUsers: string[] = [];
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -27,37 +29,15 @@ describe('E2E CheckoutUseCase', () => {
     prisma = app.get(PrismaService);
   });
 
-  beforeEach(async () => {
-    // Limpar dados antes de cada teste (ordem importa devido às FKs)
-    await prisma.transaction.deleteMany({});
-    await prisma.enrollmentRequest.deleteMany({});
-    await prisma.clubMembership.deleteMany({});
-    await prisma.clubRequest.deleteMany({});
-    await prisma.club.deleteMany({});
-    await prisma.dependant.deleteMany({});
-    await prisma.family.deleteMany({});
-    await prisma.user.deleteMany({});
-  });
-
-  afterEach(async () => {
-    // Clean up após cada teste (ordem importa devido às FKs)
-    await prisma.transaction.deleteMany({});
-    await prisma.enrollmentRequest.deleteMany({});
-    await prisma.clubMembership.deleteMany({});
-    await prisma.clubRequest.deleteMany({});
-    await prisma.club.deleteMany({});
-    await prisma.dependant.deleteMany({});
-    await prisma.family.deleteMany({});
-    await prisma.user.deleteMany({});
-  });
-
   afterAll(async () => {
+    await surgicalCleanup(prisma, createdUsers);
     await app.close();
   });
 
   it('Deve processar pagamento de afiliação com cartão de crédito e ativar família', async () => {
     // Arrange
     const { userId, accessToken, familyId } = await createTestUser(`test-${randomUUID()}@example.com`, [UserRoles.SEM_FUNCAO], prisma, app);
+    createdUsers.push(userId);
 
     // Act
     const response = await request(app.getHttpServer()).post('/checkout').set('Authorization', `Bearer ${accessToken}`).send({
@@ -78,6 +58,7 @@ describe('E2E CheckoutUseCase', () => {
   it('Deve processar pagamento de afiliação com PIX e manter família como não afiliada', async () => {
     // Arrange
     const { userId, accessToken, familyId } = await createTestUser(`test-${randomUUID()}@example.com`, [UserRoles.SEM_FUNCAO], prisma, app);
+    createdUsers.push(userId);
 
     // Act
     const response = await request(app.getHttpServer()).post('/checkout').set('Authorization', `Bearer ${accessToken}`).send({
@@ -111,6 +92,7 @@ describe('E2E CheckoutUseCase', () => {
   it('Não deve processar pagamento se a família já estiver afiliada', async () => {
     // Arrange
     const { userId, accessToken, familyId } = await createTestUser(`test-${randomUUID()}@example.com`, [UserRoles.SEM_FUNCAO], prisma, app);
+    createdUsers.push(userId);
     await prisma.family.update({
       where: { holder_id: userId },
       data: { status: FamilyStatus.AFFILIATED },
@@ -131,6 +113,7 @@ describe('E2E CheckoutUseCase', () => {
   it('Não deve processar pagamento com cartão de crédito sem paymentToken', async () => {
     // Arrange
     const { userId, accessToken, familyId } = await createTestUser(`test-${randomUUID()}@example.com`, [UserRoles.SEM_FUNCAO], prisma, app);
+    createdUsers.push(userId);
 
     // Act
     const response = await request(app.getHttpServer()).post('/checkout').set('Authorization', `Bearer ${accessToken}`).send({
@@ -146,6 +129,7 @@ describe('E2E CheckoutUseCase', () => {
   it('Não deve processar pagamento se o processamento do cartão de crédito falhar', async () => {
     // Arrange
     const { userId, accessToken, familyId } = await createTestUser(`test-${randomUUID()}@example.com`, [UserRoles.SEM_FUNCAO], prisma, app);
+    createdUsers.push(userId);
     // Mock Stripe to simulate failure - this would typically be done at a lower level (e.g., PaymentGateway mock)
     // For E2E, we rely on Stripe's test tokens for specific scenarios.
     // Using a known failing test token for Stripe

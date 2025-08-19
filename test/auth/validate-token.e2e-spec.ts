@@ -4,6 +4,7 @@ import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
 import { PrismaService } from '@/infraestructure/database/prisma.service';
 import { AppModule } from '@/app.module';
 import { createTestUser } from '../utils/prisma/create-test-user';
+import { surgicalCleanup } from '../utils/prisma/cleanup';
 import { UserRoles } from '@/domain/enums/user-roles';
 
 describe('E2E ValidateToken', () => {
@@ -13,6 +14,7 @@ describe('E2E ValidateToken', () => {
   let accessToken: string;
   const testEmail = `e2e-validate-${crypto.randomUUID()}@test.com`;
   const testPassword = 'Password@123';
+  const testUsers: string[] = [];
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -27,11 +29,11 @@ describe('E2E ValidateToken', () => {
     const testUser = await createTestUser(testEmail, [UserRoles.SEM_FUNCAO], prisma, app);
     userId = testUser.userId;
     accessToken = testUser.accessToken;
+    testUsers.push(testUser.userId);
   });
 
   afterAll(async () => {
-    await prisma.family.deleteMany({ where: { holder_id: userId } });
-    await prisma.user.deleteMany({ where: { email: testEmail } });
+    await surgicalCleanup(prisma, testUsers);
     await app.close();
   });
 

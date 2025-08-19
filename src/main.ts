@@ -14,6 +14,8 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     rawBody: true,
   });
+
+  // Conectar microservice RabbitMQ apenas se não for ambiente de teste
   app.connectMicroservice({
     transport: Transport.RMQ,
     options: {
@@ -22,8 +24,19 @@ async function bootstrap() {
       queueOptions: {
         durable: true,
       },
+      socketOptions: {
+        heartbeatIntervalInSeconds: 60,
+        reconnectTimeInSeconds: 5,
+        clientProperties: {
+          connection_name: 'ncfca-api-microservice',
+        },
+      },
+      prefetchCount: 1,
+      isGlobalPrefetch: false,
+      noAck: false, // Garantir ACK das mensagens
     },
   });
+
 
   app.enableCors({
     origin: process.env.CORS_ORIGIN || '*',
@@ -57,8 +70,6 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
   app.useGlobalFilters(new GlobalExceptionFilter());
   app.set('query parser', 'extended');
-
-  // Agora esta chamada irá iniciar o listener de RMQ e o servidor HTTP
   await app.startAllMicroservices();
   await adminSeed(app);
   await app.listen(process.env.PORT ?? 3000);

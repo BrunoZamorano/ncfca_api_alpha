@@ -9,12 +9,14 @@ import { PrismaService } from '@/infraestructure/database/prisma.service';
 import { AppModule } from '@/app.module';
 
 import { createTestUser } from '../utils/prisma/create-test-user';
+import { surgicalCleanup } from '../utils/prisma/cleanup';
 
 describe('E2E ListPendingClubRequests', () => {
   let app: INestApplication;
   let prisma: PrismaService;
   let admin: { userId: string; familyId: string; accessToken: string };
   let regularUser: { userId: string; familyId: string; accessToken: string };
+  const testUsers: string[] = [];
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -28,31 +30,11 @@ describe('E2E ListPendingClubRequests', () => {
     prisma = app.get(PrismaService);
     admin = await createTestUser(`admin-${crypto.randomUUID()}@test.com`, [UserRoles.ADMIN], prisma, app);
     regularUser = await createTestUser(`user-${crypto.randomUUID()}@test.com`, [UserRoles.SEM_FUNCAO], prisma, app);
+    testUsers.push(admin.userId, regularUser.userId);
   });
 
   afterAll(async () => {
-    await prisma.clubRequest.deleteMany({ 
-      where: { 
-        OR: [
-          { requester_id: admin.userId },
-          { requester_id: regularUser.userId }
-        ]
-      } 
-    });
-    await prisma.family.deleteMany({ 
-      where: { 
-        holder_id: { 
-          in: [admin.userId, regularUser.userId] 
-        } 
-      } 
-    });
-    await prisma.user.deleteMany({ 
-      where: { 
-        id: { 
-          in: [admin.userId, regularUser.userId] 
-        } 
-      } 
-    });
+    await surgicalCleanup(prisma, testUsers);
     await app.close();
   });
 
@@ -68,6 +50,8 @@ describe('E2E ListPendingClubRequests', () => {
   });
 
   it('Deve retornar lista vazia quando não há solicitações pendentes', async () => {
+    await prisma.clubRequest.deleteMany({});
+    
     const response = await request(app.getHttpServer())
       .get('/club-requests/pending')
       .set('Authorization', `Bearer ${admin.accessToken}`)

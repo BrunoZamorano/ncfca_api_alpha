@@ -1,60 +1,78 @@
 import * as request from 'supertest';
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { WebhookPayload } from '@/domain/types/payment';
 import { PaymentStatus } from '@/domain/enums/payment-status';
+import { PaymentMethod } from '@/domain/enums/payment-method';
+import { TransactionContextType } from '@/domain/enums/transaction-context-type';
 import { FamilyStatus } from '@/domain/enums/family-status';
-import Transaction from '@/domain/entities/transaction/transaction';
-import Family from '@/domain/entities/family/family';
+import { UserRoles } from '@/domain/enums/user-roles';
 
-import InMemoryDatabase from '@/infraestructure/database/in-memory.database';
+import { PrismaService } from '@/infraestructure/database/prisma.service';
+import { createTestUser } from './utils/prisma/create-test-user';
+import { surgicalCleanup } from './utils/prisma/cleanup';
 
 import { AppModule } from '@/app.module';
 
 describe('WebhookController (e2e)', () => {
   let app: INestApplication;
-  let db: InMemoryDatabase;
-  const familyId = 'e2e-family-1';
-  const transactionId = 'e2e-tx-1';
+  let prisma: PrismaService;
+  let user: { userId: string; familyId: string; accessToken: string };
+  const testUsers: string[] = [];
   const gatewayTransactionId = 'e2e-gateway-tx-1';
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
     app = moduleFixture.createNestApplication({ rawBody: true });
+    app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }));
     await app.init();
-    db = InMemoryDatabase.getInstance();
-    db.reset();
+    
+    prisma = app.get(PrismaService);
+    user = await createTestUser(`webhook-${crypto.randomUUID()}@test.com`, [UserRoles.SEM_FUNCAO], prisma, app);
+    testUsers.push(user.userId);
   });
 
-  afterEach(async () => {
+  afterAll(async () => {
+    await surgicalCleanup(prisma, testUsers);
     await app.close();
   });
 
   it('deve receber um webhook de pagamento bem-sucedido, atualizar o status da transação para PAID e da família para AFFILIATED', async () => {
-    db.families.push(new Family({ id: familyId, holderId: 'user-1', status: FamilyStatus.NOT_AFFILIATED }));
-    db.transactions.push(
-      Transaction.create({
-        id: transactionId,
-        familyId,
-        gatewayTransactionId,
+    const transaction = await prisma.transaction.create({
+      data: {
+        id: crypto.randomUUID(),
+        user_id: user.userId,
+        family_id: user.familyId,
+        gateway_transaction_id: gatewayTransactionId,
         status: PaymentStatus.PENDING,
-        amountCents: 50000,
+        amount_cents: 50000,
         gateway: 'memory',
-        gatewayPayload: {},
-        paymentMethod: 'pix',
-      }),
-    );
+        gateway_payload: {},
+        payment_method: PaymentMethod.PIX,
+        context_type: TransactionContextType.FAMILY_AFFILIATION,
+      },
+    });
+
     const payload: WebhookPayload = {
       event: 'PAYMENT_CONFIRMED',
       data: { id: gatewayTransactionId, status: PaymentStatus.PAID },
       timestamp: new Date().toISOString(),
     };
+    
     await request(app.getHttpServer()).post('/webhook/payment-updates').send(payload).expect(HttpStatus.NO_CONTENT);
-    const updatedTransaction = db.transactions.find((t) => t.id === transactionId);
-    const updatedFamily = db.families.find((f) => f.id === familyId);
+    
+    await new Promise(resolve => setTimeout(resolve, 200));
+    
+    const updatedTransaction = await prisma.transaction.findUnique({
+      where: { id: transaction.id },
+    });
+    const updatedFamily = await prisma.family.findUnique({
+      where: { id: user.familyId },
+    });
+    
     expect(updatedTransaction).toBeDefined();
     expect(updatedTransaction?.status).toBe(PaymentStatus.PAID);
     expect(updatedFamily).toBeDefined();

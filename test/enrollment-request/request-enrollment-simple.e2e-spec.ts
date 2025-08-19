@@ -9,6 +9,7 @@ import { PrismaService } from '@/infraestructure/database/prisma.service';
 import { AppModule } from '@/app.module';
 
 import { createTestUser } from '../utils/prisma/create-test-user';
+import { surgicalCleanup } from '../utils/prisma/cleanup';
 import { FamilyStatus } from '@/domain/enums/family-status';
 import { DependantRelationship } from '@/domain/enums/dependant-relationship';
 import { DependantType } from '@/domain/enums/dependant-type.enum';
@@ -21,6 +22,7 @@ describe('E2E RequestEnrollment', () => {
   let clubOwner: { userId: string; familyId: string; accessToken: string };
   let testClubId: string;
   let testDependantId: string;
+  const testUsers: string[] = [];
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -36,6 +38,7 @@ describe('E2E RequestEnrollment', () => {
     // Criar usuários de teste
     user = await createTestUser(`user-simple-${crypto.randomUUID()}@test.com`, [UserRoles.SEM_FUNCAO], prisma, app);
     clubOwner = await createTestUser(`owner-${crypto.randomUUID()}@test.com`, [UserRoles.DONO_DE_CLUBE], prisma, app);
+    testUsers.push(user.userId, clubOwner.userId);
 
     // Criar clube de teste
     const clubData = {
@@ -74,12 +77,7 @@ describe('E2E RequestEnrollment', () => {
   });
 
   afterAll(async () => {
-    // Cleanup
-    await prisma.enrollmentRequest.deleteMany({ where: { member_id: testDependantId } });
-    await prisma.dependant.deleteMany({ where: { OR: [{ family_id: user.familyId }, { family_id: clubOwner.familyId }] } });
-    await prisma.club.deleteMany({ where: { id: testClubId } });
-    await prisma.family.deleteMany({ where: { OR: [{ id: user.familyId }, { id: clubOwner.familyId }] } });
-    await prisma.user.deleteMany({ where: { OR: [{ id: user.userId }, { id: clubOwner.userId }] } });
+    await surgicalCleanup(prisma, testUsers);
     await app.close();
   });
 

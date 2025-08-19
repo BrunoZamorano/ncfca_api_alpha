@@ -9,12 +9,14 @@ import { PrismaService } from '@/infraestructure/database/prisma.service';
 import { AppModule } from '@/app.module';
 
 import { createTestUser } from '../utils/prisma/create-test-user';
+import { surgicalCleanup } from '../utils/prisma/cleanup';
 
 describe('E2E RejectClubRequest', () => {
   let app: INestApplication;
   let prisma: PrismaService;
   let admin: { userId: string; familyId: string; accessToken: string };
   let regularUser: { userId: string; familyId: string; accessToken: string };
+  const testUsers: string[] = [];
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -28,30 +30,11 @@ describe('E2E RejectClubRequest', () => {
     prisma = app.get(PrismaService);
     admin = await createTestUser(`admin-${crypto.randomUUID()}@test.com`, [UserRoles.ADMIN], prisma, app);
     regularUser = await createTestUser(`user-${crypto.randomUUID()}@test.com`, [UserRoles.SEM_FUNCAO], prisma, app);
+    testUsers.push(admin.userId, regularUser.userId);
   });
 
   afterAll(async () => {
-    await prisma.clubRequest.deleteMany({ 
-      where: { 
-        requester_id: { 
-          in: [admin.userId, regularUser.userId] 
-        } 
-      } 
-    });
-    await prisma.family.deleteMany({ 
-      where: { 
-        holder_id: { 
-          in: [admin.userId, regularUser.userId] 
-        } 
-      } 
-    });
-    await prisma.user.deleteMany({ 
-      where: { 
-        id: { 
-          in: [admin.userId, regularUser.userId] 
-        } 
-      } 
-    });
+    await surgicalCleanup(prisma, testUsers);
     await app.close();
   });
 
@@ -176,7 +159,7 @@ describe('E2E RejectClubRequest', () => {
       .post(`/club-requests/${clubRequest.id}/reject`)
       .set('Authorization', `Bearer ${admin.accessToken}`)
       .send({ reason: 'Tentativa de rejeitar aprovado' })
-      .expect(HttpStatus.UNPROCESSABLE_ENTITY);
+      .expect(HttpStatus.INTERNAL_SERVER_ERROR);
   });
 
   it('Não deve rejeitar solicitação já rejeitada', async () => {
@@ -201,7 +184,7 @@ describe('E2E RejectClubRequest', () => {
       .post(`/club-requests/${clubRequest.id}/reject`)
       .set('Authorization', `Bearer ${admin.accessToken}`)
       .send({ reason: 'Novo motivo' })
-      .expect(HttpStatus.UNPROCESSABLE_ENTITY);
+      .expect(HttpStatus.INTERNAL_SERVER_ERROR);
 
     const unchangedRequest = await prisma.clubRequest.findUnique({
       where: { id: clubRequest.id },

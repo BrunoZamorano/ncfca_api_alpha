@@ -7,11 +7,12 @@ import { PrismaService } from '@/infraestructure/database/prisma.service';
 import { FamilyStatus } from '@/domain/enums/family-status';
 import { randomUUID } from 'crypto';
 import { CpfGenerator } from '@/infraestructure/services/cpf-generator.service';
+import { surgicalCleanup } from '../utils/prisma/cleanup';
 
 describe('E2E RegisterUser', () => {
   let app: INestApplication;
   let prisma: PrismaService;
-  let testUsers: string[] = []; // Track user IDs created during tests
+  const testUsers: string[] = [];
   let cpfGenerator: CpfGenerator;
 
   const createValidUserData = () => ({
@@ -46,16 +47,8 @@ describe('E2E RegisterUser', () => {
     cpfGenerator = new CpfGenerator();
   });
 
-  afterEach(async () => {
-    // Limpar apenas dados específicos criados pelos testes se necessário
-  });
-
   afterAll(async () => {
-    // Limpar apenas os dados criados por estes testes
-    if (testUsers.length > 0) {
-      await prisma.family.deleteMany({ where: { holder_id: { in: testUsers } } });
-      await prisma.user.deleteMany({ where: { id: { in: testUsers } } });
-    }
+    await surgicalCleanup(prisma, testUsers);
     await app.close();
   });
 
@@ -81,7 +74,6 @@ describe('E2E RegisterUser', () => {
     expect(createdUser?.first_name).toBe(userData.firstName);
     expect(createdUser?.last_name).toBe(userData.lastName);
     
-    // Track user for cleanup
     if (createdUser?.id) {
       testUsers.push(createdUser.id);
     }
@@ -103,7 +95,6 @@ describe('E2E RegisterUser', () => {
 
     expect(firstResponse.status).toBe(201);
     
-    // Track user for cleanup
     const firstUser = await prisma.user.findUnique({ where: { email: userData.email } });
     if (firstUser?.id) {
       testUsers.push(firstUser.id);
@@ -130,7 +121,6 @@ describe('E2E RegisterUser', () => {
     const firstResponse = await request(app.getHttpServer()).post('/account/user').send(userData1);
     expect(firstResponse.status).toBe(201);
     
-    // Track user for cleanup
     const firstUser = await prisma.user.findUnique({ where: { email: userData1.email } });
     if (firstUser?.id) {
       testUsers.push(firstUser.id);

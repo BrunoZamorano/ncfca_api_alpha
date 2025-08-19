@@ -9,7 +9,7 @@ import { FamilyStatus } from '@/domain/enums/family-status';
 import { CpfGenerator } from '@/infraestructure/services/cpf-generator.service';
 import { HashingServiceBcrypt } from '@/infraestructure/services/hashing-bcrypct.service';
 
-export async function createTestUser(email: string, roles: UserRoles[], prisma: PrismaClient, app: INestApplication) {
+export async function createTestUser(email: string, roles: UserRoles[], prisma: PrismaClient, app: INestApplication, familyStatus?: FamilyStatus) {
   const cpfGenerator = new CpfGenerator();
   const hashingService = new HashingServiceBcrypt();
   const password = 'Password@123';
@@ -34,7 +34,8 @@ export async function createTestUser(email: string, roles: UserRoles[], prisma: 
     let user = await prisma.user.findUnique({ where: { email: userData.email }, include: { family: true } });
     if (!user) {
       user = await prisma.user.create({ data: userData, include: { family: true } });
-      user.family = await prisma.family.create({ data: { holder_id: userData.id, status: FamilyStatus.NOT_AFFILIATED } });
+      const finalFamilyStatus = familyStatus ?? FamilyStatus.NOT_AFFILIATED;
+      user.family = await prisma.family.create({ data: { holder_id: userData.id, status: familyStatus ?? FamilyStatus.NOT_AFFILIATED } });
     }
     if (!user || !user.family) throw new Error('Failed to create test user');
     return user;

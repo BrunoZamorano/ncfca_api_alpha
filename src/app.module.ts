@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 
 import AuthModule from '@/shared/modules/auth.module';
 import ClubModule from '@/shared/modules/club.module';
@@ -18,6 +19,10 @@ import ClubRequestModule from '@/shared/modules/club-request.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: process.env.NODE_ENV === 'test' ? '.env.test' : '.env',
+    }),
     AuthModule,
     ClubModule,
     AdminModule,

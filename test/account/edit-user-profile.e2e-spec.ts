@@ -4,6 +4,7 @@ import AllExceptionsFilter from '@/infraestructure/filters/global-exception-filt
 import * as request from 'supertest';
 import { AppModule } from '@/app.module';
 import { createTestUser } from '../utils/prisma/create-test-user';
+import { surgicalCleanup } from '../utils/prisma/cleanup';
 import { PrismaService } from '@/infraestructure/database/prisma.service';
 import { UserRoles } from '@/domain/enums/user-roles';
 import { randomUUID } from 'crypto';
@@ -12,6 +13,7 @@ describe('E2E EditUserProfile', () => {
   let app: INestApplication;
   let prisma: PrismaService;
   let user: { userId: string; familyId: string; accessToken: string };
+  const testUsers: string[] = [];
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -25,6 +27,7 @@ describe('E2E EditUserProfile', () => {
     prisma = app.get(PrismaService);
     
     user = await createTestUser(`test-${randomUUID()}@example.com`, [UserRoles.SEM_FUNCAO], prisma, app);
+    testUsers.push(user.userId);
   });
 
   afterEach(async () => {
@@ -32,9 +35,7 @@ describe('E2E EditUserProfile', () => {
   });
 
   afterAll(async () => {
-    // Limpar apenas os dados criados por estes testes
-    await prisma.family.deleteMany({ where: { holder_id: user.userId } });
-    await prisma.user.deleteMany({ where: { id: user.userId } });
+    await surgicalCleanup(prisma, testUsers);
     await app.close();
   });
 

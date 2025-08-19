@@ -9,6 +9,7 @@ import { PrismaService } from '@/infraestructure/database/prisma.service';
 import { AppModule } from '@/app.module';
 
 import { createTestUser } from '../utils/prisma/create-test-user';
+import { surgicalCleanup } from '../utils/prisma/cleanup';
 import { FamilyStatus } from '@/domain/enums/family-status';
 import { DependantRelationship } from '@/domain/enums/dependant-relationship';
 import { DependantType } from '@/domain/enums/dependant-type.enum';
@@ -22,6 +23,7 @@ describe('E2E ApproveEnrollment', () => {
   let familyUser: { userId: string; familyId: string; accessToken: string };
   let testClubId: string;
   let testDependantId: string;
+  const testUsers: string[] = [];
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -37,6 +39,7 @@ describe('E2E ApproveEnrollment', () => {
     // Criar usuários de teste
     clubOwner = await createTestUser(`owner-approve-${crypto.randomUUID()}@test.com`, [UserRoles.DONO_DE_CLUBE], prisma, app);
     familyUser = await createTestUser(`family-${crypto.randomUUID()}@test.com`, [UserRoles.SEM_FUNCAO], prisma, app);
+    testUsers.push(clubOwner.userId, familyUser.userId);
 
     // Criar clube de teste
     const clubData = {
@@ -75,19 +78,7 @@ describe('E2E ApproveEnrollment', () => {
   });
 
   afterAll(async () => {
-    // Cleanup in correct order
-    try {
-      await prisma.$transaction([
-        prisma.clubMembership.deleteMany({ where: { member_id: testDependantId } }),
-        prisma.enrollmentRequest.deleteMany({ where: { member_id: testDependantId } }),
-        prisma.dependant.deleteMany({ where: { OR: [{ family_id: clubOwner.familyId }, { family_id: familyUser.familyId }] } }),
-        prisma.club.deleteMany({ where: { id: testClubId } }),
-        prisma.family.deleteMany({ where: { OR: [{ id: clubOwner.familyId }, { id: familyUser.familyId }] } }),
-        prisma.user.deleteMany({ where: { OR: [{ id: clubOwner.userId }, { id: familyUser.userId }] } }),
-      ]);
-    } catch (error) {
-      console.warn('Cleanup error:', error);
-    }
+    await surgicalCleanup(prisma, testUsers);
     await app.close();
   });
 

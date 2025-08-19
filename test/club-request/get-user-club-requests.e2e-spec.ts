@@ -9,11 +9,13 @@ import { PrismaService } from '@/infraestructure/database/prisma.service';
 import { AppModule } from '@/app.module';
 
 import { createTestUser } from '../utils/prisma/create-test-user';
+import { surgicalCleanup } from '../utils/prisma/cleanup';
 
 describe('E2E GetUserClubRequests', () => {
   let app: INestApplication;
   let prisma: PrismaService;
   let user: { userId: string; familyId: string; accessToken: string };
+  const testUsers: string[] = [];
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -26,12 +28,11 @@ describe('E2E GetUserClubRequests', () => {
 
     prisma = app.get(PrismaService);
     user = await createTestUser(`${crypto.randomUUID()}@test.com`, [UserRoles.SEM_FUNCAO], prisma, app);
+    testUsers.push(user.userId);
   });
 
   afterAll(async () => {
-    await prisma.clubRequest.deleteMany({ where: { requester_id: user.userId } });
-    await prisma.family.delete({ where: { holder_id: user.userId } });
-    await prisma.user.deleteMany({ where: { id: user.userId } });
+    await surgicalCleanup(prisma, testUsers);
     await app.close();
   });
 
@@ -101,6 +102,7 @@ describe('E2E GetUserClubRequests', () => {
 
   it('Não deve retornar solicitações de outros usuários', async () => {
     const otherUser = await createTestUser(`${crypto.randomUUID()}@test.com`, [UserRoles.SEM_FUNCAO], prisma, app);
+    testUsers.push(otherUser.userId);
 
     await prisma.clubRequest.create({
       data: {
@@ -140,9 +142,6 @@ describe('E2E GetUserClubRequests', () => {
       clubName: 'Meu Clube',
     });
 
-    await prisma.clubRequest.deleteMany({ where: { requester_id: otherUser.userId } });
-    await prisma.family.delete({ where: { holder_id: otherUser.userId } });
-    await prisma.user.delete({ where: { id: otherUser.userId } });
   });
 
   it('Não deve permitir acesso sem autenticação', async () => {
