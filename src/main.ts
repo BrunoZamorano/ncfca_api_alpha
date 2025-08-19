@@ -4,7 +4,8 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { Transport } from '@nestjs/microservices'; // Importar Transport
+import { Transport } from '@nestjs/microservices';
+import { ConfigService } from '@nestjs/config';
 import GlobalExceptionFilter from '@/infraestructure/filters/global-exception-filter';
 
 import { AppModule } from '@/app.module';
@@ -14,12 +15,13 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     rawBody: true,
   });
+  const configService = app.get(ConfigService);
 
   // Conectar microservice RabbitMQ apenas se não for ambiente de teste
   app.connectMicroservice({
     transport: Transport.RMQ,
     options: {
-      urls: [process.env.RABBITMQ_URL || 'amqp://admin:admin@localhost:5672'],
+      urls: [configService.get<string>('RABBITMQ_URL') || 'amqp://admin:admin@localhost:5672'],
       queue: 'ClubRequest',
       queueOptions: {
         durable: true,
@@ -39,7 +41,7 @@ async function bootstrap() {
 
 
   app.enableCors({
-    origin: process.env.CORS_ORIGIN || '*',
+    origin: configService.get<string>('CORS_ORIGIN') || '*',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
@@ -72,7 +74,7 @@ async function bootstrap() {
   app.set('query parser', 'extended');
   await app.startAllMicroservices();
   await adminSeed(app);
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(configService.get<number>('PORT') ?? 3000);
 }
 
 bootstrap();
