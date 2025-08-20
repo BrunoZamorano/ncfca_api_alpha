@@ -242,6 +242,25 @@ export async function createTestClubMembership(
 }
 
 /**
+ * Cria uma família afiliada para testes
+ */
+export async function createTestFamily(
+  app: INestApplication,
+  prisma: PrismaService,
+  familyStatus: FamilyStatus = FamilyStatus.AFFILIATED,
+): Promise<ClubManagementTestUser> {
+  const email = `${crypto.randomUUID()}@testfamily.test`;
+  const user = await createTestUser(email, [UserRoles.SEM_FUNCAO], prisma, app, familyStatus);
+  
+  // Se família for AFFILIATED, definir data de expiração
+  if (familyStatus === FamilyStatus.AFFILIATED) {
+    await activateFamilyAffiliation(prisma, user.familyId);
+  }
+  
+  return user;
+}
+
+/**
  * Cleanup cirúrgico específico para testes de ClubManagement
  * Remove apenas os dados relacionados aos userIds fornecidos
  */
