@@ -9,6 +9,7 @@ import User, { CreateUserProps } from '@/domain/entities/user/user';
 import UuidGenerator from '@/infraestructure/services/uuid-generator';
 import UserMapper from '@/shared/mappers/user.mapper';
 import { DependantType } from '@/domain/enums/dependant-type.enum';
+import { ConfigService } from '@nestjs/config';
 
 const prisma = new PrismaClient();
 
@@ -17,7 +18,7 @@ async function main() {
 
   const cpfGenerator = new CpfGenerator();
 
-  const hashinService = new HashingServiceBcrypt();
+  const hashinService = new HashingServiceBcrypt({ get: () => undefined } as unknown as ConfigService);
   const idGenerator = new UuidGenerator();
 
   console.log('Criando 10 usuários, famílias, clubes e dependentes...');

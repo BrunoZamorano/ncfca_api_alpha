@@ -2,6 +2,7 @@ import * as request from 'supertest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
 import { ClientProxy, Transport } from '@nestjs/microservices';
+import { ConfigService } from '@nestjs/config';
 import { UserRoles } from '@/domain/enums/user-roles';
 import { PrismaService } from '@/infraestructure/database/prisma.service';
 import { AppModule } from '@/app.module';
@@ -49,10 +50,12 @@ describe('E2E ApproveClubRequest', () => {
     app = moduleFixture.createNestApplication({ logger: ['log', 'error', 'warn', 'debug', 'verbose'] });
     app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }));
 
+    const configService = moduleFixture.get(ConfigService);
+    
     app.connectMicroservice({
       transport: Transport.RMQ,
       options: {
-        urls: [process.env.RABBITMQ_URL || ''],
+        urls: [configService.get<string>('RABBITMQ_URL') || ''],
         queue: 'ClubRequest',
         queueOptions: {
           durable: true,

@@ -21,7 +21,12 @@ import ClubRequestModule from '@/shared/modules/club-request.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: process.env.NODE_ENV === 'test' ? '.env.test' : '.env',
+      envFilePath: [
+        `.env.${process.env.NODE_ENV || 'development'}`,
+        '.env.local',
+        '.env'
+      ],
+      ignoreEnvFile: false,
     }),
     AuthModule,
     ClubModule,

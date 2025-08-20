@@ -17,7 +17,6 @@ async function bootstrap() {
   });
   const configService = app.get(ConfigService);
 
-  // Conectar microservice RabbitMQ apenas se não for ambiente de teste
   app.connectMicroservice({
     transport: Transport.RMQ,
     options: {
@@ -35,7 +34,7 @@ async function bootstrap() {
       },
       prefetchCount: 1,
       isGlobalPrefetch: false,
-      noAck: false, // Garantir ACK das mensagens
+      noAck: false,
     },
   });
 
@@ -73,7 +72,7 @@ async function bootstrap() {
   app.useGlobalFilters(new GlobalExceptionFilter());
   app.set('query parser', 'extended');
   await app.startAllMicroservices();
-  await adminSeed(app);
+  await adminSeed(app, configService);
   await app.listen(configService.get<number>('PORT') ?? 3000);
 }
 

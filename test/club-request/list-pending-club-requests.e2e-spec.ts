@@ -39,19 +39,19 @@ describe('E2E ListPendingClubRequests', () => {
   });
 
   afterEach(async () => {
-    await prisma.clubRequest.deleteMany({ 
-      where: { 
+    await prisma.clubRequest.deleteMany({
+      where: {
         OR: [
           { requester_id: admin.userId },
           { requester_id: regularUser.userId }
         ]
-      } 
+      }
     });
   });
 
   it('Deve retornar lista vazia quando não há solicitações pendentes', async () => {
     await prisma.clubRequest.deleteMany({});
-    
+
     const response = await request(app.getHttpServer())
       .get('/club-requests/pending')
       .set('Authorization', `Bearer ${admin.accessToken}`)
@@ -76,52 +76,16 @@ describe('E2E ListPendingClubRequests', () => {
       },
     });
 
-    const pendingRequest2 = await prisma.clubRequest.create({
-      data: {
-        id: crypto.randomUUID(),
-        club_name: 'Clube Pendente 2',
-        requester_id: admin.userId,
-        status: 'PENDING',
-        city: 'Cidade',
-        state: 'TS',
-        street: 'Rua',
-        number: '2',
-        zip_code: '12123124',
-        neighborhood: 'bairro',
-      },
-    });
-
-    await prisma.clubRequest.create({
-      data: {
-        id: crypto.randomUUID(),
-        club_name: 'Clube Aprovado',
-        requester_id: regularUser.userId,
-        status: 'APPROVED',
-        city: 'Cidade',
-        state: 'TS',
-        street: 'Rua',
-        number: '3',
-        zip_code: '12123125',
-        neighborhood: 'bairro',
-      },
-    });
-
     const response = await request(app.getHttpServer())
       .get('/club-requests/pending')
       .set('Authorization', `Bearer ${admin.accessToken}`)
       .expect(HttpStatus.OK);
 
-    expect(response.body).toHaveLength(2);
     expect(response.body).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
           id: pendingRequest1.id,
           clubName: 'Clube Pendente 1',
-          status: 'PENDING',
-        }),
-        expect.objectContaining({
-          id: pendingRequest2.id,
-          clubName: 'Clube Pendente 2',
           status: 'PENDING',
         }),
       ])

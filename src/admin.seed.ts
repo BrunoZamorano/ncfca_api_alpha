@@ -1,4 +1,5 @@
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { ConfigService } from '@nestjs/config';
 import { UserRoles } from '@/domain/enums/user-roles';
 import User from '@/domain/entities/user/user';
 import HashingService from '@/domain/services/hashing-service';
@@ -8,13 +9,10 @@ import { UNIT_OF_WORK, UnitOfWork } from '@/domain/services/unit-of-work';
 import Family from '@/domain/entities/family/family';
 import { FamilyStatus } from '@/domain/enums/family-status';
 
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? 'admin@ncfca.com.br';
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? 'Admin@1234';
-
-export async function adminSeed(app: NestExpressApplication) {
+export async function adminSeed(app: NestExpressApplication, configService: ConfigService) {
   console.log(`Admin seed app created: ${app}`);
-  const adminPassword = ADMIN_PASSWORD;
-  const adminEmail = ADMIN_EMAIL;
+  const adminEmail = configService.get<string>('ADMIN_EMAIL') ?? 'admin@ncfca.com.br';
+  const adminPassword = configService.get<string>('ADMIN_PASSWORD') ?? 'Admin@1234';
   const uow = await app.resolve<UnitOfWork>(UNIT_OF_WORK);
   const idGenerator = app.get<IdGenerator>(ID_GENERATOR);
   const hashingService = app.get<HashingService>(HASHING_SERVICE);

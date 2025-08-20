@@ -1,9 +1,12 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Request } from 'express';
 import * as crypto from 'crypto';
 
 @Injectable()
 export class WebhookGuard implements CanActivate {
+  constructor(private readonly configService: ConfigService) {}
+
   canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest<Request & { rawBody: Buffer }>();
     const signature = request.headers['x-signature'] as string;
@@ -14,7 +17,7 @@ export class WebhookGuard implements CanActivate {
     if (!rawBody) {
       throw new UnauthorizedException('Corpo da requisição "cru" não encontrado. Verifique a configuração do rawBody no main.ts.');
     }
-    const secret = process.env.PAYMENT_WEBHOOK_SECRET;
+    const secret = this.configService.get<string>('PAYMENT_WEBHOOK_SECRET');
     if (!secret) {
       throw new Error('Chave secreta do webhook não configurada no servidor.');
     }

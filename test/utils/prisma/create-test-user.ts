@@ -1,5 +1,6 @@
 import * as request from 'supertest';
 import { INestApplication } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 import { PrismaClient } from '@prisma/client';
 
@@ -7,11 +8,12 @@ import { UserRoles } from '@/domain/enums/user-roles';
 import { FamilyStatus } from '@/domain/enums/family-status';
 
 import { CpfGenerator } from '@/infraestructure/services/cpf-generator.service';
-import { HashingServiceBcrypt } from '@/infraestructure/services/hashing-bcrypct.service';
+import HashingService from '@/domain/services/hashing-service';
+import { HASHING_SERVICE } from '@/shared/constants/service-constants';
 
 export async function createTestUser(email: string, roles: UserRoles[], prisma: PrismaClient, app: INestApplication, familyStatus?: FamilyStatus) {
   const cpfGenerator = new CpfGenerator();
-  const hashingService = new HashingServiceBcrypt();
+  const hashingService = app.get<HashingService>(HASHING_SERVICE);
   const password = 'Password@123';
   const userData = {
     id: crypto.randomUUID(),
