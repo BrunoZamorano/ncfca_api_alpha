@@ -74,6 +74,7 @@ async function bootstrap() {
   await app.startAllMicroservices();
   await adminSeed(app, configService);
   await app.listen(configService.get<number>('PORT') ?? 3000);
+  console.log(`Application is running on: ${await app.getUrl()}`);
 }
 
 bootstrap();

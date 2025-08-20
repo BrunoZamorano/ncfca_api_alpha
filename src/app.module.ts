@@ -22,9 +22,8 @@ import ClubRequestModule from '@/shared/modules/club-request.module';
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: [
-        `.env.${process.env.NODE_ENV || 'development'}`,
-        '.env.local',
-        '.env'
+        `.env.${process.env.NODE_ENV || 'development'}`
+        , '.env'
       ],
       ignoreEnvFile: false,
     }),
@@ -44,4 +43,4 @@ import ClubRequestModule from '@/shared/modules/club-request.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

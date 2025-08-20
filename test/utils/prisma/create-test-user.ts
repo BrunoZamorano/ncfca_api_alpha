@@ -36,7 +36,6 @@ export async function createTestUser(email: string, roles: UserRoles[], prisma: 
     let user = await prisma.user.findUnique({ where: { email: userData.email }, include: { family: true } });
     if (!user) {
       user = await prisma.user.create({ data: userData, include: { family: true } });
-      const finalFamilyStatus = familyStatus ?? FamilyStatus.NOT_AFFILIATED;
       user.family = await prisma.family.create({ data: { holder_id: userData.id, status: familyStatus ?? FamilyStatus.NOT_AFFILIATED } });
     }
     if (!user || !user.family) throw new Error('Failed to create test user');
