@@ -18,6 +18,7 @@ export default class ClubMapper {
       members: members,
       address: new Address({
         city: data.city,
+        state: data.state,
         number: data.number,
         street: data.street,
         zipCode: data.zip_code,
