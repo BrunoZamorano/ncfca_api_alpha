@@ -17,6 +17,7 @@ Task: ./tasks/prd-[$prd]/[$task]_task.md
 <prd_info>
 PRD: ./tasks/prd-[$prd]/\_prd.md
 </prd_info>
+
 <project_rules>.cursor/rules</project_rules>
 
 <requirements>
