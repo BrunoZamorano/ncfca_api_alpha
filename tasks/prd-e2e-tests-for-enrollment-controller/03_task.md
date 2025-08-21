@@ -1,5 +1,5 @@
 
-status: pending
+status: completed
 ---
 
 <task_context>
@@ -26,12 +26,12 @@ This task covers the creation of the E2E test suite for the endpoint that lists 
 
 ## Subtasks
 
--   [ ] 3.1 Create the spec file `test/enrollment/list-my-requests.e2e-spec.ts`.
--   [ ] 3.2 Implement the success case: `should return a list of enrollment requests for the user's family (200 OK)`.
--   [ ] 3.3 Implement the empty state case: `should return an empty list if no requests exist (200 OK)`.
--   [ ] 3.4 Implement the tenancy case: `should not return requests from other families`.
--   [ ] 3.5 Implement the auth case: `should fail if user is not authenticated (401 Unauthorized)`.
--   [ ] 3.6 Ensure the `afterAll` hook is configured to call `enrollmentCleanup()`.
+-   [x] 3.1 Create the spec file `test/enrollment/list-my-requests.e2e-spec.ts`.
+-   [x] 3.2 Implement the success case: `should return a list of enrollment requests for the user's family (200 OK)`.
+-   [x] 3.3 Implement the empty state case: `should return an empty list if no requests exist (200 OK)`.
+-   [x] 3.4 Implement the tenancy case: `should not return requests from other families`.
+-   [x] 3.5 Implement the auth case: `should fail if user is not authenticated (401 Unauthorized)`.
+-   [x] 3.6 Ensure the `afterAll` hook is configured to call `enrollmentCleanup()`.
 
 ## Implementation Details
 

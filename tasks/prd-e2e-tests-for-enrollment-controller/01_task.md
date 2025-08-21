@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 ---
 
 <task_context>
@@ -25,13 +25,13 @@ This task involves creating the foundational setup file required for the enrollm
 
 ## Subtasks
 
--   [ ] 1.1 Create the directory `test/enrollment/`.
--   [ ] 1.2 Implement the `setupEnrollmentApp()` function to initialize the NestJS application for testing.
--   [ ] 1.3 Implement the `createRegularUser()` function to generate a test user with a family, affiliation, and auth token.
--   [ ] 1.4 Implement the `createTestClub()` function.
--   [ ] 1.5 Implement the `createTestDependant()` function.
--   [ ] 1.6 Implement the `enrollmentCleanup()` function, ensuring it deletes records in the correct order to respect foreign key constraints.
--   [ ] 1.7 Add unit tests for the setup utility functions to ensure they work as expected.
+-   [x] 1.1 Create the directory `test/enrollment/`.
+-   [x] 1.2 Implement the `setupEnrollmentApp()` function to initialize the NestJS application for testing.
+-   [x] 1.3 Implement the `createRegularUser()` function to generate a test user with a family, affiliation, and auth token.
+-   [x] 1.4 Implement the `createTestClub()` function.
+-   [x] 1.5 Implement the `createTestDependant()` function.
+-   [x] 1.6 Implement the `enrollmentCleanup()` function, ensuring it deletes records in the correct order to respect foreign key constraints.
+-   [x] 1.7 Add unit tests for the setup utility functions to ensure they work as expected.
 
 ## Implementation Details
 
