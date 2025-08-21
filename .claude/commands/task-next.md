@@ -17,7 +17,9 @@ Task: ./tasks/prd-[$prd]/[$task]_task.md
 <prd_info>
 PRD: ./tasks/prd-[$prd]/\_prd.md
 </prd_info>
-
+<techspec_info>
+Tech Spec: ./tasks/prd-[$prd]/\_techspec.md
+</techspec_info>
 <project_rules>.cursor/rules</project_rules>
 
 <requirements>
@@ -36,12 +38,12 @@ Please follow these steps to identify and prepare for the next available task:
    e. Understand dependencies from previously completed tasks
 
 4. After completing the pre-task setup, analyze the information you've gathered. Wrap your analysis in <task_analysis> tags, considering the following:
-    - List out the task files you found and quote relevant sections from each file
-    - The main objectives of the task
-    - How the task fits into the broader project context
-    - Any potential challenges, risks, or dependencies
-    - How the task aligns with the project rules and standards
-    - Brainstorm possible solutions or approaches to the task
+   - List out the task files you found and quote relevant sections from each file
+   - The main objectives of the task
+   - How the task fits into the broader project context
+   - Any potential challenges, risks, or dependencies
+   - How the task aligns with the project rules and standards
+   - Brainstorm possible solutions or approaches to the task
 
 5. Provide a summary of the task and its requirements in the following format:
 
@@ -61,7 +63,7 @@ Potential Risks/Challenges: [List any identified risks or challenges]
 1. [First step in approaching the task]
 2. [Second step in approaching the task]
 3. [Continue with additional steps as needed]
-   </task_approach>
+</task_approach>
 
 Important Notes:
 
@@ -102,7 +104,7 @@ Potential Risks/Challenges: [Risks/Challenges list]
 1. [Step 1]
 2. [Step 2]
 3. [Step 3]
-   </task_approach>
+</task_approach>
 
 <task_implementation>
 Now I will begin implementing this task following the approach outlined above.

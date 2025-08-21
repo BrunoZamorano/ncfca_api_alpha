@@ -1,0 +1,107 @@
+# NCFCA API — Project Overview
+
+**Summary:** Backend API built with NestJS. Manages users, families, clubs, and enrollments. TypeScript + PostgreSQL (Prisma), async tasks with RabbitMQ, API docs via Swagger/OpenAPI.
+
+---
+
+## Folder Structure (High-Level)
+
+```
+.
+├── .gitignore
+├── package.json
+├── tsconfig.json
+├── nest-cli.json
+├── eslint.config.mjs
+├── README.md
+├── GEMINI.md
+├── prisma/
+│   ├── schema.prisma
+│   └── scripts/           # DB helpers (seed/reset)
+├── src/
+│   ├── main.ts
+│   ├── app.module.ts
+│   ├── application/
+│   │   ├── use-cases/     # Business actions (e.g., approve-candidate, create-club)
+│   │   ├── services/      # App-level services (e.g., token-service, payment-gateway)
+│   │   └── dtos/          # Application DTOs
+│   ├── domain/
+│   │   ├── entities/      # Domain classes (e.g., User, Club)
+│   │   ├── dtos/          # Domain DTOs
+│   │   └── repositories/  # Interfaces/contracts
+│   ├── infrastructure/
+│   │   ├── controllers/   # NestJS HTTP controllers
+│   │   ├── database/      # service/module
+│   │   ├── dtos/          # Infra DTOs
+│   │   └── repositories/  # repository implementations
+│   └── shared/            # Guards, decorators, utils
+├── tasks/                 # Project task docs/planning
+└── test/                  # E2E tests
+```
+
+---
+
+## Root (`./`)
+
+Purpose: Root configuration and documentation.
+
+| File | Purpose |
+|------|---------|
+| `.gitignore` | Ignore patterns for Git. |
+| `package.json` | Dependencies, scripts, and metadata. |
+| `tsconfig.json` | TypeScript compiler settings. |
+| `nest-cli.json` | Nest CLI configuration. |
+| `eslint.config.mjs` | Lint rules. |
+| `README.md` | Project readme. |
+
+---
+
+## `prisma/`
+
+Purpose: Database schema and migrations (Prisma).
+
+- `schema.prisma`
+- `scripts/` — DB helpers (seed/reset)
+
+---
+
+## `src/`
+
+Purpose: Application source code.
+
+### Root files
+- `main.ts`
+- `app.module.ts`
+
+### `application/`
+- `use-cases/` — Business actions (e.g., `approve-candidate`, `create-club`)
+- `services/` — App-level services (e.g., `token-service`, `payment-gateway`)
+- `dtos/` — Application DTOs
+
+### `domain/`
+- `entities/` — Domain classes (e.g., `User`, `Club`)
+- `dtos/` — Domain DTOs
+- `repositories/` — Interfaces/contracts (repository ports)
+
+### `infrastructure/`
+- `controllers/` — NestJS HTTP controllers
+- `database/` — Prisma service/module
+- `dtos/` — Infra DTOs
+- `repositories/` — repository implementations (adapters)
+
+### `shared/`
+- Shared modules/utilities (guards, decorators, utils).
+
+---
+
+## `tasks/`
+
+Purpose: Project task docs/planning.
+
+
+---
+
+## `test/`
+
+Purpose: End-to-end tests only (E2E).
+

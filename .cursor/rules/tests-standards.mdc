@@ -1,0 +1,85 @@
+# Test Standards
+
+Framework: Jest | Standards: @code.standards.yml
+
+## Core Principles
+
+### Arrange–Act–Assert
+```javascript
+it("creates a club", async () => {
+  // Arrange
+  const input = { name: "Chess" };
+  // Act
+  const result = await createClub(input);
+  // Assert
+  expect(result.id).toBeDefined();
+})
+```
+
+### Independent Tests
+No shared mutable state or test dependencies.
+```javascript
+// ✅ Each test is self-contained
+it("creates a club", async () => {
+  const { id } = await createClub({ name: "Music" });
+  const found = await repo.findById(id);
+  expect(found?.name).toBe("Music");
+});
+```
+
+### One Behavior Per Test
+```javascript
+// ❌ Multiple behaviors
+it("creates and deletes a club", async () => {...});
+
+// ✅ Single responsibility
+it("creates a club", async () => {...});
+it("deletes a club", async () => {...});
+```
+
+## Environment Management
+
+### Setup & Cleanup
+```javascript
+beforeEach(async () => {
+  jest.clearAllMocks();
+});
+
+afterAll(async () => {
+  await db.disconnect();
+  await new Promise<void>((resolve) => server.close(() => resolve()));
+});
+```
+
+### Surgical Cleanup
+Clean only what you create. Global resets forbidden.
+```javascript
+describe('(E2E) ApproveClubRequest', () => {
+  let testUserIds: string[] = [];
+  
+  beforeAll(async () => {
+    const admin = await createTestUser(...);
+    testUserIds.push(admin.userId);
+  });
+  
+  afterAll(async () => {
+    // Remove ONLY test-created data
+    await prisma.user.deleteMany({ 
+      where: { id: { in: testUserIds } } 
+    });
+  });
+});
+```
+
+## Naming Conventions
+
+### Describe: `(SCOPE) UseCase`
+- SCOPE: UNIT | INT | E2E
+- ✅ `describe('(E2E) ApproveCandidate', ...)`
+- ❌ `describe('Testing approval', ...)`
+
+### It: Portuguese Business Rules
+Start with "Deve"/"Não deve", no technical details.
+- ✅ `it('Deve aprovar candidatura válida', ...)`
+- ✅ `it('Não deve aprovar com documentação pendente', ...)`
+- ❌ `it('POST /approve returns 204', ...)`
