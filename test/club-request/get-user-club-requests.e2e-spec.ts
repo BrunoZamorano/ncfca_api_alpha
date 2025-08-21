@@ -96,7 +96,7 @@ describe('E2E GetUserClubRequests', () => {
           clubName: 'Segundo Clube',
           status: 'PENDING',
         }),
-      ])
+      ]),
     );
   });
 
@@ -141,13 +141,10 @@ describe('E2E GetUserClubRequests', () => {
     expect(response.body[0]).toMatchObject({
       clubName: 'Meu Clube',
     });
-
   });
 
   it('Não deve permitir acesso sem autenticação', async () => {
-    await request(app.getHttpServer())
-      .get('/club-requests/my-requests')
-      .expect(HttpStatus.UNAUTHORIZED);
+    await request(app.getHttpServer()).get('/club-requests/my-requests').expect(HttpStatus.UNAUTHORIZED);
   });
 
   it('Não deve permitir acesso com token inválido', async () => {

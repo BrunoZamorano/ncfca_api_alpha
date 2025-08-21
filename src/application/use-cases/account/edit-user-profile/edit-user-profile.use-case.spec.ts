@@ -15,7 +15,7 @@ describe('UNIT EditUserProfile', () => {
     firstName: 'José',
     lastName: 'Santos',
     phone: '11998877665',
-    email: 'jose.santos@example.com'
+    email: 'jose.santos@example.com',
   };
 
   beforeEach(async () => {
@@ -94,7 +94,7 @@ describe('UNIT EditUserProfile', () => {
     // Arrange
     const partialInput = {
       id: mockUserId,
-      firstName: 'José'
+      firstName: 'José',
     };
 
     const mockUser = {

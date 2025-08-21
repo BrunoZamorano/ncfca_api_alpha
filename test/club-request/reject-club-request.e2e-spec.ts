@@ -39,12 +39,12 @@ describe('E2E RejectClubRequest', () => {
   });
 
   afterEach(async () => {
-    await prisma.clubRequest.deleteMany({ 
-      where: { 
-        requester_id: { 
-          in: [admin.userId, regularUser.userId] 
-        } 
-      } 
+    await prisma.clubRequest.deleteMany({
+      where: {
+        requester_id: {
+          in: [admin.userId, regularUser.userId],
+        },
+      },
     });
   });
 

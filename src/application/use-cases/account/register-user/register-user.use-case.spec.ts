@@ -30,7 +30,7 @@ describe('UNIT RegisterUser', () => {
     email: 'joao.silva@example.com',
     phone: '11987654321',
     cpf: Cpf.VALID_CPF,
-    password: 'Password@123'
+    password: 'Password@123',
   };
 
   const mockUserId = 'user-id-123';
@@ -150,9 +150,7 @@ describe('UNIT RegisterUser', () => {
     });
 
     // Act & Assert
-    await expect(registerUser.execute(mockInput)).rejects.toThrow(
-      RegisterUser.errorCodes.EMAIL_ALREADY_IN_USE
-    );
+    await expect(registerUser.execute(mockInput)).rejects.toThrow(RegisterUser.errorCodes.EMAIL_ALREADY_IN_USE);
     expect(userRepository.findByEmail).toHaveBeenCalledWith(mockInput.email);
     expect(userRepository.save).not.toHaveBeenCalled();
   });
@@ -168,9 +166,7 @@ describe('UNIT RegisterUser', () => {
     });
 
     // Act & Assert
-    await expect(registerUser.execute(mockInput)).rejects.toThrow(
-      InvalidOperationException
-    );
+    await expect(registerUser.execute(mockInput)).rejects.toThrow(InvalidOperationException);
     await expect(registerUser.execute(mockInput)).rejects.toThrow('Cpf já cadastrado');
     expect(userRepository.findByEmail).toHaveBeenCalledWith(mockInput.email);
     expect(userRepository.findByCpf).toHaveBeenCalledWith(mockInput.cpf);
@@ -211,7 +207,7 @@ describe('UNIT RegisterUser', () => {
       expect.objectContaining({
         holderId: mockUserId,
         status: FamilyStatus.NOT_AFFILIATED,
-      })
+      }),
     );
     expect(idGenerator.generate).toHaveBeenCalled();
   });

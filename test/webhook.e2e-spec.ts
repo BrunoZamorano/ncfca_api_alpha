@@ -29,7 +29,7 @@ describe('WebhookController (e2e)', () => {
     app = moduleFixture.createNestApplication({ rawBody: true });
     app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }));
     await app.init();
-    
+
     prisma = app.get(PrismaService);
     user = await createTestUser(`webhook-${crypto.randomUUID()}@test.com`, [UserRoles.SEM_FUNCAO], prisma, app);
     testUsers.push(user.userId);
@@ -61,18 +61,18 @@ describe('WebhookController (e2e)', () => {
       data: { id: gatewayTransactionId, status: PaymentStatus.PAID },
       timestamp: new Date().toISOString(),
     };
-    
+
     await request(app.getHttpServer()).post('/webhook/payment-updates').send(payload).expect(HttpStatus.NO_CONTENT);
-    
-    await new Promise(resolve => setTimeout(resolve, 200));
-    
+
+    await new Promise((resolve) => setTimeout(resolve, 200));
+
     const updatedTransaction = await prisma.transaction.findUnique({
       where: { id: transaction.id },
     });
     const updatedFamily = await prisma.family.findUnique({
       where: { id: user.familyId },
     });
-    
+
     expect(updatedTransaction).toBeDefined();
     expect(updatedTransaction?.status).toBe(PaymentStatus.PAID);
     expect(updatedFamily).toBeDefined();

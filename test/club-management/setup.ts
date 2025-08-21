@@ -1,12 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { 
-  DependantRelationship, 
-  DependantType, 
-  Sex, 
-  EnrollmentStatus, 
-  MembershipStatus 
-} from '@prisma/client';
+import { DependantRelationship, DependantType, Sex, EnrollmentStatus, MembershipStatus } from '@prisma/client';
 
 import { PrismaService } from '@/infraestructure/database/prisma.service';
 import { UserRoles } from '@/domain/enums/user-roles';
@@ -53,7 +47,7 @@ export async function setupClubManagementApp(): Promise<{ app: INestApplication;
 async function activateFamilyAffiliation(prisma: PrismaService, familyId: string): Promise<void> {
   const expirationDate = new Date();
   expirationDate.setFullYear(expirationDate.getFullYear() + 1); // 1 ano no futuro
-  
+
   await prisma.family.update({
     where: { id: familyId },
     data: {
@@ -73,12 +67,12 @@ export async function createClubOwnerUser(
 ): Promise<ClubManagementTestUser> {
   const email = `${crypto.randomUUID()}@clubowner.test`;
   const user = await createTestUser(email, [UserRoles.DONO_DE_CLUBE], prisma, app, familyStatus);
-  
+
   // Se família for AFFILIATED, definir data de expiração
   if (familyStatus === FamilyStatus.AFFILIATED) {
     await activateFamilyAffiliation(prisma, user.familyId);
   }
-  
+
   return user;
 }
 
@@ -92,12 +86,12 @@ export async function createRegularUser(
 ): Promise<ClubManagementTestUser> {
   const email = `${crypto.randomUUID()}@regular.test`;
   const user = await createTestUser(email, [UserRoles.SEM_FUNCAO], prisma, app, familyStatus);
-  
+
   // Se família for AFFILIATED, definir data de expiração
   if (familyStatus === FamilyStatus.AFFILIATED) {
     await activateFamilyAffiliation(prisma, user.familyId);
   }
-  
+
   return user;
 }
 
@@ -111,12 +105,12 @@ export async function createAdminUser(
 ): Promise<ClubManagementTestUser> {
   const email = `${crypto.randomUUID()}@admin.test`;
   const user = await createTestUser(email, [UserRoles.ADMIN], prisma, app, familyStatus);
-  
+
   // Se família for AFFILIATED, definir data de expiração
   if (familyStatus === FamilyStatus.AFFILIATED) {
     await activateFamilyAffiliation(prisma, user.familyId);
   }
-  
+
   return user;
 }
 
@@ -251,12 +245,12 @@ export async function createTestFamily(
 ): Promise<ClubManagementTestUser> {
   const email = `${crypto.randomUUID()}@testfamily.test`;
   const user = await createTestUser(email, [UserRoles.SEM_FUNCAO], prisma, app, familyStatus);
-  
+
   // Se família for AFFILIATED, definir data de expiração
   if (familyStatus === FamilyStatus.AFFILIATED) {
     await activateFamilyAffiliation(prisma, user.familyId);
   }
-  
+
   return user;
 }
 

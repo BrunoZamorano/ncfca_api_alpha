@@ -19,7 +19,7 @@ import {
 /**
  * ESTE É UM ARQUIVO TEMPLATE/EXEMPLO
  * Demonstra como usar a infraestrutura de testes para ClubManagement
- * 
+ *
  * Para implementar testes reais:
  * 1. Copie este arquivo renomeando para a funcionalidade específica
  * 2. Adapte os testes para o cenário que você quer testar
@@ -37,19 +37,19 @@ describe('(E2E) ExemploTemplate - ClubManagement', () => {
   beforeAll(async () => {
     // Arrange - Setup da aplicação e usuários base
     ({ app, prisma } = await setupClubManagementApp());
-    
+
     // Criar usuário dono do clube
     clubOwner = await createClubOwnerUser(app, prisma);
     testUsers.push(clubOwner.userId);
-    
+
     // Criar segundo usuário dono para teste que precisa de clube separado
     secondClubOwner = await createClubOwnerUser(app, prisma);
     testUsers.push(secondClubOwner.userId);
-    
+
     // Criar usuário regular
     regularUser = await createRegularUser(app, prisma);
     testUsers.push(regularUser.userId);
-    
+
     // Criar clube para o dono principal
     testClub = await createTestClub(prisma, clubOwner.userId, {
       name: 'Clube Template E2E',
@@ -66,7 +66,7 @@ describe('(E2E) ExemploTemplate - ClubManagement', () => {
   describe('Obtendo informações do clube', () => {
     it('Deve retornar informações do clube para o dono autenticado', async () => {
       // Arrange - Dados já preparados no beforeAll
-      
+
       // Act - Buscar informações do clube
       const response = await request(app.getHttpServer())
         .get('/club-management/my-club')
@@ -83,16 +83,14 @@ describe('(E2E) ExemploTemplate - ClubManagement', () => {
 
     it('Não deve permitir acesso sem autenticação', async () => {
       // Arrange - Nenhuma preparação especial
-      
+
       // Act & Assert - Tentar acessar sem token
-      await request(app.getHttpServer())
-        .get('/club-management/my-club')
-        .expect(HttpStatus.UNAUTHORIZED);
+      await request(app.getHttpServer()).get('/club-management/my-club').expect(HttpStatus.UNAUTHORIZED);
     });
 
     it('Não deve permitir acesso para usuário que não é dono de clube', async () => {
       // Arrange - Usuário regular já criado
-      
+
       // Act & Assert - Tentar acessar com usuário regular
       await request(app.getHttpServer())
         .get('/club-management/my-club')
@@ -108,14 +106,8 @@ describe('(E2E) ExemploTemplate - ClubManagement', () => {
         firstName: 'Maria',
         lastName: 'Santos',
       });
-      
-      await createTestEnrollmentRequest(
-        prisma, 
-        testClub.id, 
-        dependant.id, 
-        regularUser.familyId,
-        EnrollmentStatus.PENDING
-      );
+
+      await createTestEnrollmentRequest(prisma, testClub.id, dependant.id, regularUser.familyId, EnrollmentStatus.PENDING);
 
       // Act - Listar enrollments pendentes
       const response = await request(app.getHttpServer())
@@ -158,14 +150,8 @@ describe('(E2E) ExemploTemplate - ClubManagement', () => {
         firstName: 'João',
         lastName: 'Silva',
       });
-      
-      const enrollmentRequest = await createTestEnrollmentRequest(
-        prisma,
-        testClub.id,
-        dependant.id,
-        regularUser.familyId,
-        EnrollmentStatus.PENDING
-      );
+
+      const enrollmentRequest = await createTestEnrollmentRequest(prisma, testClub.id, dependant.id, regularUser.familyId, EnrollmentStatus.PENDING);
 
       // Act - Aprovar o enrollment
       await request(app.getHttpServer())
@@ -177,9 +163,9 @@ describe('(E2E) ExemploTemplate - ClubManagement', () => {
       const updatedEnrollment = await prisma.enrollmentRequest.findUnique({
         where: { id: enrollmentRequest.id },
       });
-      
+
       expect(updatedEnrollment?.status).toBe(EnrollmentStatus.APPROVED);
-      
+
       // Assert - Verificar que membership foi criada
       const membership = await prisma.clubMembership.findFirst({
         where: {
@@ -187,7 +173,7 @@ describe('(E2E) ExemploTemplate - ClubManagement', () => {
           member_id: dependant.id,
         },
       });
-      
+
       expect(membership).toBeDefined();
       expect(membership?.status).toBe('ACTIVE');
     });

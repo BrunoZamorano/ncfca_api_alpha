@@ -26,9 +26,9 @@ describe('UNIT Checkout', () => {
   let mockIdGenerator;
 
   const mockHashingService: HashingService = {
-  hash: jest.fn((value) => `hashed_${value}`),
-  compare: jest.fn((plain, hashed) => hashed === `hashed_${plain}`),
-};
+    hash: jest.fn((value) => `hashed_${value}`),
+    compare: jest.fn((plain, hashed) => hashed === `hashed_${plain}`),
+  };
 
   const mockUser = new User({
     id: 'user-1',
@@ -172,9 +172,7 @@ describe('UNIT Checkout', () => {
     const input = { userId: 'non-existent-user', paymentMethod: PaymentMethod.CREDIT_CARD };
 
     // Act & Assert
-    await expect(checkoutUseCase.execute(input)).rejects.toThrow(
-      new EntityNotFoundException('User', input.userId),
-    );
+    await expect(checkoutUseCase.execute(input)).rejects.toThrow(new EntityNotFoundException('User', input.userId));
     expect(mockFamilyRepository.findByHolderId).not.toHaveBeenCalled();
     expect(mockPaymentGateway.createTransaction).not.toHaveBeenCalled();
     expect(mockTransactionRepository.save).not.toHaveBeenCalled();
@@ -187,9 +185,7 @@ describe('UNIT Checkout', () => {
     const input = { userId: mockUser.id, paymentMethod: PaymentMethod.CREDIT_CARD };
 
     // Act & Assert
-    await expect(checkoutUseCase.execute(input)).rejects.toThrow(
-      new EntityNotFoundException('Family', `for user ${mockUser.id}`),
-    );
+    await expect(checkoutUseCase.execute(input)).rejects.toThrow(new EntityNotFoundException('Family', `for user ${mockUser.id}`));
     expect(mockPaymentGateway.createTransaction).not.toHaveBeenCalled();
     expect(mockTransactionRepository.save).not.toHaveBeenCalled();
   });
@@ -210,9 +206,7 @@ describe('UNIT Checkout', () => {
     const input = { userId: mockUser.id, paymentMethod: PaymentMethod.CREDIT_CARD };
 
     // Act & Assert
-    await expect(checkoutUseCase.execute(input)).rejects.toThrow(
-      new DomainException('FAMILY_ALREADY_AFFILIATED'),
-    );
+    await expect(checkoutUseCase.execute(input)).rejects.toThrow(new DomainException('FAMILY_ALREADY_AFFILIATED'));
     expect(mockPaymentGateway.createTransaction).not.toHaveBeenCalled();
     expect(mockTransactionRepository.save).not.toHaveBeenCalled();
   });
@@ -230,9 +224,7 @@ describe('UNIT Checkout', () => {
     };
 
     // Act & Assert
-    await expect(checkoutUseCase.execute(input)).rejects.toThrow(
-      new DomainException('Payment token is required for credit card payments.'),
-    );
+    await expect(checkoutUseCase.execute(input)).rejects.toThrow(new DomainException('Payment token is required for credit card payments.'));
     expect(mockPaymentGateway.processCreditCardPayment).not.toHaveBeenCalled();
     expect(mockTransactionRepository.save).not.toHaveBeenCalled();
   });
@@ -252,9 +244,7 @@ describe('UNIT Checkout', () => {
     };
 
     // Act & Assert
-    await expect(checkoutUseCase.execute(input)).rejects.toThrow(
-      new DomainException('PAYMENT_FAILED: Payment failed'),
-    );
+    await expect(checkoutUseCase.execute(input)).rejects.toThrow(new DomainException('PAYMENT_FAILED: Payment failed'));
     expect(mockFamilyRepository.save).not.toHaveBeenCalled();
     expect(mockTransactionRepository.save).not.toHaveBeenCalled();
   });

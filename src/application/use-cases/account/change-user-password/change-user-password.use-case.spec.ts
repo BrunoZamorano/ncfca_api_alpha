@@ -18,7 +18,7 @@ describe('UNIT ChangeUserPassword', () => {
   const mockInput = {
     id: mockUserId,
     password: 'OldPassword@123',
-    newPassword: 'NewPassword@456'
+    newPassword: 'NewPassword@456',
   };
 
   beforeEach(async () => {
@@ -73,11 +73,7 @@ describe('UNIT ChangeUserPassword', () => {
 
     // Assert
     expect(userRepository.find).toHaveBeenCalledWith(mockUserId);
-    expect(mockUser.changePassword).toHaveBeenCalledWith(
-      mockInput.password,
-      mockInput.newPassword,
-      hashingService
-    );
+    expect(mockUser.changePassword).toHaveBeenCalledWith(mockInput.password, mockInput.newPassword, hashingService);
     expect(userRepository.save).toHaveBeenCalledWith(mockUser);
   });
 
@@ -106,11 +102,7 @@ describe('UNIT ChangeUserPassword', () => {
     // Act & Assert
     await expect(changeUserPassword.execute(mockInput)).rejects.toThrow('Invalid password');
     expect(userRepository.find).toHaveBeenCalledWith(mockUserId);
-    expect(mockUser.changePassword).toHaveBeenCalledWith(
-      mockInput.password,
-      mockInput.newPassword,
-      hashingService
-    );
+    expect(mockUser.changePassword).toHaveBeenCalledWith(mockInput.password, mockInput.newPassword, hashingService);
     expect(userRepository.save).not.toHaveBeenCalled();
   });
 
@@ -119,7 +111,7 @@ describe('UNIT ChangeUserPassword', () => {
     const samePasswordInput = {
       id: mockUserId,
       password: 'SamePassword@123',
-      newPassword: 'SamePassword@123'
+      newPassword: 'SamePassword@123',
     };
 
     const mockUser = {
@@ -132,15 +124,9 @@ describe('UNIT ChangeUserPassword', () => {
     userRepository.find.mockResolvedValue(mockUser);
 
     // Act & Assert
-    await expect(changeUserPassword.execute(samePasswordInput)).rejects.toThrow(
-      ChangeUserPassword.errorCodes.SAME_PASSWORD
-    );
+    await expect(changeUserPassword.execute(samePasswordInput)).rejects.toThrow(ChangeUserPassword.errorCodes.SAME_PASSWORD);
     expect(userRepository.find).toHaveBeenCalledWith(mockUserId);
-    expect(mockUser.changePassword).toHaveBeenCalledWith(
-      samePasswordInput.password,
-      samePasswordInput.newPassword,
-      hashingService
-    );
+    expect(mockUser.changePassword).toHaveBeenCalledWith(samePasswordInput.password, samePasswordInput.newPassword, hashingService);
     expect(userRepository.save).not.toHaveBeenCalled();
   });
 });

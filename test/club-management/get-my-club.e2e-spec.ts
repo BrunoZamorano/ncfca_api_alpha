@@ -3,14 +3,7 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 
 import { PrismaService } from '@/infraestructure/database/prisma.service';
 
-import {
-  setupClubManagementApp,
-  createClubOwnerUser,
-  createTestClub,
-  clubManagementCleanup,
-  ClubManagementTestUser,
-  ClubTestData,
-} from './setup';
+import { setupClubManagementApp, createClubOwnerUser, createTestClub, clubManagementCleanup, ClubManagementTestUser, ClubTestData } from './setup';
 
 describe('(E2E) GetMyClub', () => {
   let app: INestApplication;
@@ -23,15 +16,15 @@ describe('(E2E) GetMyClub', () => {
   beforeAll(async () => {
     // Arrange - Setup da aplicação e usuários base
     ({ app, prisma } = await setupClubManagementApp());
-    
+
     // Criar usuário dono do clube
     clubOwner = await createClubOwnerUser(app, prisma);
     testUsers.push(clubOwner.userId);
-    
+
     // Criar segundo usuário dono sem clube
     clubOwnerWithoutClub = await createClubOwnerUser(app, prisma);
     testUsers.push(clubOwnerWithoutClub.userId);
-    
+
     // Criar clube para o dono principal
     testClub = await createTestClub(prisma, clubOwner.userId, {
       name: 'Clube E2E Teste',
@@ -55,7 +48,7 @@ describe('(E2E) GetMyClub', () => {
   describe('GET /club-management/my-club', () => {
     it('Deve retornar as informações completas do clube para o dono autenticado', async () => {
       // Arrange - Dados já preparados no beforeAll
-      
+
       // Act - Buscar informações do clube
       const response = await request(app.getHttpServer())
         .get('/club-management/my-club')
@@ -79,7 +72,7 @@ describe('(E2E) GetMyClub', () => {
         principalId: clubOwner.userId,
         corum: 0, // Clube sem membros deve ter corum 0
       });
-      
+
       // Validar que todos os campos obrigatórios estão presentes
       expect(response.body.id).toBeDefined();
       expect(response.body.name).toBeDefined();
@@ -91,7 +84,7 @@ describe('(E2E) GetMyClub', () => {
 
     it('Não deve retornar clube quando usuário dono não possui clube', async () => {
       // Arrange - Usuário sem clube já criado
-      
+
       // Act & Assert - Tentar buscar clube inexistente
       await request(app.getHttpServer())
         .get('/club-management/my-club')
@@ -101,11 +94,9 @@ describe('(E2E) GetMyClub', () => {
 
     it('Não deve permitir acesso sem token de autenticação', async () => {
       // Arrange - Nenhuma preparação especial
-      
+
       // Act & Assert - Tentar acessar sem token
-      await request(app.getHttpServer())
-        .get('/club-management/my-club')
-        .expect(HttpStatus.UNAUTHORIZED);
+      await request(app.getHttpServer()).get('/club-management/my-club').expect(HttpStatus.UNAUTHORIZED);
     });
   });
 });

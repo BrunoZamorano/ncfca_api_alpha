@@ -25,7 +25,7 @@ describe('E2E ChangeUserPassword', () => {
     app.useGlobalFilters(new AllExceptionsFilter());
     await app.init();
     prisma = app.get(PrismaService);
-    
+
     user = await createTestUser(`test-${randomUUID()}@example.com`, [UserRoles.SEM_FUNCAO], prisma, app);
     testUsers.push(user.userId);
   });
@@ -44,7 +44,7 @@ describe('E2E ChangeUserPassword', () => {
     const testPassword = 'Password@123'; // Senha padrão do createTestUser
     const passwordData = {
       oldPassword: testPassword,
-      newPassword: 'NewStrongPassword@456'
+      newPassword: 'NewStrongPassword@456',
     };
 
     // Act
@@ -61,13 +61,11 @@ describe('E2E ChangeUserPassword', () => {
     // Arrange
     const passwordData = {
       oldPassword: 'OldPassword@123',
-      newPassword: 'NewPassword@456'
+      newPassword: 'NewPassword@456',
     };
 
     // Act
-    const response = await request(app.getHttpServer())
-      .post('/account/change-password')
-      .send(passwordData);
+    const response = await request(app.getHttpServer()).post('/account/change-password').send(passwordData);
 
     // Assert
     expect(response.status).toBe(401);
@@ -77,7 +75,7 @@ describe('E2E ChangeUserPassword', () => {
     // Arrange
     const passwordData = {
       oldPassword: 'WrongPassword@123', // Senha incorreta
-      newPassword: 'NewPassword@456'
+      newPassword: 'NewPassword@456',
     };
 
     // Act
@@ -96,7 +94,7 @@ describe('E2E ChangeUserPassword', () => {
     const testPassword = 'Password@123'; // Senha padrão do createTestUser
     const passwordData = {
       oldPassword: testPassword,
-      newPassword: 'weak' // Senha que não atende aos critérios
+      newPassword: 'weak', // Senha que não atende aos critérios
     };
 
     // Act
@@ -115,7 +113,7 @@ describe('E2E ChangeUserPassword', () => {
     const testPassword = 'Password@123'; // Senha padrão do createTestUser
     const passwordData = {
       oldPassword: testPassword,
-      newPassword: testPassword // Mesma senha
+      newPassword: testPassword, // Mesma senha
     };
 
     // Act

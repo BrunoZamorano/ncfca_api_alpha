@@ -41,11 +41,8 @@ describe('E2E ListPendingClubRequests', () => {
   afterEach(async () => {
     await prisma.clubRequest.deleteMany({
       where: {
-        OR: [
-          { requester_id: admin.userId },
-          { requester_id: regularUser.userId }
-        ]
-      }
+        OR: [{ requester_id: admin.userId }, { requester_id: regularUser.userId }],
+      },
     });
   });
 
@@ -88,7 +85,7 @@ describe('E2E ListPendingClubRequests', () => {
           clubName: 'Clube Pendente 1',
           status: 'PENDING',
         }),
-      ])
+      ]),
     );
   });
 
@@ -152,9 +149,7 @@ describe('E2E ListPendingClubRequests', () => {
   });
 
   it('Não deve permitir acesso sem autenticação', async () => {
-    await request(app.getHttpServer())
-      .get('/club-requests/pending')
-      .expect(HttpStatus.UNAUTHORIZED);
+    await request(app.getHttpServer()).get('/club-requests/pending').expect(HttpStatus.UNAUTHORIZED);
   });
 
   it('Não deve permitir acesso para usuários não-admin', async () => {
@@ -165,9 +160,6 @@ describe('E2E ListPendingClubRequests', () => {
   });
 
   it('Não deve permitir acesso com token inválido', async () => {
-    await request(app.getHttpServer())
-      .get('/club-requests/pending')
-      .set('Authorization', 'Bearer token-invalido')
-      .expect(HttpStatus.UNAUTHORIZED);
+    await request(app.getHttpServer()).get('/club-requests/pending').set('Authorization', 'Bearer token-invalido').expect(HttpStatus.UNAUTHORIZED);
   });
 });

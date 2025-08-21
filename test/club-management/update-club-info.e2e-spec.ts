@@ -3,14 +3,7 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 
 import { PrismaService } from '@/infraestructure/database/prisma.service';
 
-import {
-  setupClubManagementApp,
-  createClubOwnerUser,
-  createTestClub,
-  clubManagementCleanup,
-  ClubManagementTestUser,
-  ClubTestData,
-} from './setup';
+import { setupClubManagementApp, createClubOwnerUser, createTestClub, clubManagementCleanup, ClubManagementTestUser, ClubTestData } from './setup';
 
 describe('(E2E) UpdateClubInfo', () => {
   let app: INestApplication;
@@ -24,15 +17,15 @@ describe('(E2E) UpdateClubInfo', () => {
   beforeAll(async () => {
     // Arrange - Setup da aplicação e usuários base
     ({ app, prisma } = await setupClubManagementApp());
-    
+
     // Criar usuário dono do clube principal
     clubOwner = await createClubOwnerUser(app, prisma);
     testUsers.push(clubOwner.userId);
-    
+
     // Criar outro usuário dono para teste de autorização
     otherClubOwner = await createClubOwnerUser(app, prisma);
     testUsers.push(otherClubOwner.userId);
-    
+
     // Criar clube para o dono principal
     testClub = await createTestClub(prisma, clubOwner.userId, {
       name: 'Clube Original',
@@ -73,7 +66,7 @@ describe('(E2E) UpdateClubInfo', () => {
           complement: 'Andar 2',
         },
       };
-      
+
       // Act - Atualizar clube
       await request(app.getHttpServer())
         .patch('/club-management')
@@ -85,7 +78,7 @@ describe('(E2E) UpdateClubInfo', () => {
       const updatedClub = await prisma.club.findUnique({
         where: { id: testClub.id },
       });
-      
+
       expect(updatedClub).not.toBeNull();
       expect(updatedClub?.name).toBe('Clube Atualizado E2E');
       expect(updatedClub?.street).toBe('Rua Nova');
@@ -102,7 +95,7 @@ describe('(E2E) UpdateClubInfo', () => {
       const updateData = {
         maxMembers: 50,
       };
-      
+
       // Act - Atualizar clube
       await request(app.getHttpServer())
         .patch('/club-management')
@@ -114,7 +107,7 @@ describe('(E2E) UpdateClubInfo', () => {
       const updatedClub = await prisma.club.findUnique({
         where: { id: testClub.id },
       });
-      
+
       expect(updatedClub?.max_members).toBe(50);
       // Verificar que outros campos não foram alterados
       expect(updatedClub?.name).toBe('Clube Atualizado E2E'); // Do teste anterior
@@ -125,7 +118,7 @@ describe('(E2E) UpdateClubInfo', () => {
       const updateData = {
         maxMembers: 1,
       };
-      
+
       // Act - Atualizar clube
       await request(app.getHttpServer())
         .patch('/club-management')
@@ -137,7 +130,7 @@ describe('(E2E) UpdateClubInfo', () => {
       const updatedClub = await prisma.club.findUnique({
         where: { id: testClub.id },
       });
-      
+
       expect(updatedClub?.max_members).toBe(1);
     });
 
@@ -154,7 +147,7 @@ describe('(E2E) UpdateClubInfo', () => {
           extraField: 'campo não permitido', // Campo não permitido pelo whitelist
         },
       };
-      
+
       // Act & Assert - Validação deve falhar devido ao whitelist
       await request(app.getHttpServer())
         .patch('/club-management')
@@ -168,7 +161,7 @@ describe('(E2E) UpdateClubInfo', () => {
       const updateData = {
         name: 'Tentativa de Alteração',
       };
-      
+
       // Act - Usuário atualiza SEU PRÓPRIO clube (não o clube do teste)
       await request(app.getHttpServer())
         .patch('/club-management')
@@ -180,11 +173,11 @@ describe('(E2E) UpdateClubInfo', () => {
       const otherClubUpdated = await prisma.club.findUnique({
         where: { id: otherClub.id },
       });
-      
+
       const mainClubNotChanged = await prisma.club.findUnique({
         where: { id: testClub.id },
       });
-      
+
       expect(otherClubUpdated?.name).toBe('Tentativa de Alteração');
       expect(mainClubNotChanged?.name).toBe('Clube Atualizado E2E'); // Não deve ter mudado
     });
@@ -194,12 +187,9 @@ describe('(E2E) UpdateClubInfo', () => {
       const updateData = {
         name: 'Tentativa sem token',
       };
-      
+
       // Act & Assert - Deve retornar 401 Unauthorized
-      await request(app.getHttpServer())
-        .patch('/club-management')
-        .send(updateData)
-        .expect(HttpStatus.UNAUTHORIZED);
+      await request(app.getHttpServer()).patch('/club-management').send(updateData).expect(HttpStatus.UNAUTHORIZED);
     });
 
     it('Não deve aceitar name muito curto', async () => {
@@ -207,7 +197,7 @@ describe('(E2E) UpdateClubInfo', () => {
       const invalidData = {
         name: 'AB', // Menor que minLength de 3
       };
-      
+
       // Act & Assert - Validação deve falhar
       await request(app.getHttpServer())
         .patch('/club-management')
@@ -228,7 +218,7 @@ describe('(E2E) UpdateClubInfo', () => {
           zipCode: '1234567', // 7 dígitos ao invés de 8
         },
       };
-      
+
       // Act & Assert - Validação deve falhar
       await request(app.getHttpServer())
         .patch('/club-management')

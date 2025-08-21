@@ -73,7 +73,7 @@ describe('E2E RegisterUser', () => {
     expect(createdUser).toBeTruthy();
     expect(createdUser?.first_name).toBe(userData.firstName);
     expect(createdUser?.last_name).toBe(userData.lastName);
-    
+
     if (createdUser?.id) {
       testUsers.push(createdUser.id);
     }
@@ -94,7 +94,7 @@ describe('E2E RegisterUser', () => {
     const firstResponse = await request(app.getHttpServer()).post('/account/user').send(userData);
 
     expect(firstResponse.status).toBe(201);
-    
+
     const firstUser = await prisma.user.findUnique({ where: { email: userData.email } });
     if (firstUser?.id) {
       testUsers.push(firstUser.id);
@@ -120,7 +120,7 @@ describe('E2E RegisterUser', () => {
     // Criar primeiro usuário
     const firstResponse = await request(app.getHttpServer()).post('/account/user').send(userData1);
     expect(firstResponse.status).toBe(201);
-    
+
     const firstUser = await prisma.user.findUnique({ where: { email: userData1.email } });
     if (firstUser?.id) {
       testUsers.push(firstUser.id);

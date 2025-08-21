@@ -29,84 +29,54 @@ describe('(E2E) ListPendingEnrollments', () => {
   beforeAll(async () => {
     // Arrange - Setup da aplicação e usuários base
     ({ app, prisma } = await setupClubManagementApp());
-    
+
     // Criar usuário dono do clube principal
     clubOwner = await createClubOwnerUser(app, prisma);
     testUsers.push(clubOwner.userId);
-    
+
     // Criar outro usuário dono de clube
     otherClubOwner = await createClubOwnerUser(app, prisma);
     testUsers.push(otherClubOwner.userId);
-    
+
     // Criar família afiliada para testes
     testFamily = await createTestFamily(app, prisma);
     testUsers.push(testFamily.userId);
-    
+
     // Criar clube para o dono principal
     testClub = await createTestClub(prisma, clubOwner.userId, {
       name: 'Clube Pendentes E2E',
       maxMembers: 30,
     });
-    
+
     // Criar outro clube para outro dono
     otherTestClub = await createTestClub(prisma, otherClubOwner.userId, {
       name: 'Outro Clube E2E',
       maxMembers: 25,
     });
-    
+
     // Criar dependente para a família
     const dependant1 = await createTestDependant(prisma, testFamily.familyId, {
       firstName: 'João',
       lastName: 'Silva',
     });
-    
+
     const dependant2 = await createTestDependant(prisma, testFamily.familyId, {
       firstName: 'Maria',
       lastName: 'Santos',
     });
-    
+
     // Criar solicitações pendentes para o clube principal
-    await createTestEnrollmentRequest(
-      prisma,
-      testClub.id,
-      dependant1.id,
-      testFamily.familyId,
-      EnrollmentStatus.PENDING,
-    );
-    
-    await createTestEnrollmentRequest(
-      prisma,
-      testClub.id,
-      dependant2.id,
-      testFamily.familyId,
-      EnrollmentStatus.PENDING,
-    );
-    
+    await createTestEnrollmentRequest(prisma, testClub.id, dependant1.id, testFamily.familyId, EnrollmentStatus.PENDING);
+
+    await createTestEnrollmentRequest(prisma, testClub.id, dependant2.id, testFamily.familyId, EnrollmentStatus.PENDING);
+
     // Criar solicitações com outros status (não devem aparecer)
-    await createTestEnrollmentRequest(
-      prisma,
-      testClub.id,
-      dependant1.id,
-      testFamily.familyId,
-      EnrollmentStatus.APPROVED,
-    );
-    
-    await createTestEnrollmentRequest(
-      prisma,
-      testClub.id,
-      dependant2.id,
-      testFamily.familyId,
-      EnrollmentStatus.REJECTED,
-    );
-    
+    await createTestEnrollmentRequest(prisma, testClub.id, dependant1.id, testFamily.familyId, EnrollmentStatus.APPROVED);
+
+    await createTestEnrollmentRequest(prisma, testClub.id, dependant2.id, testFamily.familyId, EnrollmentStatus.REJECTED);
+
     // Criar solicitação pendente para o outro clube
-    await createTestEnrollmentRequest(
-      prisma,
-      otherTestClub.id,
-      dependant1.id,
-      testFamily.familyId,
-      EnrollmentStatus.PENDING,
-    );
+    await createTestEnrollmentRequest(prisma, otherTestClub.id, dependant1.id, testFamily.familyId, EnrollmentStatus.PENDING);
   });
 
   afterAll(async () => {
@@ -118,7 +88,7 @@ describe('(E2E) ListPendingEnrollments', () => {
   describe('GET /club-management/:clubId/enrollments/pending', () => {
     it('Deve listar apenas matrículas pendentes com dependantName populado', async () => {
       // Arrange - Dados já preparados no beforeAll
-      
+
       // Act - Buscar matrículas pendentes
       const response = await request(app.getHttpServer())
         .get(`/club-management/${testClub.id}/enrollments/pending`)
@@ -128,12 +98,12 @@ describe('(E2E) ListPendingEnrollments', () => {
       // Assert - Validar que retorna apenas pendentes
       expect(Array.isArray(response.body)).toBe(true);
       expect(response.body).toHaveLength(2);
-      
+
       // Verificar que todos os enrollments são PENDING
       response.body.forEach((enrollment: any) => {
         expect(enrollment.status).toBe(EnrollmentStatus.PENDING);
       });
-      
+
       // Verificar que cada enrollment tem os campos obrigatórios incluindo dependantName
       response.body.forEach((enrollment: any) => {
         expect(enrollment).toHaveProperty('id');
@@ -145,12 +115,12 @@ describe('(E2E) ListPendingEnrollments', () => {
         expect(enrollment).toHaveProperty('requestedAt');
         expect(enrollment).toHaveProperty('resolvedAt');
         expect(enrollment).toHaveProperty('rejectionReason');
-        
+
         // Verificar que dependantName está presente e não é vazio
         expect(typeof enrollment.dependantName).toBe('string');
         expect(enrollment.dependantName.length).toBeGreaterThan(0);
       });
-      
+
       // Verificar que os nomes dos dependentes estão corretos
       const dependantNames = response.body.map((enrollment: any) => enrollment.dependantName);
       expect(dependantNames).toContain('João Silva');
@@ -161,11 +131,11 @@ describe('(E2E) ListPendingEnrollments', () => {
       // Arrange - Criar novo clube sem matrículas pendentes
       const newClubOwner = await createClubOwnerUser(app, prisma);
       testUsers.push(newClubOwner.userId);
-      
+
       const newClub = await createTestClub(prisma, newClubOwner.userId, {
         name: 'Clube Sem Pendentes',
       });
-      
+
       // Act - Buscar pendentes do clube vazio
       const response = await request(app.getHttpServer())
         .get(`/club-management/${newClub.id}/enrollments/pending`)
@@ -179,7 +149,7 @@ describe('(E2E) ListPendingEnrollments', () => {
 
     it('Não deve listar pendentes de clube que não possuo', async () => {
       // Arrange - Tentar acessar clube de outro usuário
-      
+
       // Act & Assert - Deve retornar 403 FORBIDDEN
       await request(app.getHttpServer())
         .get(`/club-management/${otherTestClub.id}/enrollments/pending`)
@@ -189,17 +159,15 @@ describe('(E2E) ListPendingEnrollments', () => {
 
     it('Não deve permitir acesso sem token de autenticação', async () => {
       // Arrange - Nenhuma preparação especial
-      
+
       // Act & Assert - Tentar acessar sem token
-      await request(app.getHttpServer())
-        .get(`/club-management/${testClub.id}/enrollments/pending`)
-        .expect(HttpStatus.UNAUTHORIZED);
+      await request(app.getHttpServer()).get(`/club-management/${testClub.id}/enrollments/pending`).expect(HttpStatus.UNAUTHORIZED);
     });
 
     it('Deve retornar erro 404 para clube inexistente', async () => {
       // Arrange - ID de clube inexistente
       const nonExistentClubId = crypto.randomUUID();
-      
+
       // Act & Assert - Deve retornar 404 NOT FOUND
       await request(app.getHttpServer())
         .get(`/club-management/${nonExistentClubId}/enrollments/pending`)

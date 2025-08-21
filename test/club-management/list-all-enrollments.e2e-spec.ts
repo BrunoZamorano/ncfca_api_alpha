@@ -28,55 +28,37 @@ describe('(E2E) ListAllEnrollments', () => {
   beforeAll(async () => {
     // Arrange - Setup da aplicação e usuários base
     ({ app, prisma } = await setupClubManagementApp());
-    
+
     // Criar usuário dono do clube
     clubOwner = await createClubOwnerUser(app, prisma);
     testUsers.push(clubOwner.userId);
-    
+
     // Criar segundo usuário dono sem clube
     clubOwnerWithoutClub = await createClubOwnerUser(app, prisma);
     testUsers.push(clubOwnerWithoutClub.userId);
-    
+
     // Criar família afiliada para testes
     testFamily = await createTestFamily(app, prisma);
     testUsers.push(testFamily.userId);
-    
+
     // Criar clube para o dono principal
     testClub = await createTestClub(prisma, clubOwner.userId, {
       name: 'Clube Matrículas E2E',
       maxMembers: 30,
     });
-    
+
     // Criar dependente para a família
     const dependant = await createTestDependant(prisma, testFamily.familyId, {
       firstName: 'João',
       lastName: 'Silva',
     });
-    
+
     // Criar solicitações de matrícula com diferentes status
-    await createTestEnrollmentRequest(
-      prisma,
-      testClub.id,
-      dependant.id,
-      testFamily.familyId,
-      EnrollmentStatus.PENDING,
-    );
-    
-    await createTestEnrollmentRequest(
-      prisma,
-      testClub.id,
-      dependant.id,
-      testFamily.familyId,
-      EnrollmentStatus.APPROVED,
-    );
-    
-    await createTestEnrollmentRequest(
-      prisma,
-      testClub.id,
-      dependant.id,
-      testFamily.familyId,
-      EnrollmentStatus.REJECTED,
-    );
+    await createTestEnrollmentRequest(prisma, testClub.id, dependant.id, testFamily.familyId, EnrollmentStatus.PENDING);
+
+    await createTestEnrollmentRequest(prisma, testClub.id, dependant.id, testFamily.familyId, EnrollmentStatus.APPROVED);
+
+    await createTestEnrollmentRequest(prisma, testClub.id, dependant.id, testFamily.familyId, EnrollmentStatus.REJECTED);
   });
 
   afterAll(async () => {
@@ -88,7 +70,7 @@ describe('(E2E) ListAllEnrollments', () => {
   describe('GET /club-management/my-club/enrollments', () => {
     it('Deve listar todas as matrículas do meu clube', async () => {
       // Arrange - Dados já preparados no beforeAll
-      
+
       // Act - Buscar todas as matrículas
       const response = await request(app.getHttpServer())
         .get('/club-management/my-club/enrollments')
@@ -98,7 +80,7 @@ describe('(E2E) ListAllEnrollments', () => {
       // Assert - Validar que retorna array com todos os status
       expect(Array.isArray(response.body)).toBe(true);
       expect(response.body).toHaveLength(3);
-      
+
       // Verificar que cada enrollment tem os campos obrigatórios
       response.body.forEach((enrollment: any) => {
         expect(enrollment).toHaveProperty('id');
@@ -110,7 +92,7 @@ describe('(E2E) ListAllEnrollments', () => {
         expect(enrollment).toHaveProperty('resolvedAt');
         expect(enrollment).toHaveProperty('rejectionReason');
       });
-      
+
       // Verificar que todos os status estão presentes
       const statuses = response.body.map((enrollment: any) => enrollment.status);
       expect(statuses).toContain(EnrollmentStatus.PENDING);
@@ -122,11 +104,11 @@ describe('(E2E) ListAllEnrollments', () => {
       // Arrange - Criar novo clube sem matrículas
       const newClubOwner = await createClubOwnerUser(app, prisma);
       testUsers.push(newClubOwner.userId);
-      
+
       await createTestClub(prisma, newClubOwner.userId, {
         name: 'Clube Vazio',
       });
-      
+
       // Act - Buscar matrículas do clube vazio
       const response = await request(app.getHttpServer())
         .get('/club-management/my-club/enrollments')
@@ -140,7 +122,7 @@ describe('(E2E) ListAllEnrollments', () => {
 
     it('Não deve retornar matrículas quando usuário dono não possui clube', async () => {
       // Arrange - Usuário sem clube já criado
-      
+
       // Act & Assert - Tentar buscar matrículas sem ter clube
       await request(app.getHttpServer())
         .get('/club-management/my-club/enrollments')
@@ -150,11 +132,9 @@ describe('(E2E) ListAllEnrollments', () => {
 
     it('Não deve permitir acesso sem token de autenticação', async () => {
       // Arrange - Nenhuma preparação especial
-      
+
       // Act & Assert - Tentar acessar sem token
-      await request(app.getHttpServer())
-        .get('/club-management/my-club/enrollments')
-        .expect(HttpStatus.UNAUTHORIZED);
+      await request(app.getHttpServer()).get('/club-management/my-club/enrollments').expect(HttpStatus.UNAUTHORIZED);
     });
   });
 });

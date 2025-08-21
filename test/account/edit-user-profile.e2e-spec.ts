@@ -25,7 +25,7 @@ describe('E2E EditUserProfile', () => {
     app.useGlobalFilters(new AllExceptionsFilter());
     await app.init();
     prisma = app.get(PrismaService);
-    
+
     user = await createTestUser(`test-${randomUUID()}@example.com`, [UserRoles.SEM_FUNCAO], prisma, app);
     testUsers.push(user.userId);
   });
@@ -45,21 +45,18 @@ describe('E2E EditUserProfile', () => {
       firstName: 'José',
       lastName: 'Santos',
       phone: '11998877665',
-      email: `updated-${randomUUID()}@example.com`
+      email: `updated-${randomUUID()}@example.com`,
     };
 
     // Act
-    const response = await request(app.getHttpServer())
-      .patch('/account/profile')
-      .set('Authorization', `Bearer ${user.accessToken}`)
-      .send(updateData);
+    const response = await request(app.getHttpServer()).patch('/account/profile').set('Authorization', `Bearer ${user.accessToken}`).send(updateData);
 
     // Assert
     expect(response.status).toBe(204);
 
     // Verificar se os dados foram atualizados no banco
     const updatedUser = await prisma.user.findUnique({
-      where: { id: user.userId }
+      where: { id: user.userId },
     });
     expect(updatedUser?.first_name).toBe(updateData.firstName);
     expect(updatedUser?.last_name).toBe(updateData.lastName);
@@ -71,13 +68,11 @@ describe('E2E EditUserProfile', () => {
     // Arrange
     const updateData = {
       firstName: 'José',
-      lastName: 'Santos'
+      lastName: 'Santos',
     };
 
     // Act
-    const response = await request(app.getHttpServer())
-      .patch('/account/profile')
-      .send(updateData);
+    const response = await request(app.getHttpServer()).patch('/account/profile').send(updateData);
 
     // Assert
     expect(response.status).toBe(401);
@@ -87,7 +82,7 @@ describe('E2E EditUserProfile', () => {
     // Arrange
     const invalidData = {
       firstName: 'A', // Muito curto
-      email: 'email-invalido' // Email inválido
+      email: 'email-invalido', // Email inválido
     };
 
     // Act
@@ -104,11 +99,11 @@ describe('E2E EditUserProfile', () => {
   it('Deve permitir atualização de campos individuais', async () => {
     // Arrange
     const originalUser = await prisma.user.findUnique({
-      where: { id: user.userId }
+      where: { id: user.userId },
     });
 
     const partialUpdateData = {
-      firstName: 'NovoNome'
+      firstName: 'NovoNome',
     };
 
     // Act
@@ -122,7 +117,7 @@ describe('E2E EditUserProfile', () => {
 
     // Verificar se apenas o campo especificado foi atualizado
     const updatedUser = await prisma.user.findUnique({
-      where: { id: user.userId }
+      where: { id: user.userId },
     });
     expect(updatedUser?.first_name).toBe(partialUpdateData.firstName);
     expect(updatedUser?.last_name).toBe(originalUser?.last_name); // Não deve mudar

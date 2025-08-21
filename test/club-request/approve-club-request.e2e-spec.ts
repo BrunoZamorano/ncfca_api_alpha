@@ -51,7 +51,7 @@ describe('E2E ApproveClubRequest', () => {
     app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }));
 
     const configService = moduleFixture.get(ConfigService);
-    
+
     app.connectMicroservice({
       transport: Transport.RMQ,
       options: {
@@ -91,33 +91,33 @@ describe('E2E ApproveClubRequest', () => {
       where: {
         club: {
           principal_id: {
-            in: [admin.userId, regularUser.userId]
-          }
-        }
-      }
+            in: [admin.userId, regularUser.userId],
+          },
+        },
+      },
     });
     await prisma.enrollmentRequest.deleteMany({
       where: {
         club: {
           principal_id: {
-            in: [admin.userId, regularUser.userId]
-          }
-        }
-      }
+            in: [admin.userId, regularUser.userId],
+          },
+        },
+      },
     });
     await prisma.club.deleteMany({
       where: {
         principal_id: {
-          in: [admin.userId, regularUser.userId]
-        }
-      }
+          in: [admin.userId, regularUser.userId],
+        },
+      },
     });
     await prisma.clubRequest.deleteMany({
       where: {
         requester_id: {
-          in: [admin.userId, regularUser.userId]
-        }
-      }
+          in: [admin.userId, regularUser.userId],
+        },
+      },
     });
   });
 
@@ -219,9 +219,7 @@ describe('E2E ApproveClubRequest', () => {
       status: ClubRequestStatus.PENDING,
     });
 
-    await request(app.getHttpServer())
-      .post(`/club-requests/${clubRequest.id}/approve`)
-      .expect(HttpStatus.UNAUTHORIZED);
+    await request(app.getHttpServer()).post(`/club-requests/${clubRequest.id}/approve`).expect(HttpStatus.UNAUTHORIZED);
   });
 
   it('Não deve permitir aprovação com token inválido', async () => {

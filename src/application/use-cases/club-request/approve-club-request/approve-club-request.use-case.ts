@@ -25,7 +25,7 @@ export default class ApproveClubRequest {
     clubRequest.approve();
     await this.clubRequestRepository.save(clubRequest);
 
-    const event = new ClubRequestApprovedEvent(clubRequest.id, clubRequest.requesterId); 
+    const event = new ClubRequestApprovedEvent(clubRequest.id, clubRequest.requesterId);
     this.logger.debug(`[GEMINI_DEBUG] Sending ClubRequest.Approved event for: ${clubRequest.id}`);
     this.client.emit('ClubRequest.Approved', event);
   }

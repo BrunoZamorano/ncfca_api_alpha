@@ -12,18 +12,12 @@ export async function surgicalCleanup(prisma: PrismaService, userIds: string[]):
   await prisma.$transaction(async (tx) => {
     await tx.clubMembership.deleteMany({
       where: {
-        OR: [
-          { club: { principal_id: { in: userIds } } },
-          { family: { holder_id: { in: userIds } } },
-        ],
+        OR: [{ club: { principal_id: { in: userIds } } }, { family: { holder_id: { in: userIds } } }],
       },
     });
     await tx.enrollmentRequest.deleteMany({
       where: {
-        OR: [
-          { club: { principal_id: { in: userIds } } },
-          { family: { holder_id: { in: userIds } } },
-        ],
+        OR: [{ club: { principal_id: { in: userIds } } }, { family: { holder_id: { in: userIds } } }],
       },
     });
     await tx.club.deleteMany({
