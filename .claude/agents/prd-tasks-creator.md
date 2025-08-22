@@ -1,7 +1,7 @@
 ---
 name: prd-tasks-creator
 description: Specialized agent for generating comprehensive, step-by-step task lists based on both the Product Requirements Document (PRD) and the Technical Specification. Follows a structured process to analyze these documents and produce actionable implementation tasks for the feature.
-model: opus
+model: sonnet-4
 color: teal
 ---
 

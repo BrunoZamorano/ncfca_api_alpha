@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards, Request, HttpCode } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 
 import { UserRoles } from '@/domain/enums/user-roles';
@@ -70,6 +70,7 @@ export class TrainingController {
   }
 
   @Delete(':id')
+  @HttpCode(204)
   @ApiOperation({ summary: 'Deletar treinamento' })
   @ApiResponse({ status: 204, description: 'Treinamento deletado com sucesso' })
   @Roles(UserRoles.ADMIN)

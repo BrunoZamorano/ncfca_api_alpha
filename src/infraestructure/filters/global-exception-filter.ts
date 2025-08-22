@@ -1,4 +1,4 @@
-import { ArgumentsHost, BadRequestException, ExceptionFilter, ForbiddenException, HttpStatus, UnauthorizedException } from '@nestjs/common';
+import { ArgumentsHost, BadRequestException, ExceptionFilter, ForbiddenException, HttpStatus, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { JsonWebTokenError } from '@nestjs/jwt';
 import { Request, Response } from 'express';
 
@@ -12,6 +12,9 @@ export default class GlobalExceptionFilter implements ExceptionFilter {
     let status: HttpStatus;
     let body: any;
     if (exception instanceof EntityNotFoundException) {
+      status = HttpStatus.NOT_FOUND;
+      body = { message: exception.message };
+    } else if (exception instanceof NotFoundException) {
       status = HttpStatus.NOT_FOUND;
       body = { message: exception.message };
     } else if (exception instanceof InvalidOperationException) {
