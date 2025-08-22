@@ -17,12 +17,13 @@ import AdminModule from '@/shared/modules/admin.module';
 import TrainingModule from '@/shared/modules/training.module';
 import ClubRequestModule from '@/shared/modules/club-request.module';
 
+const env = process.env.NODE_ENV ? `.env.${process.env.NODE_ENV}` : '.env.development';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: [`.env.${process.env.NODE_ENV || 'development'}`, '.env'],
-      ignoreEnvFile: false,
+      envFilePath: [env],
     }),
     AuthModule,
     ClubModule,
@@ -40,4 +41,4 @@ import ClubRequestModule from '@/shared/modules/club-request.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
