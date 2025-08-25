@@ -23,5 +23,3 @@ export interface ClubMemberDto {
 export interface ClubQuery {
   getClubMembersListView(clubId: string): Promise<ClubMemberDto[]>;
 }
-
-export const CLUB_QUERY = Symbol('CLUB_QUERY');

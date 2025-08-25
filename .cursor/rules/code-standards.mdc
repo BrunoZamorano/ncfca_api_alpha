@@ -272,3 +272,6 @@ class UserService {
 eg: create user: 
 bad (POST) users
 good (POST) users/create
+
+## Use Cases 
+- dont name it with sufix UseCase, but just the action name. Eg LoginUseCase (wrong) Login(right)

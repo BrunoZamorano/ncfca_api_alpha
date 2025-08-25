@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 ---
 <task_context>
 <domain>engine/application/use-cases</domain>
@@ -23,9 +23,9 @@ This task involves implementing the application-level use cases for all write op
 
 ## Subtasks
 
-- [ ] 3.1 Implement `CreateTournamentUseCase` and its unit tests.
-- [ ] 3.2 Implement `UpdateTournamentUseCase` and its unit tests.
-- [ ] 3.3 Implement `DeleteTournamentUseCase` and its unit tests.
+- [x] 3.1 Implement `CreateTournament` and its unit tests.
+- [x] 3.2 Implement `UpdateTournament` and its unit tests.
+- [x] 3.3 Implement `DeleteTournament` and its unit tests.
 
 ## Implementation Details
 

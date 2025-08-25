@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 
-import { TRAINING_QUERY, TrainingQuery } from '@/application/queries/training-query/training.query';
+import { TrainingQuery } from '@/application/queries/training-query/training.query';
+import { TRAINING_QUERY } from '@/shared/constants/query-constants';
 import { TrainingListItemView } from '@/application/queries/training-query/training-list-item.view';
 
 @Injectable()

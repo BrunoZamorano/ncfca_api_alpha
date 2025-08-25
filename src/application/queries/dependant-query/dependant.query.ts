@@ -3,5 +3,3 @@ import { DependantsListItemView } from '@/application/queries/dependant-query/de
 export interface DependantQuery {
   dependantsListView(): Promise<DependantsListItemView[]>;
 }
-
-export const DEPENDANT_QUERY = Symbol('DEPENDANT_QUERY');

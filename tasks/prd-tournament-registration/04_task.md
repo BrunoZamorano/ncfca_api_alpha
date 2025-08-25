@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 ---
 <task_context>
 <domain>engine/application/queries</domain>
@@ -24,11 +24,11 @@ This task covers the implementation of the read model (CQRS Query side) for tour
 
 ## Subtasks
 
-- [ ] 4.1 Define the `TournamentQuery` interface and its associated DTOs.
-- [ ] 4.2 Create `src/shared/constants/query-constants.ts` and add the `TOURNAMENT_QUERY` symbol.
-- [ ] 4.3 Implement the `PrismaTournamentQuery` class in the infrastructure layer.
-- [ ] 4.4 Implement the `GetTournamentUseCase` and its unit tests.
-- [ ] 4.5 Implement the `ListTournamentsUseCase` and its unit tests.
+- [x] 4.1 Define the `TournamentQuery` interface and its associated DTOs.
+- [x] 4.2 Create `src/shared/constants/query-constants.ts` and add the `TOURNAMENT_QUERY` symbol.
+- [x] 4.3 Implement the `PrismaTournamentQuery` class in the infrastructure layer.
+- [x] 4.4 Implement the `GetTournament` and its unit tests.
+- [x] 4.5 Implement the `ListTournaments` and its unit tests.
 
 ## Implementation Details
 
