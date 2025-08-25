@@ -1,23 +1,23 @@
-import { IsString, IsNotEmpty, IsEnum, IsDateString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { TournamentType } from '@/domain/enums/tournament-type.enum';
 
-export class CreateTournamentDto {
+export class TournamentResponseDto {
+  @ApiProperty({
+    description: 'ID único do torneio',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
+  id: string;
+
   @ApiProperty({
     description: 'Nome do torneio',
     example: 'Torneio Nacional de Debate Individual',
-    minLength: 3,
   })
-  @IsString()
-  @IsNotEmpty()
   name: string;
 
   @ApiProperty({
     description: 'Descrição detalhada do torneio',
     example: 'Torneio nacional de debate para estudantes do ensino médio com foco em argumentação e oratória',
   })
-  @IsString()
-  @IsNotEmpty()
   description: string;
 
   @ApiProperty({
@@ -25,7 +25,6 @@ export class CreateTournamentDto {
     enum: TournamentType,
     example: TournamentType.INDIVIDUAL,
   })
-  @IsEnum(TournamentType)
   type: TournamentType;
 
   @ApiProperty({
@@ -34,7 +33,6 @@ export class CreateTournamentDto {
     format: 'date-time',
     example: '2024-01-01T00:00:00Z',
   })
-  @IsDateString()
   registrationStartDate: Date;
 
   @ApiProperty({
@@ -43,7 +41,6 @@ export class CreateTournamentDto {
     format: 'date-time',
     example: '2024-01-15T23:59:59Z',
   })
-  @IsDateString()
   registrationEndDate: Date;
 
   @ApiProperty({
@@ -52,6 +49,36 @@ export class CreateTournamentDto {
     format: 'date-time',
     example: '2024-02-01T09:00:00Z',
   })
-  @IsDateString()
   startDate: Date;
+
+  @ApiProperty({
+    description: 'Número de inscrições no torneio',
+    example: 0,
+  })
+  registrationCount: number;
+
+  @ApiProperty({
+    description: 'Data de criação do torneio',
+    type: String,
+    format: 'date-time',
+    example: '2024-01-01T00:00:00Z',
+  })
+  createdAt: Date;
+
+  @ApiProperty({
+    description: 'Data da última atualização do torneio',
+    type: String,
+    format: 'date-time',
+    example: '2024-01-01T00:00:00Z',
+  })
+  updatedAt: Date;
+
+  @ApiProperty({
+    description: 'Data de deleção do torneio (soft delete)',
+    type: String,
+    format: 'date-time',
+    example: null,
+    nullable: true,
+  })
+  deletedAt?: Date | null;
 }

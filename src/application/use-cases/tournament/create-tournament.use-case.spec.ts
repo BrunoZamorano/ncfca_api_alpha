@@ -77,9 +77,7 @@ describe('(UNIT) CreateTournament', () => {
     };
 
     // Act & Assert
-    await expect(useCase.execute(invalidProps)).rejects.toThrow(
-      'Tournament name is required and must have at least 3 characters.',
-    );
+    await expect(useCase.execute(invalidProps)).rejects.toThrow('Tournament name is required and must have at least 3 characters.');
     expect(mockTournamentRepository.save).not.toHaveBeenCalled();
   });
 

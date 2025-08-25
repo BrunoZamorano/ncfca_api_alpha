@@ -13,6 +13,7 @@ import { ListTournamentsQueryDto } from '@/infraestructure/dtos/tournament/list-
 
 import { TournamentDetailsView } from '@/application/queries/tournament-query/tournament-details.view';
 import { TournamentListItemView } from '@/application/queries/tournament-query/tournament-list-item.view';
+import { TournamentResponseDto } from '@/infraestructure/dtos/tournament/tournament-response.dto';
 import Tournament from '@/domain/entities/tournament/tournament.entity';
 
 import AuthGuard from '@/shared/guards/auth.guard';
@@ -36,11 +37,11 @@ export default class TournamentController {
   @Post('create')
   @Roles(UserRoles.ADMIN)
   @ApiOperation({ summary: 'Cria um novo torneio' })
-  @ApiResponse({ status: 201, description: 'Torneio criado com sucesso.' })
+  @ApiResponse({ status: 201, description: 'Torneio criado com sucesso.', type: TournamentResponseDto })
   @ApiResponse({ status: 400, description: 'Dados inválidos.' })
   @ApiResponse({ status: 403, description: 'Acesso negado.' })
-  async create(@Body() createTournamentDto: CreateTournamentDto): Promise<Tournament> {
-    return await this.createTournament.execute({
+  async create(@Body() createTournamentDto: CreateTournamentDto): Promise<TournamentResponseDto> {
+    const tournament = await this.createTournament.execute({
       name: createTournamentDto.name,
       description: createTournamentDto.description,
       type: createTournamentDto.type,
@@ -48,20 +49,31 @@ export default class TournamentController {
       registrationEndDate: new Date(createTournamentDto.registrationEndDate),
       startDate: new Date(createTournamentDto.startDate),
     });
+
+    return {
+      id: tournament.id,
+      name: tournament.name,
+      description: tournament.description,
+      type: tournament.type,
+      registrationStartDate: tournament.registrationStartDate,
+      registrationEndDate: tournament.registrationEndDate,
+      startDate: tournament.startDate,
+      registrationCount: tournament.registrationCount,
+      createdAt: tournament.createdAt,
+      updatedAt: tournament.updatedAt,
+      deletedAt: tournament.deletedAt,
+    };
   }
 
   @Post(':id/update')
   @Roles(UserRoles.ADMIN)
   @ApiOperation({ summary: 'Atualiza um torneio existente' })
-  @ApiResponse({ status: 200, description: 'Torneio atualizado com sucesso.' })
+  @ApiResponse({ status: 200, description: 'Torneio atualizado com sucesso.', type: TournamentResponseDto })
   @ApiResponse({ status: 400, description: 'Dados inválidos.' })
   @ApiResponse({ status: 403, description: 'Acesso negado.' })
   @ApiResponse({ status: 404, description: 'Torneio não encontrado.' })
-  async update(
-    @Param('id') id: string,
-    @Body() updateTournamentDto: UpdateTournamentDto,
-  ): Promise<Tournament> {
-    return await this.updateTournament.execute({
+  async update(@Param('id') id: string, @Body() updateTournamentDto: UpdateTournamentDto): Promise<TournamentResponseDto> {
+    const tournament = await this.updateTournament.execute({
       id,
       data: {
         name: updateTournamentDto.name,
@@ -72,6 +84,19 @@ export default class TournamentController {
         startDate: updateTournamentDto.startDate ? new Date(updateTournamentDto.startDate) : undefined,
       },
     });
+    return {
+      id: tournament.id,
+      name: tournament.name,
+      description: tournament.description,
+      type: tournament.type,
+      registrationStartDate: tournament.registrationStartDate,
+      registrationEndDate: tournament.registrationEndDate,
+      startDate: tournament.startDate,
+      registrationCount: tournament.registrationCount,
+      createdAt: tournament.createdAt,
+      updatedAt: tournament.updatedAt,
+      deletedAt: tournament.deletedAt,
+    };
   }
 
   @Post(':id/delete')

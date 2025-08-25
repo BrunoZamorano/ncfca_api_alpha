@@ -12,7 +12,7 @@ export class PrismaTournamentRepository implements TournamentRepository {
 
   async save(tournament: Tournament): Promise<void> {
     const tournamentData = TournamentMapper.entityToModel(tournament);
-    
+
     await this.prisma.tournament.upsert({
       where: { id: tournament.id },
       update: tournamentData,

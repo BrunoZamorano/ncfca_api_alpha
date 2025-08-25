@@ -22,7 +22,7 @@ export default class CreateClub {
   ) {}
 
   async execute(input: Input): Promise<{ club: Club; tokens: { accessToken: string; refreshToken: string } }> {
-    this.logger.debug(`[GEMINI_DEBUG] CreateClub use case triggered for request: ${input.requestId}`);
+    this.logger.debug(`CreateClub use case triggered for request: ${input.requestId}`);
     return this._uow.executeInTransaction(async () => {
       const clubRequest = await this._uow.clubRequestRepository.findById(input.requestId);
       if (!clubRequest) throw new EntityNotFoundException('ClubRequest', input.requestId);

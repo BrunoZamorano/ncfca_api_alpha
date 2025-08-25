@@ -129,9 +129,7 @@ describe('(UNIT) UpdateTournament', () => {
     mockTournamentRepository.findById.mockResolvedValueOnce(existingTournament);
 
     // Act & Assert
-    await expect(useCase.execute(input)).rejects.toThrow(
-      'Tournament name must have at least 3 characters.',
-    );
+    await expect(useCase.execute(input)).rejects.toThrow('Tournament name must have at least 3 characters.');
     expect(mockTournamentRepository.findById).toHaveBeenCalledWith(tournamentId);
     expect(mockTournamentRepository.save).not.toHaveBeenCalled();
   });

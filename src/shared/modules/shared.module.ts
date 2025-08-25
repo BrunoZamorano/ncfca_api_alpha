@@ -7,7 +7,6 @@ import { CLUB_MEMBERSHIP_REPOSITORY } from '@/domain/repositories/club-membershi
 import { TRAINING_REPOSITORY } from '@/domain/repositories/training.repository';
 import { UNIT_OF_WORK } from '@/domain/services/unit-of-work';
 
-
 import { QUERY_SERVICE } from '@/application/services/query.service';
 
 import { EnrollmentRequestRepositoryPrisma } from '@/infraestructure/repositories/prisma/enrollment-request.repository.prisma';

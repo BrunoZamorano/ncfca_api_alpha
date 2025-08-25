@@ -8,9 +8,7 @@ import { TOURNAMENT_REPOSITORY } from '@/shared/constants/repository-constants';
 
 @Injectable()
 export class DeleteTournament {
-  constructor(
-    @Inject(TOURNAMENT_REPOSITORY) private readonly tournamentRepository: TournamentRepository,
-  ) {}
+  constructor(@Inject(TOURNAMENT_REPOSITORY) private readonly tournamentRepository: TournamentRepository) {}
 
   async execute(id: string): Promise<Tournament> {
     const tournament = await this.tournamentRepository.findById(id);

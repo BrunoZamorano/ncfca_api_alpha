@@ -13,13 +13,7 @@ import SharedModule from '@/shared/modules/shared.module';
 @Module({
   imports: [SharedModule],
   controllers: [TournamentController],
-  providers: [
-    CreateTournament,
-    UpdateTournament,
-    DeleteTournament,
-    ListTournaments,
-    GetTournament,
-  ],
+  providers: [CreateTournament, UpdateTournament, DeleteTournament, ListTournaments, GetTournament],
   exports: [],
 })
 export default class TournamentModule {}

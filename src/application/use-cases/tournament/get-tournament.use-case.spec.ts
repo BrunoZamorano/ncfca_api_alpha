@@ -23,10 +23,7 @@ describe('(UNIT) GetTournament', () => {
 
   beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
-      providers: [
-        GetTournament,
-        { provide: QUERY_SERVICE, useValue: mockQueryService },
-      ],
+      providers: [GetTournament, { provide: QUERY_SERVICE, useValue: mockQueryService }],
     }).compile();
 
     useCase = moduleRef.get(GetTournament);

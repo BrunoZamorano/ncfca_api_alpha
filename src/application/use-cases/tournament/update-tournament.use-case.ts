@@ -13,9 +13,7 @@ export interface UpdateTournamentInput {
 
 @Injectable()
 export class UpdateTournament {
-  constructor(
-    @Inject(TOURNAMENT_REPOSITORY) private readonly tournamentRepository: TournamentRepository,
-  ) {}
+  constructor(@Inject(TOURNAMENT_REPOSITORY) private readonly tournamentRepository: TournamentRepository) {}
 
   async execute(input: UpdateTournamentInput): Promise<Tournament> {
     const tournament = await this.tournamentRepository.findById(input.id);
