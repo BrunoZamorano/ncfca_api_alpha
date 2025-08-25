@@ -72,7 +72,7 @@ describe('(E2E) DeleteTraining', () => {
 
     // Limpar treinamentos que não foram deletados pelos testes
     // (excluindo testTrainingForAdmin que é deletado no teste de sucesso)
-    const trainingsToCleanup = createdTrainingIds.filter(id => id !== testTrainingForAdmin.id);
+    const trainingsToCleanup = createdTrainingIds.filter((id) => id !== testTrainingForAdmin.id);
     if (trainingsToCleanup.length > 0) {
       await prisma.training.deleteMany({
         where: { id: { in: trainingsToCleanup } },
@@ -148,9 +148,7 @@ describe('(E2E) DeleteTraining', () => {
       // Arrange - Treinamento já criado no beforeAll
 
       // Act & Assert - Tentar deletar sem token
-      await request(app.getHttpServer())
-        .delete(`/trainings/${testTrainingForUnauthenticated.id}`)
-        .expect(HttpStatus.UNAUTHORIZED);
+      await request(app.getHttpServer()).delete(`/trainings/${testTrainingForUnauthenticated.id}`).expect(HttpStatus.UNAUTHORIZED);
 
       // Assert - Verificar que o treinamento ainda existe
       const existingTraining = await prisma.training.findUnique({

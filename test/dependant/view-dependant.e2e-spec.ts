@@ -50,9 +50,7 @@ describe('(E2E) GET /dependants - Visualização de Família e Dependente', () =
       // Arrange - Família já criada no setup sem dependentes
 
       // Act
-      const response = await request(app.getHttpServer())
-        .get('/dependants/my-family')
-        .set('Authorization', `Bearer ${primaryUser.accessToken}`);
+      const response = await request(app.getHttpServer()).get('/dependants/my-family').set('Authorization', `Bearer ${primaryUser.accessToken}`);
 
       // Assert
       expect(response.status).toBe(HttpStatus.OK);
@@ -69,16 +67,10 @@ describe('(E2E) GET /dependants - Visualização de Família e Dependente', () =
 
     it('Deve retornar dados da família com dependentes existentes', async () => {
       // Arrange - Criar múltiplos dependentes para a família
-      const createdDependants = await createMultipleTestDependants(
-        prisma,
-        primaryUser.familyId,
-        3
-      );
+      const createdDependants = await createMultipleTestDependants(prisma, primaryUser.familyId, 3);
 
       // Act
-      const response = await request(app.getHttpServer())
-        .get('/dependants/my-family')
-        .set('Authorization', `Bearer ${primaryUser.accessToken}`);
+      const response = await request(app.getHttpServer()).get('/dependants/my-family').set('Authorization', `Bearer ${primaryUser.accessToken}`);
 
       // Assert
       expect(response.status).toBe(HttpStatus.OK);
@@ -102,7 +94,7 @@ describe('(E2E) GET /dependants - Visualização de Família e Dependente', () =
 
       // Verificar que todos os dependentes criados estão presentes
       expect(response.body.dependants).toHaveLength(3);
-      
+
       // Verificar que cada dependente tem os campos corretos
       response.body.dependants.forEach((dependant: any) => {
         expect(dependant.familyId).toBe(primaryUser.familyId);
@@ -146,9 +138,7 @@ describe('(E2E) GET /dependants - Visualização de Família e Dependente', () =
       });
 
       // Act
-      const response = await request(app.getHttpServer())
-        .get('/dependants/my-family')
-        .set('Authorization', `Bearer ${isolatedUser.accessToken}`);
+      const response = await request(app.getHttpServer()).get('/dependants/my-family').set('Authorization', `Bearer ${isolatedUser.accessToken}`);
 
       // Assert
       expect(response.status).toBe(HttpStatus.OK);
@@ -169,8 +159,7 @@ describe('(E2E) GET /dependants - Visualização de Família e Dependente', () =
 
     it('Não deve acessar dados da família sem autenticação', async () => {
       // Act
-      const response = await request(app.getHttpServer())
-        .get('/dependants/my-family');
+      const response = await request(app.getHttpServer()).get('/dependants/my-family');
 
       // Assert
       expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
@@ -178,9 +167,7 @@ describe('(E2E) GET /dependants - Visualização de Família e Dependente', () =
 
     it('Não deve acessar dados da família com token inválido', async () => {
       // Act
-      const response = await request(app.getHttpServer())
-        .get('/dependants/my-family')
-        .set('Authorization', 'Bearer token-invalido');
+      const response = await request(app.getHttpServer()).get('/dependants/my-family').set('Authorization', 'Bearer token-invalido');
 
       // Assert
       expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
@@ -322,9 +309,7 @@ describe('(E2E) GET /dependants - Visualização de Família e Dependente', () =
       const invalidId = 'id-invalido-123';
 
       // Act
-      const response = await request(app.getHttpServer())
-        .get(`/dependants/${invalidId}`)
-        .set('Authorization', `Bearer ${primaryUser.accessToken}`);
+      const response = await request(app.getHttpServer()).get(`/dependants/${invalidId}`).set('Authorization', `Bearer ${primaryUser.accessToken}`);
 
       // Assert - Pode ser 400 (Bad Request) ou 404, dependendo da validação
       expect([HttpStatus.BAD_REQUEST, HttpStatus.NOT_FOUND]).toContain(response.status);
@@ -334,7 +319,7 @@ describe('(E2E) GET /dependants - Visualização de Família e Dependente', () =
       // Note: Com base na implementação atual do ViewDependant use case,
       // não há verificação de autorização - qualquer usuário pode ver qualquer dependente
       // Isso pode ser uma decisão de design ou algo a ser implementado no futuro
-      
+
       // Act - Usuário primary tenta acessar dependente isolated
       const response = await request(app.getHttpServer())
         .get(`/dependants/${isolatedDependant.id}`)
@@ -345,15 +330,14 @@ describe('(E2E) GET /dependants - Visualização de Família e Dependente', () =
       expect(response.body.id).toBe(isolatedDependant.id);
       expect(response.body.firstName).toBe('Isolated');
       expect(response.body.familyId).toBe(isolatedUser.familyId);
-      
+
       // Verificar que o holder retornado é o correto (da família isolated)
       expect(response.body.holder.id).not.toBe(primaryUser.userId);
     });
 
     it('Não deve acessar dependente sem autenticação', async () => {
       // Act
-      const response = await request(app.getHttpServer())
-        .get(`/dependants/${testDependant.id}`);
+      const response = await request(app.getHttpServer()).get(`/dependants/${testDependant.id}`);
 
       // Assert
       expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
@@ -361,9 +345,7 @@ describe('(E2E) GET /dependants - Visualização de Família e Dependente', () =
 
     it('Não deve acessar dependente com token inválido', async () => {
       // Act
-      const response = await request(app.getHttpServer())
-        .get(`/dependants/${testDependant.id}`)
-        .set('Authorization', 'Bearer token-invalido');
+      const response = await request(app.getHttpServer()).get(`/dependants/${testDependant.id}`).set('Authorization', 'Bearer token-invalido');
 
       // Assert
       expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
@@ -436,7 +418,7 @@ describe('(E2E) GET /dependants - Visualização de Família e Dependente', () =
 
       // Verificar que não há cross-contamination
       expect(primaryResponse.body.id).not.toBe(isolatedResponse.body.id);
-      
+
       // Verificar que cada família tem apenas dependentes criados para ela
       const primaryDependantNames = primaryResponse.body.dependants.map((d: any) => d.firstName);
       const isolatedDependantNames = isolatedResponse.body.dependants.map((d: any) => d.firstName);
@@ -444,7 +426,7 @@ describe('(E2E) GET /dependants - Visualização de Família e Dependente', () =
       if (primaryDependantNames.includes('Primary')) {
         expect(isolatedDependantNames).not.toContain('Primary');
       }
-      
+
       if (isolatedDependantNames.includes('Isolated')) {
         expect(primaryDependantNames).not.toContain('Isolated');
       }
@@ -478,9 +460,7 @@ describe('(E2E) GET /dependants - Visualização de Família e Dependente', () =
       expect(dependantResponse.status).toBe(HttpStatus.OK);
 
       // Encontrar o dependente na resposta da família
-      const dependantInFamily = familyResponse.body.dependants.find(
-        (d: any) => d.id === specificDependant.id
-      );
+      const dependantInFamily = familyResponse.body.dependants.find((d: any) => d.id === specificDependant.id);
 
       expect(dependantInFamily).toBeDefined();
 

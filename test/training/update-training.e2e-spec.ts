@@ -146,10 +146,7 @@ describe('(E2E) UpdateTraining', () => {
       };
 
       // Act & Assert - Tentar atualizar sem token
-      await request(app.getHttpServer())
-        .put(`/trainings/${testTraining.id}`)
-        .send(updateData)
-        .expect(HttpStatus.UNAUTHORIZED);
+      await request(app.getHttpServer()).put(`/trainings/${testTraining.id}`).send(updateData).expect(HttpStatus.UNAUTHORIZED);
     });
   });
 });

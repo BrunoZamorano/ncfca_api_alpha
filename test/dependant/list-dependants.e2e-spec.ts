@@ -57,9 +57,7 @@ describe('(E2E) GET /dependants - Listagem de Dependentes', () => {
   describe('Cenários de Sucesso', () => {
     it('Deve listar todos os dependentes da família com sucesso', async () => {
       // Act
-      const response = await request(app.getHttpServer())
-        .get('/dependants')
-        .set('Authorization', `Bearer ${userWithDependants.accessToken}`);
+      const response = await request(app.getHttpServer()).get('/dependants').set('Authorization', `Bearer ${userWithDependants.accessToken}`);
 
       // Assert
       expect(response.status).toBe(HttpStatus.OK);
@@ -88,9 +86,7 @@ describe('(E2E) GET /dependants - Listagem de Dependentes', () => {
 
     it('Deve retornar array vazio quando usuário não possui dependentes', async () => {
       // Act
-      const response = await request(app.getHttpServer())
-        .get('/dependants')
-        .set('Authorization', `Bearer ${userWithoutDependants.accessToken}`);
+      const response = await request(app.getHttpServer()).get('/dependants').set('Authorization', `Bearer ${userWithoutDependants.accessToken}`);
 
       // Assert
       expect(response.status).toBe(HttpStatus.OK);
@@ -121,14 +117,12 @@ describe('(E2E) GET /dependants - Listagem de Dependentes', () => {
       });
 
       // Act
-      const response = await request(app.getHttpServer())
-        .get('/dependants')
-        .set('Authorization', `Bearer ${specificUser.accessToken}`);
+      const response = await request(app.getHttpServer()).get('/dependants').set('Authorization', `Bearer ${specificUser.accessToken}`);
 
       // Assert
       expect(response.status).toBe(HttpStatus.OK);
       expect(response.body).toHaveLength(2);
-      
+
       // Verificar se os dados corretos foram retornados
       const dependantNames = response.body.map((d: any) => d.firstName);
       expect(dependantNames).toContain('Ana');
@@ -158,9 +152,7 @@ describe('(E2E) GET /dependants - Listagem de Dependentes', () => {
       }
 
       // Act
-      const response = await request(app.getHttpServer())
-        .get('/dependants')
-        .set('Authorization', `Bearer ${diverseFamilyUser.accessToken}`);
+      const response = await request(app.getHttpServer()).get('/dependants').set('Authorization', `Bearer ${diverseFamilyUser.accessToken}`);
 
       // Assert
       expect(response.status).toBe(HttpStatus.OK);
@@ -189,9 +181,7 @@ describe('(E2E) GET /dependants - Listagem de Dependentes', () => {
       });
 
       // Act
-      const response = await request(app.getHttpServer())
-        .get('/dependants')
-        .set('Authorization', `Bearer ${completeDataUser.accessToken}`);
+      const response = await request(app.getHttpServer()).get('/dependants').set('Authorization', `Bearer ${completeDataUser.accessToken}`);
 
       // Assert
       expect(response.status).toBe(HttpStatus.OK);
@@ -228,14 +218,10 @@ describe('(E2E) GET /dependants - Listagem de Dependentes', () => {
       });
 
       // Act - Listar dependentes da família 1
-      const response1 = await request(app.getHttpServer())
-        .get('/dependants')
-        .set('Authorization', `Bearer ${family1.user.accessToken}`);
+      const response1 = await request(app.getHttpServer()).get('/dependants').set('Authorization', `Bearer ${family1.user.accessToken}`);
 
       // Act - Listar dependentes da família 2
-      const response2 = await request(app.getHttpServer())
-        .get('/dependants')
-        .set('Authorization', `Bearer ${family2.user.accessToken}`);
+      const response2 = await request(app.getHttpServer()).get('/dependants').set('Authorization', `Bearer ${family2.user.accessToken}`);
 
       // Assert
       expect(response1.status).toBe(HttpStatus.OK);
@@ -254,7 +240,7 @@ describe('(E2E) GET /dependants - Listagem de Dependentes', () => {
       // Verificar que não há vazamento entre famílias
       const family1Ids = response1.body.map((d: any) => d.id);
       const family2Ids = response2.body.map((d: any) => d.id);
-      
+
       // Nenhum ID deve estar em ambas as listas
       const intersection = family1Ids.filter((id: string) => family2Ids.includes(id));
       expect(intersection).toHaveLength(0);
@@ -270,9 +256,7 @@ describe('(E2E) GET /dependants - Listagem de Dependentes', () => {
       });
 
       // Act
-      const response = await request(app.getHttpServer())
-        .get('/dependants')
-        .set('Authorization', `Bearer ${adminUser.accessToken}`);
+      const response = await request(app.getHttpServer()).get('/dependants').set('Authorization', `Bearer ${adminUser.accessToken}`);
 
       // Assert
       expect(response.status).toBe(HttpStatus.OK);
@@ -292,9 +276,7 @@ describe('(E2E) GET /dependants - Listagem de Dependentes', () => {
 
     it('Não deve permitir listagem com token inválido', async () => {
       // Act
-      const response = await request(app.getHttpServer())
-        .get('/dependants')
-        .set('Authorization', 'Bearer invalid-token');
+      const response = await request(app.getHttpServer()).get('/dependants').set('Authorization', 'Bearer invalid-token');
 
       // Assert
       expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
@@ -302,9 +284,7 @@ describe('(E2E) GET /dependants - Listagem de Dependentes', () => {
 
     it('Não deve permitir listagem com token malformado', async () => {
       // Act
-      const response = await request(app.getHttpServer())
-        .get('/dependants')
-        .set('Authorization', 'malformed-authorization');
+      const response = await request(app.getHttpServer()).get('/dependants').set('Authorization', 'malformed-authorization');
 
       // Assert
       expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
@@ -314,13 +294,9 @@ describe('(E2E) GET /dependants - Listagem de Dependentes', () => {
   describe('Integridade dos Dados', () => {
     it('Deve retornar dados consistentes em múltiplas chamadas', async () => {
       // Act - Fazer múltiplas chamadas
-      const response1 = await request(app.getHttpServer())
-        .get('/dependants')
-        .set('Authorization', `Bearer ${userWithDependants.accessToken}`);
+      const response1 = await request(app.getHttpServer()).get('/dependants').set('Authorization', `Bearer ${userWithDependants.accessToken}`);
 
-      const response2 = await request(app.getHttpServer())
-        .get('/dependants')
-        .set('Authorization', `Bearer ${userWithDependants.accessToken}`);
+      const response2 = await request(app.getHttpServer()).get('/dependants').set('Authorization', `Bearer ${userWithDependants.accessToken}`);
 
       // Assert
       expect(response1.status).toBe(HttpStatus.OK);
@@ -347,11 +323,9 @@ describe('(E2E) GET /dependants - Listagem de Dependentes', () => {
       });
 
       // Act - Fazer chamadas concorrentes
-      const promises = Array(5).fill(null).map(() =>
-        request(app.getHttpServer())
-          .get('/dependants')
-          .set('Authorization', `Bearer ${concurrencyUser.accessToken}`)
-      );
+      const promises = Array(5)
+        .fill(null)
+        .map(() => request(app.getHttpServer()).get('/dependants').set('Authorization', `Bearer ${concurrencyUser.accessToken}`));
 
       const responses = await Promise.all(promises);
 
@@ -374,14 +348,12 @@ describe('(E2E) GET /dependants - Listagem de Dependentes', () => {
       await createMultipleTestDependants(prisma, bigFamilyUser.familyId, 10);
 
       // Act
-      const response = await request(app.getHttpServer())
-        .get('/dependants')
-        .set('Authorization', `Bearer ${bigFamilyUser.accessToken}`);
+      const response = await request(app.getHttpServer()).get('/dependants').set('Authorization', `Bearer ${bigFamilyUser.accessToken}`);
 
       // Assert
       expect(response.status).toBe(HttpStatus.OK);
       expect(response.body).toHaveLength(10);
-      
+
       // Verificar que todos os dependentes têm estrutura válida
       response.body.forEach((dependant: any) => {
         expect(dependant.id).toBeDefined();
@@ -407,9 +379,7 @@ describe('(E2E) GET /dependants - Listagem de Dependentes', () => {
       });
 
       // Verificar que existe
-      let response = await request(app.getHttpServer())
-        .get('/dependants')
-        .set('Authorization', `Bearer ${modificationUser.accessToken}`);
+      let response = await request(app.getHttpServer()).get('/dependants').set('Authorization', `Bearer ${modificationUser.accessToken}`);
 
       expect(response.status).toBe(HttpStatus.OK);
       expect(response.body).toHaveLength(1);
@@ -420,9 +390,7 @@ describe('(E2E) GET /dependants - Listagem de Dependentes', () => {
       });
 
       // Act - Verificar que lista ficou vazia
-      response = await request(app.getHttpServer())
-        .get('/dependants')
-        .set('Authorization', `Bearer ${modificationUser.accessToken}`);
+      response = await request(app.getHttpServer()).get('/dependants').set('Authorization', `Bearer ${modificationUser.accessToken}`);
 
       // Assert
       expect(response.status).toBe(HttpStatus.OK);

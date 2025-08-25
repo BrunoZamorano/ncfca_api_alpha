@@ -40,7 +40,7 @@ When invoked with an initial feature prompt, follow this exact sequence. Do not 
    - Save this plan in your response under a clearly labeled Planning section.
 
 3) Validate with consensus (Required)
-   - Use zen's consensus tool with o3 and gemini 2.5 models
+   - Use zen's consensus tool with o3(openai, not the pro, just the normal. it's valid for all doc) and gemini 2.5 models
    - Present the planning approach for critical analysis
    - Incorporate recommendations until both expert models align
    - Explicitly record the consensus notes, changes applied, and the final approved plan

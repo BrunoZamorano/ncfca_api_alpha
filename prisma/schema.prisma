@@ -87,6 +87,11 @@ enum ClubRequestStatus {
   REJECTED
 }
 
+enum TournamentType {
+  INDIVIDUAL
+  DUO
+}
+
 model User {
   id           String  @id @default(uuid())
   email        String  @unique
@@ -243,4 +248,19 @@ model ClubRequest {
   neighborhood     String
 
   requester User @relation(fields: [requester_id], references: [id])
+}
+
+model Tournament {
+  id                      String         @id @default(uuid())
+  name                    String
+  description             String
+  type                    TournamentType
+  registration_start_date DateTime
+  registration_end_date   DateTime
+  start_date              DateTime
+  deleted_at              DateTime?
+  created_at              DateTime       @default(now())
+  updated_at              DateTime       @updatedAt
+
+  @@map("tournament")
 }

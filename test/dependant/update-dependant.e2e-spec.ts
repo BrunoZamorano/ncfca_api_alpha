@@ -599,9 +599,7 @@ describe('(E2E) PATCH /dependants/:id - Atualização de Dependentes', () => {
       const updateData = { firstName: 'Unauthorized' };
 
       // Act
-      const response = await request(app.getHttpServer())
-        .patch(`/dependants/${dependant.id}`)
-        .send(updateData);
+      const response = await request(app.getHttpServer()).patch(`/dependants/${dependant.id}`).send(updateData);
 
       // Assert
       expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
@@ -818,7 +816,7 @@ describe('(E2E) PATCH /dependants/:id - Atualização de Dependentes', () => {
         expect(response.body.message).toContain('phone');
       } else {
         expect(response.status).toBe(HttpStatus.NO_CONTENT);
-        
+
         // Verificar persistência se aceito
         const updatedDependant = await prisma.dependant.findUnique({
           where: { id: dependant.id },

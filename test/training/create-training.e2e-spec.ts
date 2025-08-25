@@ -4,14 +4,7 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { PrismaService } from '@/infraestructure/database/prisma.service';
 import { TrainingResponseDto } from '@/application/use-cases/training/training.dto';
 
-import {
-  setupTrainingApp,
-  createAdminUser,
-  createClubOwnerUser,
-  createRegularUser,
-  trainingCleanup,
-  TrainingTestUser,
-} from './setup';
+import { setupTrainingApp, createAdminUser, createClubOwnerUser, createRegularUser, trainingCleanup, TrainingTestUser } from './setup';
 
 describe('(E2E) CreateTraining', () => {
   let app: INestApplication;
@@ -128,10 +121,7 @@ describe('(E2E) CreateTraining', () => {
       };
 
       // Act & Assert - Tentar criar sem token deve falhar
-      await request(app.getHttpServer())
-        .post('/trainings')
-        .send(validTrainingData)
-        .expect(HttpStatus.UNAUTHORIZED);
+      await request(app.getHttpServer()).post('/trainings').send(validTrainingData).expect(HttpStatus.UNAUTHORIZED);
     });
   });
 });

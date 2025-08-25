@@ -113,11 +113,7 @@ export async function createAdminUser(
 /**
  * Cria um dependente para uma família específica nos testes
  */
-export async function createTestDependant(
-  prisma: PrismaService,
-  familyId: string,
-  options: CreateDependantOptions = {},
-) {
+export async function createTestDependant(prisma: PrismaService, familyId: string, options: CreateDependantOptions = {}) {
   const dependantData = {
     id: crypto.randomUUID(),
     first_name: options.firstName || 'João',
@@ -139,28 +135,22 @@ export async function createTestDependant(
 /**
  * Cria múltiplos dependentes para testes que precisam de mais dados
  */
-export async function createMultipleTestDependants(
-  prisma: PrismaService,
-  familyId: string,
-  count: number = 3,
-): Promise<any[]> {
+export async function createMultipleTestDependants(prisma: PrismaService, familyId: string, count: number = 3): Promise<any[]> {
   const dependants: any[] = [];
-  
+
   for (let i = 0; i < count; i++) {
     const dependant = await createTestDependant(prisma, familyId, {
       firstName: `Dependente${i + 1}`,
       lastName: `Test`,
       birthDate: new Date(`201${i}-0${i + 1}-15`),
-      relationship: i === 0 ? DependantRelationship.SON : 
-                   i === 1 ? DependantRelationship.DAUGHTER : 
-                   DependantRelationship.OTHER,
+      relationship: i === 0 ? DependantRelationship.SON : i === 1 ? DependantRelationship.DAUGHTER : DependantRelationship.OTHER,
       type: i < 2 ? DependantType.STUDENT : DependantType.ALUMNI,
       sex: i % 2 === 0 ? Sex.MALE : Sex.FEMALE,
     });
-    
+
     dependants.push(dependant);
   }
-  
+
   return dependants;
 }
 
@@ -203,10 +193,7 @@ export async function createValidationTestDependant(
 /**
  * Cria uma família adicional para testes de isolamento (cross-family access)
  */
-export async function createIsolatedFamily(
-  app: INestApplication,
-  prisma: PrismaService,
-): Promise<{ user: DependantTestUser; dependant: any }> {
+export async function createIsolatedFamily(app: INestApplication, prisma: PrismaService): Promise<{ user: DependantTestUser; dependant: any }> {
   const user = await createRegularUser(app, prisma, FamilyStatus.AFFILIATED);
   const dependant = await createTestDependant(prisma, user.familyId, {
     firstName: 'Isolated',

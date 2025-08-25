@@ -4,14 +4,7 @@ import { INestApplication, HttpStatus } from '@nestjs/common';
 import { PrismaService } from '@/infraestructure/database/prisma.service';
 import { FamilyStatus } from '@/domain/enums/family-status';
 
-import {
-  setupDependantApp,
-  createRegularUser,
-  createTestDependant,
-  createIsolatedFamily,
-  dependantCleanup,
-  DependantTestUser,
-} from './setup';
+import { setupDependantApp, createRegularUser, createTestDependant, createIsolatedFamily, dependantCleanup, DependantTestUser } from './setup';
 
 describe('(E2E) DELETE /dependants/:id - Remoção de Dependentes', () => {
   let app: INestApplication;

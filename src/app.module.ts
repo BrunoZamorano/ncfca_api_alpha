@@ -41,4 +41,4 @@ const env = process.env.NODE_ENV ? `.env.${process.env.NODE_ENV}` : '.env.develo
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

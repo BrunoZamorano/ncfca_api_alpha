@@ -1,4 +1,12 @@
-import { ArgumentsHost, BadRequestException, ExceptionFilter, ForbiddenException, HttpStatus, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  ArgumentsHost,
+  BadRequestException,
+  ExceptionFilter,
+  ForbiddenException,
+  HttpStatus,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JsonWebTokenError } from '@nestjs/jwt';
 import { Request, Response } from 'express';
 

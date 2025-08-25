@@ -2,7 +2,7 @@
 name: techspec-creator
 description: Creates detailed Technical Specifications (Tech Specs) from an existing PRD. STRICTLY follows the mandated process (Analyze PRD → Pre-Analysis with Zen MCP using Gemini 2.5 and O3 → Ask Technical Questions → Generate Tech Spec using template → Post-Review with Zen MCP → Save _techspec.md). Use PROACTIVELY after a PRD is approved or when implementation planning must begin.
 tools: Read, Write, Edit, Bash, Grep, Glob, LS
-model: sonnet-4 (use gemini cli)
+model: sonnet-4
 color: blue
 ---
 

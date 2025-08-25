@@ -5,14 +5,7 @@ import { DependantRelationship, Sex } from '@prisma/client';
 import { PrismaService } from '@/infraestructure/database/prisma.service';
 import { FamilyStatus } from '@/domain/enums/family-status';
 
-import {
-  setupDependantApp,
-  createRegularUser,
-  createAdminUser,
-  createIsolatedFamily,
-  dependantCleanup,
-  DependantTestUser,
-} from './setup';
+import { setupDependantApp, createRegularUser, createAdminUser, createIsolatedFamily, dependantCleanup, DependantTestUser } from './setup';
 
 describe('(E2E) POST /dependants - Adição de Dependentes', () => {
   let app: INestApplication;
@@ -454,9 +447,7 @@ describe('(E2E) POST /dependants - Adição de Dependentes', () => {
       };
 
       // Act
-      const response = await request(app.getHttpServer())
-        .post('/dependants')
-        .send(validDependantData);
+      const response = await request(app.getHttpServer()).post('/dependants').send(validDependantData);
 
       // Assert
       expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
@@ -474,10 +465,7 @@ describe('(E2E) POST /dependants - Adição de Dependentes', () => {
       };
 
       // Act
-      const response = await request(app.getHttpServer())
-        .post('/dependants')
-        .set('Authorization', 'Bearer invalid-token')
-        .send(validDependantData);
+      const response = await request(app.getHttpServer()).post('/dependants').set('Authorization', 'Bearer invalid-token').send(validDependantData);
 
       // Assert
       expect(response.status).toBe(HttpStatus.UNAUTHORIZED);

@@ -263,3 +263,12 @@ class UserService {
   constructor(private readonly logger: Logger) {}
 }
 ```
+
+## REST
+
+- Use just GET and POST.
+- DO NOT USE PUT, PATCH, DELETE, etc.
+- use meaningfull names for the endpoint's actions 
+eg: create user: 
+bad (POST) users
+good (POST) users/create
