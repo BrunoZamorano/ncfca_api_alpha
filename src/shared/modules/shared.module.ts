@@ -34,11 +34,14 @@ import {
   CLUB_REQUEST_REPOSITORY,
   FAMILY_REPOSITORY,
   TRANSACTION_REPOSITORY,
+  TOURNAMENT_REPOSITORY,
   USER_REPOSITORY,
 } from '@/shared/constants/repository-constants';
 import { HASHING_SERVICE, ID_GENERATOR, PAYMENT_GATEWAY, TOKEN_SERVICE } from '@/shared/constants/service-constants';
 import { ClubRequestRepositoryPrisma } from '@/infraestructure/repositories/prisma/club-request.repository.prisma';
-import { CLUB_QUERY, DEPENDANT_QUERY, ENROLLMENT_QUERY, TRAINING_QUERY } from '../constants/query-constants';
+import { CLUB_QUERY, DEPENDANT_QUERY, ENROLLMENT_QUERY, TOURNAMENT_QUERY, TRAINING_QUERY } from '../constants/query-constants';
+import { PrismaTournamentRepository } from '@/infraestructure/repositories/prisma/tournament.repository.prisma';
+import { PrismaTournamentQuery } from '@/infraestructure/queries/tournament/prisma-tournament.query';
 
 const repositories = [
   { provide: ENROLLMENT_REQUEST_REPOSITORY, useClass: EnrollmentRequestRepositoryPrisma },
@@ -48,6 +51,7 @@ const repositories = [
   { provide: TRAINING_REPOSITORY, useClass: TrainingRepositoryPrisma },
   { provide: FAMILY_REPOSITORY, useClass: FamilyRepositoryPrisma },
   { provide: CLUB_REPOSITORY, useClass: ClubRepositoryPrisma },
+  { provide: TOURNAMENT_REPOSITORY, useClass: PrismaTournamentRepository },
   { provide: USER_REPOSITORY, useClass: UserRepositoryPrisma },
 ];
 
@@ -56,6 +60,7 @@ const queries = [
   { provide: DEPENDANT_QUERY, useClass: DependantQueryPrisma },
   { provide: TRAINING_QUERY, useClass: TrainingQueryPrisma },
   { provide: CLUB_QUERY, useClass: ClubQueryPrisma },
+  { provide: TOURNAMENT_QUERY, useClass: PrismaTournamentQuery },
 ];
 
 const services = [

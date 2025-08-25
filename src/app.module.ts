@@ -16,6 +16,7 @@ import ClubManagementModule from '@/shared/modules/club-management.module';
 import AdminModule from '@/shared/modules/admin.module';
 import TrainingModule from '@/shared/modules/training.module';
 import ClubRequestModule from '@/shared/modules/club-request.module';
+import TournamentModule from '@/shared/modules/tournament.module';
 
 const env = process.env.NODE_ENV ? `.env.${process.env.NODE_ENV}` : '.env.development';
 
@@ -37,6 +38,7 @@ const env = process.env.NODE_ENV ? `.env.${process.env.NODE_ENV}` : '.env.develo
     EnrollmentModule,
     ClubManagementModule,
     ClubRequestModule,
+    TournamentModule,
   ],
   controllers: [AppController],
   providers: [AppService],

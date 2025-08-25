@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 ---
 <task_context>
 <domain>engine/infra/api</domain>
@@ -24,12 +24,12 @@ This task involves creating the infrastructure components that expose the tourna
 
 ## Subtasks
 
-- [ ] 5.1 Implement all DTOs (`CreateTournamentDto`, `UpdateTournamentDto`, `ListTournamentsQueryDto`, etc.).
-- [ ] 5.2 Implement the `PrismaTournamentRepository` in `src/infraestructure/repositories/tournament/`.
-- [ ] 5.3 Implement the `TournamentController` with all five API endpoints.
-- [ ] 5.4 Add appropriate guards (`@Roles(Role.Admin)`) to secure the endpoints.
-- [ ] 5.5 Create and configure the `TournamentModule` to provide and export all necessary components.
-- [ ] 5.6 Update the `QueryService` to include the `tournamentQuery`.
+- [x] 5.1 Implement all DTOs (`CreateTournamentDto`, `UpdateTournamentDto`, `ListTournamentsQueryDto`, etc.).
+- [x] 5.2 Implement the `PrismaTournamentRepository` in `src/infraestructure/repositories/prisma/`.
+- [x] 5.3 Implement the `TournamentController` with all five API endpoints.
+- [x] 5.4 Add appropriate guards (`@Roles(UserRoles.ADMIN)`) to secure the endpoints.
+- [x] 5.5 Create and configure the `TournamentModule` to provide and export all necessary components.
+- [x] 5.6 Update the `SharedModule` to include the `tournamentQuery` and `tournamentRepository`.
 
 ## Implementation Details
 
