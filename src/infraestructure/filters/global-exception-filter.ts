@@ -1,6 +1,7 @@
 import {
   ArgumentsHost,
   BadRequestException,
+  ConflictException,
   ExceptionFilter,
   ForbiddenException,
   HttpStatus,
@@ -39,6 +40,9 @@ export default class GlobalExceptionFilter implements ExceptionFilter {
       body = { message: exception.message };
     } else if (exception instanceof ForbiddenException) {
       status = HttpStatus.FORBIDDEN;
+      body = { message: exception.message };
+    } else if (exception instanceof ConflictException) {
+      status = HttpStatus.CONFLICT;
       body = { message: exception.message };
     } else if (exception instanceof BadRequestException) {
       status = HttpStatus.BAD_REQUEST;

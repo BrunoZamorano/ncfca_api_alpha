@@ -17,6 +17,7 @@ export default class Tournament {
   private _updatedAt: Date;
   private _registrationCount: number;
   private _registrations: Registration[];
+  private _version: number;
 
   constructor(props: TournamentConstructorProps) {
     this._id = props.id;
@@ -31,6 +32,7 @@ export default class Tournament {
     this._updatedAt = props.updatedAt;
     this._registrationCount = props.registrationCount || 0;
     this._registrations = props.registrations || [];
+    this._version = props.version || 1;
   }
 
   public static create(props: CreateTournamentProps, idGenerator: IdGenerator): Tournament {
@@ -64,6 +66,7 @@ export default class Tournament {
       updatedAt: now,
       registrationCount: 0,
       registrations: [],
+      version: 1,
     });
   }
 
@@ -115,6 +118,7 @@ export default class Tournament {
     }
 
     this._updatedAt = new Date();
+    this._version++;
   }
 
   public softDelete(): void {
@@ -128,6 +132,7 @@ export default class Tournament {
 
     this._deletedAt = new Date();
     this._updatedAt = new Date();
+    this._version++;
   }
 
   public isDeleted(): boolean {
@@ -151,6 +156,7 @@ export default class Tournament {
     this._registrations.push(newRegistration);
     this._registrationCount = this._registrations.length;
     this._updatedAt = new Date();
+    this._version++;
 
     return newRegistration;
   }
@@ -211,6 +217,10 @@ export default class Tournament {
   get registrations(): Readonly<Registration[]> {
     return this._registrations;
   }
+
+  get version(): number {
+    return this._version;
+  }
 }
 
 export interface CreateTournamentProps {
@@ -244,4 +254,5 @@ interface TournamentConstructorProps {
   updatedAt: Date;
   registrationCount?: number;
   registrations?: Registration[];
+  version?: number;
 }

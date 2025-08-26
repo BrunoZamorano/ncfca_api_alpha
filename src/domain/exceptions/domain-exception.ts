@@ -16,3 +16,9 @@ export class InvalidOperationException extends DomainException {
     super(message);
   }
 }
+
+export class OptimisticLockError extends DomainException {
+  constructor(entity: string, id: string) {
+    super(`Optimistic lock error: ${entity} with id ${id} has been modified by another process.`);
+  }
+}

@@ -132,7 +132,6 @@ model User {
   family      Family?       @relation("holder")
   Transaction Transaction[]
   ClubRequest ClubRequest[]
-  registrations Registration[]
 }
 
 model Family {
@@ -168,6 +167,7 @@ model Dependant {
   family             Family              @relation(fields: [family_id], references: [id])
   memberships        ClubMembership[]
   enrollmentRequests EnrollmentRequest[]
+  registrations      Registration[]
 }
 
 model Club {
@@ -288,7 +288,7 @@ model Registration {
   id                 String             @id @default(uuid())
   tournament         Tournament         @relation(fields: [tournament_id], references: [id])
   tournament_id      String
-  competitor         User               @relation(fields: [competitor_id], references: [id])
+  competitor         Dependant          @relation(fields: [competitor_id], references: [id])
   competitor_id      String
   status             RegistrationStatus
   type               RegistrationType

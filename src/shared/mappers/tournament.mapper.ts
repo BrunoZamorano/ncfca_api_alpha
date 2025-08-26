@@ -16,6 +16,7 @@ export default class TournamentMapper {
       createdAt: model.created_at,
       updatedAt: model.updated_at,
       registrationCount: 0, // Will be hydrated by repository when needed
+      version: model.version,
     });
   }
 
@@ -29,6 +30,7 @@ export default class TournamentMapper {
       registration_end_date: entity.registrationEndDate,
       start_date: entity.startDate,
       deleted_at: entity.deletedAt,
+      version: entity.version,
     };
   }
 }
