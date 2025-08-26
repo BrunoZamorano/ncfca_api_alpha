@@ -16,9 +16,9 @@ export class PrismaTournamentRepository implements TournamentRepository {
 
     try {
       const result = await this.prisma.tournament.updateMany({
-        where: { 
+        where: {
           id: tournament.id,
-          version: tournament.version - 1 
+          version: tournament.version - 1,
         },
         data: {
           ...tournamentData,
@@ -56,6 +56,28 @@ export class PrismaTournamentRepository implements TournamentRepository {
       where: {
         id,
         deleted_at: null,
+      },
+    });
+
+    if (!tournament) {
+      return null;
+    }
+
+    return TournamentMapper.modelToEntity(tournament);
+  }
+
+  async findByRegistrationId(registrationId: string): Promise<Tournament | null> {
+    const tournament = await this.prisma.tournament.findFirst({
+      where: {
+        deleted_at: null,
+        registrations: {
+          some: {
+            id: registrationId,
+          },
+        },
+      },
+      include: {
+        registrations: true,
       },
     });
 

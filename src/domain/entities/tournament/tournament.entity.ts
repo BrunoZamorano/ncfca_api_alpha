@@ -170,6 +170,19 @@ export default class Tournament {
     return this._registrations.some((registration) => registration.competitorId === competitorId);
   }
 
+  public cancelRegistration(registrationId: string): Registration {
+    const registration = this._registrations.find((reg) => reg.id === registrationId);
+    if (!registration) {
+      throw new InvalidOperationException(`Registration with ID ${registrationId} not found in this tournament.`);
+    }
+
+    registration.cancel();
+    this._updatedAt = new Date();
+    this._version++;
+
+    return registration;
+  }
+
   get id(): string {
     return this._id;
   }

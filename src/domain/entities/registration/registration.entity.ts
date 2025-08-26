@@ -6,7 +6,7 @@ export default class Registration {
   private readonly _id: string;
   private readonly _tournamentId: string;
   private readonly _competitorId: string;
-  private readonly _status: RegistrationStatus;
+  private _status: RegistrationStatus;
   private readonly _type: RegistrationType;
   private readonly _createdAt: Date;
   private _updatedAt: Date;
@@ -60,6 +60,15 @@ export default class Registration {
 
   get updatedAt(): Date {
     return this._updatedAt;
+  }
+
+  public cancel(): void {
+    if (this._status === RegistrationStatus.CANCELLED) {
+      throw new Error('Registration is already cancelled');
+    }
+
+    this._status = RegistrationStatus.CANCELLED;
+    this._updatedAt = new Date();
   }
 }
 

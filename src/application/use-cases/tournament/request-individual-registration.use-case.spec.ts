@@ -112,9 +112,7 @@ describe('RequestIndividualRegistration', () => {
     it('deveria lançar EntityNotFoundException quando o torneio não for encontrado', async () => {
       tournamentRepository.findById.mockResolvedValue(null);
 
-      await expect(
-        useCase.execute({ tournamentId, competitorId })
-      ).rejects.toThrow(new EntityNotFoundException('Tournament', tournamentId));
+      await expect(useCase.execute({ tournamentId, competitorId })).rejects.toThrow(new EntityNotFoundException('Tournament', tournamentId));
 
       expect(tournamentRepository.findById).toHaveBeenCalledWith(tournamentId);
       expect(familyRepository.findDependant).not.toHaveBeenCalled();
@@ -139,9 +137,7 @@ describe('RequestIndividualRegistration', () => {
       tournamentRepository.findById.mockResolvedValue(tournament);
       familyRepository.findDependant.mockResolvedValue(null);
 
-      await expect(
-        useCase.execute({ tournamentId, competitorId })
-      ).rejects.toThrow(new EntityNotFoundException('Dependant', competitorId));
+      await expect(useCase.execute({ tournamentId, competitorId })).rejects.toThrow(new EntityNotFoundException('Dependant', competitorId));
 
       expect(tournamentRepository.findById).toHaveBeenCalledWith(tournamentId);
       expect(familyRepository.findDependant).toHaveBeenCalledWith(competitorId);
@@ -178,9 +174,9 @@ describe('RequestIndividualRegistration', () => {
       familyRepository.findDependant.mockResolvedValue(competitor);
       tournamentRepository.save.mockRejectedValue(new OptimisticLockError('Tournament', tournamentId));
 
-      await expect(
-        useCase.execute({ tournamentId, competitorId })
-      ).rejects.toThrow(new ConflictException('Tournament has been modified by another process. Please refresh and try again.'));
+      await expect(useCase.execute({ tournamentId, competitorId })).rejects.toThrow(
+        new ConflictException('Tournament has been modified by another process. Please refresh and try again.'),
+      );
 
       expect(tournamentRepository.findById).toHaveBeenCalledWith(tournamentId);
       expect(familyRepository.findDependant).toHaveBeenCalledWith(competitorId);
@@ -214,14 +210,12 @@ describe('RequestIndividualRegistration', () => {
       });
 
       const databaseError = new Error('Database connection failed');
-      
+
       tournamentRepository.findById.mockResolvedValue(tournament);
       familyRepository.findDependant.mockResolvedValue(competitor);
       tournamentRepository.save.mockRejectedValue(databaseError);
 
-      await expect(
-        useCase.execute({ tournamentId, competitorId })
-      ).rejects.toThrow(databaseError);
+      await expect(useCase.execute({ tournamentId, competitorId })).rejects.toThrow(databaseError);
 
       expect(tournamentRepository.findById).toHaveBeenCalledWith(tournamentId);
       expect(familyRepository.findDependant).toHaveBeenCalledWith(competitorId);

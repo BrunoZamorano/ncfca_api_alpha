@@ -6,10 +6,14 @@ import { UpdateTournament } from '@/application/use-cases/tournament/update-tour
 import { DeleteTournament } from '@/application/use-cases/tournament/delete-tournament.use-case';
 import { GetTournament } from '@/application/use-cases/tournament/get-tournament.use-case';
 import { ListTournaments } from '@/application/use-cases/tournament/list-tournaments.use-case';
+import { RequestIndividualRegistration } from '@/application/use-cases/tournament/request-individual-registration.use-case';
+import { CancelRegistration } from '@/application/use-cases/tournament/cancel-registration.use-case';
 
 import { CreateTournamentDto } from '@/infraestructure/dtos/tournament/create-tournament.dto';
 import { UpdateTournamentDto } from '@/infraestructure/dtos/tournament/update-tournament.dto';
 import { ListTournamentsQueryDto } from '@/infraestructure/dtos/tournament/list-tournaments-query.dto';
+import { RequestIndividualRegistrationDto } from '@/infraestructure/dtos/tournament/request-individual-registration.dto';
+import { CancelRegistrationDto } from '@/infraestructure/dtos/tournament/cancel-registration.dto';
 
 import { TournamentDetailsView } from '@/application/queries/tournament-query/tournament-details.view';
 import { TournamentListItemView } from '@/application/queries/tournament-query/tournament-list-item.view';
@@ -32,6 +36,8 @@ export default class TournamentController {
     private readonly deleteTournament: DeleteTournament,
     private readonly getTournament: GetTournament,
     private readonly listTournaments: ListTournaments,
+    private readonly requestIndividualRegistration: RequestIndividualRegistration,
+    private readonly cancelRegistration: CancelRegistration,
   ) {}
 
   @Post('create')
@@ -126,5 +132,39 @@ export default class TournamentController {
   @ApiResponse({ status: 404, description: 'Torneio não encontrado.' })
   async getById(@Param('id') id: string): Promise<TournamentDetailsView> {
     return await this.getTournament.execute(id);
+  }
+
+  @Post('registrations/request-individual')
+  @ApiOperation({ summary: 'Solicita inscrição individual em um torneio' })
+  @ApiResponse({ status: 201, description: 'Inscrição realizada com sucesso.' })
+  @ApiResponse({ status: 400, description: 'Dados inválidos.' })
+  @ApiResponse({ status: 409, description: 'Competidor já está inscrito neste torneio.' })
+  @ApiResponse({ status: 404, description: 'Torneio ou competidor não encontrado.' })
+  async registerIndividualCompetitor(@Body() dto: RequestIndividualRegistrationDto): Promise<{ registrationId: string; status: string }> {
+    const registration = await this.requestIndividualRegistration.execute({
+      tournamentId: dto.tournamentId,
+      competitorId: dto.competitorId,
+    });
+
+    return {
+      registrationId: registration.id,
+      status: registration.status,
+    };
+  }
+
+  @Post('registrations/cancel')
+  @ApiOperation({ summary: 'Cancela uma inscrição em torneio' })
+  @ApiResponse({ status: 200, description: 'Inscrição cancelada com sucesso.' })
+  @ApiResponse({ status: 400, description: 'Dados inválidos.' })
+  @ApiResponse({ status: 404, description: 'Inscrição não encontrada.' })
+  async cancelCompetitorRegistration(@Body() dto: CancelRegistrationDto): Promise<{ message: string }> {
+    await this.cancelRegistration.execute({
+      registrationId: dto.registrationId,
+      reason: dto.reason,
+    });
+
+    return {
+      message: 'Inscrição cancelada com sucesso',
+    };
   }
 }
