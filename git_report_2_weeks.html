@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório de Commits - Últimas Duas Semanas</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            text-align: center;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .chart-container {
+            width: 100%;
+            max-width: 1000px;
+            margin: 30px 0;
+        }
+        .summary {
+            background-color: #eaf5ff;
+            border: 1px solid #b8d9f3;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+        .key-actions {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        .key-actions h2 {
+            margin-top: 0;
+        }
+        .key-actions ul {
+            padding-left: 20px;
+        }
+        .key-actions li {
+            margin-bottom: 10px;
+        }
+        .stat {
+            text-align: center;
+        }
+        .stat .value {
+            font-weight: bold;
+            font-size: 1.5em;
+        }
+        .stat .label {
+            color: #7f8c8d;
+        }
+        .commit-list {
+            margin-top: 20px;
+        }
+        .insertions { color: #2ecc71; font-weight: bold; }
+        .deletions { color: #e74c3c; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>Relatório de Produtividade (11/08/2025 - 25/08/2025)</h1>
+
+    <div class="chart-container">
+        <canvas id="productivityChart"></canvas>
+    </div>
+
+    <div class="summary">
+        <div class="stat">
+            <div class="value">30</div>
+            <div class="label">Total de Commits</div>
+        </div>
+        <div class="stat">
+            <div class="value">589</div>
+            <div class="label">Arquivos Alterados</div>
+        </div>
+        <div class="stat">
+            <div class="value insertions">29517</div>
+            <div class="label">Linhas Adicionadas</div>
+        </div>
+        <div class="stat">
+            <div class="value deletions">4141</div>
+            <div class="label">Linhas Removidas</div>
+        </div>
+        <div class="stat">
+            <div class="value">33658</div>
+            <div class="label">Total de Linhas</div>
+        </div>
+    </div>
+
+    <div class="key-actions">
+        <h2>Principais Ações do Dia 25/08/2025</h2>
+        <ul>
+            <li><strong>Implementação do Módulo de Torneios:</strong> Criação de toda a estrutura do novo módulo, incluindo controllers, DTOs, repositórios, casos de uso e queries.</li>
+            <li><strong>Testes Abrangentes:</strong> Implementação de testes E2E para o módulo de torneios, cobrindo criação, atualização e exclusão, garantindo a robustez da nova funcionalidade.</li>
+            <li><strong>Refatoração e Melhorias de Código:</strong> Limpeza e otimização do código relacionado a torneios para melhorar a legibilidade e a manutenção futura.</li>
+            <li><strong>Melhorias na Documentação:</strong> Atualização da documentação de padrões de código e dos agentes de IA para refletir as novas implementações e diretrizes.</li>
+        </ul>
+    </div>
+
+    <script>
+        const dailyData = {
+            '2025-08-11': { insertions: 0, deletions: 0 },
+            '2025-08-12': { insertions: 1068, deletions: 135 },
+            '2025-08-13': { insertions: 0, deletions: 0 },
+            '2025-08-14': { insertions: 6713, deletions: 1141 },
+            '2025-08-15': { insertions: 0, deletions: 0 },
+            '2025-08-16': { insertions: 0, deletions: 0 },
+            '2025-08-17': { insertions: 0, deletions: 0 },
+            '2025-08-18': { insertions: 2703, deletions: 1530 },
+            '2025-08-19': { insertions: 1142, deletions: 445 },
+            '2025-08-20': { insertions: 1920, deletions: 61 },
+            '2025-08-21': { insertions: 5389, deletions: 387 },
+            '2025-08-22': { insertions: 5716, deletions: 11 },
+            '2025-08-23': { insertions: 0, deletions: 0 },
+            '2025-08-24': { insertions: 0, deletions: 0 },
+            '2025-08-25': { insertions: 4866, deletions: 292 },
+        };
+
+        const labels = Object.keys(dailyData);
+        const insertionsData = labels.map(date => dailyData[date].insertions);
+        const deletionsData = labels.map(date => dailyData[date].deletions);
+        const totalData = labels.map(date => dailyData[date].insertions + dailyData[date].deletions);
+
+        const ctx = document.getElementById('productivityChart').getContext('2d');
+        const productivityChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels.map(d => new Date(d).toLocaleDateString('pt-BR', {day: '2-digit', month: '2-digit'})),
+                datasets: [
+                    {
+                        label: 'Linhas Adicionadas',
+                        data: insertionsData,
+                        borderColor: 'rgba(46, 204, 113, 1)',
+                        backgroundColor: 'rgba(46, 204, 113, 0.2)',
+                        fill: true,
+                        tension: 0.1
+                    },
+                    {
+                        label: 'Linhas Removidas',
+                        data: deletionsData,
+                        borderColor: 'rgba(231, 76, 60, 1)',
+                        backgroundColor: 'rgba(231, 76, 60, 0.2)',
+                        fill: true,
+                        tension: 0.1
+                    },
+                    {
+                        label: 'Total de Linhas Alteradas',
+                        data: totalData,
+                        borderColor: 'rgba(52, 152, 219, 1)',
+                        backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                        fill: false,
+                        tension: 0.1,
+                        type: 'line'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Produtividade Diária (Linhas de Código)',
+                        font: {
+                            size: 18
+                        }
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false
+                    }
+                },
+                scales: {
+                    x: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'Data'
+                        }
+                    },
+                    y: {
+                        display: true,
+                        title: {
+                            display: true,
+                            text: 'Linhas de Código'
+                        },
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

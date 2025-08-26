@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório de Commits - 25/08/2025</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            text-align: center;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .commit {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .commit-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .commit-author {
+            font-weight: bold;
+            color: #3498db;
+        }
+        .commit-date {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+        .commit-message {
+            margin-top: 10px;
+        }
+        .commit-stats {
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: space-around;
+            font-size: 0.9em;
+        }
+        .stat {
+            text-align: center;
+        }
+        .stat .value {
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        .stat .label {
+            color: #7f8c8d;
+        }
+        .insertions { color: #2ecc71; }
+        .deletions { color: #e74c3c; }
+        .files { color: #3498db; }
+        .summary {
+            background-color: #eaf5ff;
+            border: 1px solid #b8d9f3;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        .summary h2 {
+            margin-top: 0;
+        }
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Relatório de Commits - 25 de Agosto de 2025</h1>
+
+    <div class="summary">
+        <h2>Resumo do Dia</h2>
+        <p>O dia foi focado principalmente na implementação e refatoração do módulo de torneios, incluindo a criação de DTOs, repositórios, casos de uso e testes E2E. Também houve melhorias na documentação e nos padrões de código.</p>
+        <div class="summary-grid">
+            <div class="stat">
+                <div class="value">4</div>
+                <div class="label">Total de Commits</div>
+            </div>
+            <div class="stat">
+                <div class="value files">102</div>
+                <div class="label">Arquivos Alterados</div>
+            </div>
+            <div class="stat">
+                <div class="value insertions">4866</div>
+                <div class="label">Linhas Adicionadas</div>
+            </div>
+            <div class="stat">
+                <div class="value deletions">292</div>
+                <div class="label">Linhas Removidas</div>
+            </div>
+             <div class="stat">
+                <div class="value">5158</div>
+                <div class="label">Total de Linhas</div>
+            </div>
+        </div>
+    </div>
+
+    <h2>Detalhes dos Commits</h2>
+
+    <div class="commit">
+        <div class="commit-header">
+            <span class="commit-author">brunozamorano</span>
+            <span class="commit-date">25/08/2025, 16:25:53</span>
+        </div>
+        <h3>refactor: clean up and enhance tournament-related code</h3>
+        <div class="commit-message">
+            <ul>
+                <li>Removed unnecessary line breaks and improved formatting in various tournament-related files for better readability.</li>
+                <li>Updated logging in <code>CreateClub</code> use case to remove redundant debug information.</li>
+                <li>Consolidated provider declarations in tournament module and test setup for clarity.</li>
+                <li>Added a new <code>TournamentResponseDto</code> to standardize tournament response structure in the API.</li>
+                <li>Implemented comprehensive E2E tests for tournament creation, deletion, and updates, ensuring robust coverage of business logic and authorization rules.</li>
+            </ul>
+        </div>
+        <div class="commit-stats">
+            <div class="stat files"><span class="value">28</span><br><span class="label">arquivos</span></div>
+            <div class="stat insertions"><span class="value">1288</span><br><span class="label">adições</span></div>
+            <div class="stat deletions"><span class="value">56</span><br><span class="label">remoções</span></div>
+        </div>
+    </div>
+
+    <div class="commit">
+        <div class="commit-header">
+            <span class="commit-author">brunozamorano</span>
+            <span class="commit-date">25/08/2025, 16:04:15</span>
+        </div>
+        <h3>feat: implement tournament module with controller, DTOs, and repository</h3>
+        <div class="commit-message">
+            <ul>
+                <li>Added <code>TournamentModule</code> to encapsulate tournament-related functionality.</li>
+                <li>Implemented <code>TournamentController</code> with endpoints for creating, updating, deleting, and retrieving tournaments.</li>
+                <li>Created <code>CreateTournamentDto</code> and <code>UpdateTournamentDto</code> for input validation and data transfer.</li>
+                <li>Developed <code>PrismaTournamentRepository</code> for database interactions, including methods for saving and finding tournaments.</li>
+                <li>Enhanced the application module to include the new <code>TournamentModule</code>.</li>
+            </ul>
+        </div>
+        <div class="commit-stats">
+            <div class="stat files"><span class="value">10</span><br><span class="label">arquivos</span></div>
+            <div class="stat insertions"><span class="value">415</span><br><span class="label">adições</span></div>
+            <div class="stat deletions"><span class="value">8</span><br><span class="label">remoções</span></div>
+        </div>
+    </div>
+
+    <div class="commit">
+        <div class="commit-header">
+            <span class="commit-author">brunozamorano</span>
+            <span class="commit-date">25/08/2025, 12:50:53</span>
+        </div>
+        <h3>feat: implement tournament use cases and queries</h3>
+        <div class="commit-message">
+            <ul>
+                <li>Added <code>CreateTournament</code>, <code>UpdateTournament</code>, <code>DeleteTournament</code>, <code>GetTournament</code>, and <code>ListTournaments</code> use cases with corresponding unit tests.</li>
+                <li>Introduced <code>TournamentQuery</code> interface and its implementations for querying tournament details and lists.</li>
+                <li>Created DTOs for filtering and pagination in tournament queries.</li>
+                <li>Implemented <code>PrismaTournamentQuery</code> for database interactions and integrated it into the query service.</li>
+                <li>Enhanced code standards documentation with new guidelines for naming conventions.</li>
+            </ul>
+        </div>
+        <div class="commit-stats">
+            <div class="stat files"><span class="value">28</span><br><span class="label">arquivos</span></div>
+            <div class="stat insertions"><span class="value">872</span><br><span class="label">adições</span></div>
+            <div class="stat deletions"><span class="value">28</span><br><span class="label">remoções</span></div>
+        </div>
+    </div>
+
+    <div class="commit">
+        <div class="commit-header">
+            <span class="commit-author">brunozamorano</span>
+            <span class="commit-date">25/08/2025, 07:58:29</span>
+        </div>
+        <h3>feat: enhance documentation and add new features to agents and models</h3>
+        <div class="commit-message">
+            <ul>
+                <li>Updated <code>prd-creator.md</code> to clarify the use of zen's consensus tool with o3 model specifications.</li>
+                <li>Modified <code>techspec-creator.md</code> to remove the model specification for clarity.</li>
+                <li>Expanded <code>code-standards.mdc</code> with new REST guidelines for endpoint naming conventions.</li>
+                <li>Introduced <code>TournamentType</code> enum and <code>Tournament</code> model in <code>schema.prisma</code> to support tournament functionalities.</li>
+                <li>Added <code>TOURNAMENT_REPOSITORY</code> constant in <code>repository-constants.ts</code> for tournament management.</li>
+                <li>Refactored E2E tests in <code>dependant</code> and <code>training</code> directories for improved readability and consistency.</li>
+                <li>Cleaned up import statements across various test files for better organization.</li>
+            </ul>
+        </div>
+        <div class="commit-stats">
+            <div class="stat files"><span class="value">36</span><br><span class="label">arquivos</span></div>
+            <div class="stat insertions"><span class="value">2291</span><br><span class="label">adições</span></div>
+            <div class="stat deletions"><span class="value">200</span><br><span class="label">remoções</span></div>
+        </div>
+    </div>
+
+</body>
+</html>

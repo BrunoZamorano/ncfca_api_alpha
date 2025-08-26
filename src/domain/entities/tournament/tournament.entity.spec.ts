@@ -2,9 +2,19 @@ import Tournament from './tournament.entity';
 import { InvalidOperationException } from '@/domain/exceptions/domain-exception';
 import IdGenerator from '@/application/services/id-generator';
 import { TournamentType } from '@/domain/enums/tournament-type.enum';
+import Dependant from '@/domain/entities/dependant/dependant';
+import Registration from '@/domain/entities/registration/registration.entity';
+import { RegistrationStatus } from '@/domain/enums/registration-status.enum';
+import { RegistrationType } from '@/domain/enums/registration-type.enum';
 
 const mockIdGenerator: IdGenerator = {
   generate: jest.fn().mockImplementation(() => `mock-uuid-${Math.random()}`),
+};
+
+const mockDependant: Partial<Dependant> = {
+  id: 'dependant-123',
+  firstName: 'João',
+  lastName: 'Silva',
 };
 
 describe('(UNIT) Tournament Entity', () => {
@@ -296,6 +306,199 @@ describe('(UNIT) Tournament Entity', () => {
       expect(tournament.createdAt).toBeInstanceOf(Date);
       expect(tournament.updatedAt).toBeInstanceOf(Date);
       expect(tournament.registrationCount).toBe(0);
+      expect(tournament.registrations).toEqual([]);
+    });
+  });
+
+  describe('Individual Registration', () => {
+    let openTournament: Tournament;
+    let closedTournament: Tournament;
+    let duoTournament: Tournament;
+
+    beforeEach(() => {
+      const now = new Date();
+      const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+      const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+      const nextWeek = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+
+      openTournament = Tournament.create(
+        {
+          ...validTournamentProps,
+          type: TournamentType.INDIVIDUAL,
+          registrationStartDate: yesterday,
+          registrationEndDate: tomorrow,
+          startDate: nextWeek,
+        },
+        mockIdGenerator,
+      );
+
+      closedTournament = Tournament.create(
+        {
+          ...validTournamentProps,
+          type: TournamentType.INDIVIDUAL,
+          registrationStartDate: new Date('2024-01-01'),
+          registrationEndDate: new Date('2024-01-15'),
+          startDate: new Date('2024-02-01'),
+        },
+        mockIdGenerator,
+      );
+
+      duoTournament = Tournament.create(
+        {
+          ...validTournamentProps,
+          type: TournamentType.DUO,
+          registrationStartDate: yesterday,
+          registrationEndDate: tomorrow,
+          startDate: nextWeek,
+        },
+        mockIdGenerator,
+      );
+    });
+
+    describe('Success scenarios', () => {
+      it('Deve criar um registro individual com sucesso', () => {
+        // Act
+        const registration = openTournament.requestIndividualRegistration(mockDependant as Dependant, mockIdGenerator);
+
+        // Assert
+        expect(registration).toBeInstanceOf(Registration);
+        expect(registration.tournamentId).toBe(openTournament.id);
+        expect(registration.competitorId).toBe(mockDependant.id);
+        expect(registration.status).toBe(RegistrationStatus.CONFIRMED);
+        expect(registration.type).toBe(RegistrationType.INDIVIDUAL);
+        expect(openTournament.registrationCount).toBe(1);
+        expect(openTournament.registrations).toHaveLength(1);
+        expect(openTournament.registrations[0]).toBe(registration);
+        expect(mockIdGenerator.generate).toHaveBeenCalled();
+      });
+
+      it('Deve permitir múltiplas inscrições de competidores diferentes', () => {
+        // Arrange
+        const anotherDependant: Partial<Dependant> = {
+          id: 'dependant-456',
+          firstName: 'Maria',
+          lastName: 'Santos',
+        };
+
+        // Act
+        const registration1 = openTournament.requestIndividualRegistration(mockDependant as Dependant, mockIdGenerator);
+        const registration2 = openTournament.requestIndividualRegistration(anotherDependant as Dependant, mockIdGenerator);
+
+        // Assert
+        expect(openTournament.registrationCount).toBe(2);
+        expect(openTournament.registrations).toHaveLength(2);
+        expect(registration1.competitorId).toBe(mockDependant.id);
+        expect(registration2.competitorId).toBe(anotherDependant.id);
+      });
+    });
+
+    describe('Tournament type validation', () => {
+      it('Não deve criar um registro para um torneio que não seja individual', () => {
+        // Act & Assert
+        expect(() => duoTournament.requestIndividualRegistration(mockDependant as Dependant, mockIdGenerator)).toThrow(
+          new InvalidOperationException('Cannot register for this tournament type. Tournament must be of type INDIVIDUAL.'),
+        );
+      });
+    });
+
+    describe('Registration period validation', () => {
+      it('Não deve criar um registro fora do período de inscrição', () => {
+        // Act & Assert
+        expect(() => closedTournament.requestIndividualRegistration(mockDependant as Dependant, mockIdGenerator)).toThrow(
+          new InvalidOperationException('Registration period is not open for this tournament.'),
+        );
+      });
+
+      it('Deve permitir registro no primeiro dia do período', () => {
+        // Arrange
+        const now = new Date();
+        const tournament = Tournament.create(
+          {
+            ...validTournamentProps,
+            type: TournamentType.INDIVIDUAL,
+            registrationStartDate: now,
+            registrationEndDate: new Date(now.getTime() + 24 * 60 * 60 * 1000),
+            startDate: new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000),
+          },
+          mockIdGenerator,
+        );
+
+        // Act & Assert
+        expect(() => tournament.requestIndividualRegistration(mockDependant as Dependant, mockIdGenerator)).not.toThrow();
+      });
+
+      it('Deve permitir registro no último dia do período', () => {
+        // Arrange
+        const now = new Date();
+        const tournament = Tournament.create(
+          {
+            ...validTournamentProps,
+            type: TournamentType.INDIVIDUAL,
+            registrationStartDate: new Date(now.getTime() - 24 * 60 * 60 * 1000),
+            registrationEndDate: now,
+            startDate: new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000),
+          },
+          mockIdGenerator,
+        );
+
+        // Act & Assert
+        expect(() => tournament.requestIndividualRegistration(mockDependant as Dependant, mockIdGenerator)).not.toThrow();
+      });
+    });
+
+    describe('Duplicate registration validation', () => {
+      it('Não deve permitir o mesmo competidor se registrar duas vezes', () => {
+        // Arrange
+        openTournament.requestIndividualRegistration(mockDependant as Dependant, mockIdGenerator);
+
+        // Act & Assert
+        expect(() => openTournament.requestIndividualRegistration(mockDependant as Dependant, mockIdGenerator)).toThrow(
+          new InvalidOperationException(`Competitor ${mockDependant.firstName} ${mockDependant.lastName} is already registered for this tournament.`),
+        );
+      });
+
+      it('Deve verificar duplicatas apenas por ID do competidor', () => {
+        // Arrange
+        const sameDependantDifferentName: Partial<Dependant> = {
+          id: mockDependant.id,
+          firstName: 'Diferente',
+          lastName: 'Nome',
+        };
+        openTournament.requestIndividualRegistration(mockDependant as Dependant, mockIdGenerator);
+
+        // Act & Assert
+        expect(() => openTournament.requestIndividualRegistration(sameDependantDifferentName as Dependant, mockIdGenerator)).toThrow(
+          new InvalidOperationException(
+            `Competitor ${sameDependantDifferentName.firstName} ${sameDependantDifferentName.lastName} is already registered for this tournament.`,
+          ),
+        );
+      });
+    });
+
+    describe('Tournament state updates', () => {
+      it('Deve atualizar o contador de registros após criar registro', () => {
+        // Arrange
+        const initialCount = openTournament.registrationCount;
+
+        // Act
+        openTournament.requestIndividualRegistration(mockDependant as Dependant, mockIdGenerator);
+
+        // Assert
+        expect(openTournament.registrationCount).toBe(initialCount + 1);
+      });
+
+      it('Deve atualizar a data de modificação após criar registro', () => {
+        // Arrange
+        const initialUpdatedAt = openTournament.updatedAt;
+
+        // Act (wait a small amount to ensure different timestamp)
+        setTimeout(() => {
+          openTournament.requestIndividualRegistration(mockDependant as Dependant, mockIdGenerator);
+        }, 1);
+
+        // Assert
+        expect(openTournament.updatedAt.getTime()).toBeGreaterThanOrEqual(initialUpdatedAt.getTime());
+      });
     });
   });
 });

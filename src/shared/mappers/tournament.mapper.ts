@@ -31,5 +31,4 @@ export default class TournamentMapper {
       deleted_at: entity.deletedAt,
     };
   }
-
 }

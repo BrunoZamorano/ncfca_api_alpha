@@ -2001,6 +2001,214 @@
           "Clubes - Solicitações"
         ]
       }
+    },
+    "/tournaments/create": {
+      "post": {
+        "operationId": "TournamentController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTournamentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Torneio criado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TournamentResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados inválidos."
+          },
+          "403": {
+            "description": "Acesso negado."
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Cria um novo torneio",
+        "tags": [
+          "Torneios"
+        ]
+      }
+    },
+    "/tournaments/{id}/update": {
+      "post": {
+        "operationId": "TournamentController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTournamentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Torneio atualizado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TournamentResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados inválidos."
+          },
+          "403": {
+            "description": "Acesso negado."
+          },
+          "404": {
+            "description": "Torneio não encontrado."
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Atualiza um torneio existente",
+        "tags": [
+          "Torneios"
+        ]
+      }
+    },
+    "/tournaments/{id}/delete": {
+      "post": {
+        "operationId": "TournamentController_delete",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Torneio removido com sucesso."
+          },
+          "403": {
+            "description": "Acesso negado."
+          },
+          "404": {
+            "description": "Torneio não encontrado."
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Remove um torneio (soft delete)",
+        "tags": [
+          "Torneios"
+        ]
+      }
+    },
+    "/tournaments": {
+      "get": {
+        "operationId": "TournamentController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Lista de torneios retornada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TournamentListItemView"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Acesso negado."
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Lista torneios com filtros e paginação",
+        "tags": [
+          "Torneios"
+        ]
+      }
+    },
+    "/tournaments/{id}": {
+      "get": {
+        "operationId": "TournamentController_getById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detalhes do torneio retornados com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TournamentDetailsView"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Acesso negado."
+          },
+          "404": {
+            "description": "Torneio não encontrado."
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Obtém detalhes de um torneio específico",
+        "tags": [
+          "Torneios"
+        ]
+      }
     }
   },
   "info": {
@@ -3702,6 +3910,325 @@
         },
         "required": [
           "reason"
+        ]
+      },
+      "CreateTournamentDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Nome do torneio",
+            "example": "Torneio Nacional de Debate Individual",
+            "minLength": 3
+          },
+          "description": {
+            "type": "string",
+            "description": "Descrição detalhada do torneio",
+            "example": "Torneio nacional de debate para estudantes do ensino médio com foco em argumentação e oratória"
+          },
+          "type": {
+            "type": "string",
+            "description": "Tipo do torneio",
+            "enum": [
+              "INDIVIDUAL",
+              "DUO"
+            ],
+            "example": "INDIVIDUAL"
+          },
+          "registrationStartDate": {
+            "type": "string",
+            "description": "Data de início das inscrições",
+            "format": "date-time",
+            "example": "2024-01-01T00:00:00Z"
+          },
+          "registrationEndDate": {
+            "type": "string",
+            "description": "Data de fim das inscrições",
+            "format": "date-time",
+            "example": "2024-01-15T23:59:59Z"
+          },
+          "startDate": {
+            "type": "string",
+            "description": "Data de início do torneio",
+            "format": "date-time",
+            "example": "2024-02-01T09:00:00Z"
+          }
+        },
+        "required": [
+          "name",
+          "description",
+          "type",
+          "registrationStartDate",
+          "registrationEndDate",
+          "startDate"
+        ]
+      },
+      "TournamentResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID único do torneio",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "name": {
+            "type": "string",
+            "description": "Nome do torneio",
+            "example": "Torneio Nacional de Debate Individual"
+          },
+          "description": {
+            "type": "string",
+            "description": "Descrição detalhada do torneio",
+            "example": "Torneio nacional de debate para estudantes do ensino médio com foco em argumentação e oratória"
+          },
+          "type": {
+            "type": "string",
+            "description": "Tipo do torneio",
+            "enum": [
+              "INDIVIDUAL",
+              "DUO"
+            ],
+            "example": "INDIVIDUAL"
+          },
+          "registrationStartDate": {
+            "type": "string",
+            "description": "Data de início das inscrições",
+            "format": "date-time",
+            "example": "2024-01-01T00:00:00Z"
+          },
+          "registrationEndDate": {
+            "type": "string",
+            "description": "Data de fim das inscrições",
+            "format": "date-time",
+            "example": "2024-01-15T23:59:59Z"
+          },
+          "startDate": {
+            "type": "string",
+            "description": "Data de início do torneio",
+            "format": "date-time",
+            "example": "2024-02-01T09:00:00Z"
+          },
+          "registrationCount": {
+            "type": "number",
+            "description": "Número de inscrições no torneio",
+            "example": 0
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Data de criação do torneio",
+            "format": "date-time",
+            "example": "2024-01-01T00:00:00Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "Data da última atualização do torneio",
+            "format": "date-time",
+            "example": "2024-01-01T00:00:00Z"
+          },
+          "deletedAt": {
+            "type": "string",
+            "description": "Data de deleção do torneio (soft delete)",
+            "format": "date-time",
+            "example": null,
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "description",
+          "type",
+          "registrationStartDate",
+          "registrationEndDate",
+          "startDate",
+          "registrationCount",
+          "createdAt",
+          "updatedAt",
+          "deletedAt"
+        ]
+      },
+      "UpdateTournamentDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Nome do torneio",
+            "example": "Torneio Nacional de Debate Individual",
+            "minLength": 3
+          },
+          "description": {
+            "type": "string",
+            "description": "Descrição detalhada do torneio",
+            "example": "Torneio nacional de debate para estudantes do ensino médio com foco em argumentação e oratória"
+          },
+          "type": {
+            "type": "string",
+            "description": "Tipo do torneio",
+            "enum": [
+              "INDIVIDUAL",
+              "DUO"
+            ],
+            "example": "INDIVIDUAL"
+          },
+          "registrationStartDate": {
+            "type": "string",
+            "description": "Data de início das inscrições",
+            "format": "date-time",
+            "example": "2024-01-01T00:00:00Z"
+          },
+          "registrationEndDate": {
+            "type": "string",
+            "description": "Data de fim das inscrições",
+            "format": "date-time",
+            "example": "2024-01-15T23:59:59Z"
+          },
+          "startDate": {
+            "type": "string",
+            "description": "Data de início do torneio",
+            "format": "date-time",
+            "example": "2024-02-01T09:00:00Z"
+          }
+        }
+      },
+      "TournamentListItemView": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID único do torneio",
+            "format": "uuid",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "name": {
+            "type": "string",
+            "description": "Nome do torneio",
+            "example": "Torneio Nacional de Debate Individual"
+          },
+          "type": {
+            "type": "string",
+            "description": "Tipo do torneio",
+            "example": "INDIVIDUAL",
+            "enum": [
+              "INDIVIDUAL",
+              "DUO"
+            ]
+          },
+          "startDate": {
+            "type": "string",
+            "description": "Data de início do torneio",
+            "format": "date-time",
+            "example": "2024-02-01T09:00:00Z"
+          },
+          "registrationCount": {
+            "type": "number",
+            "description": "Número de inscrições no torneio",
+            "example": 25
+          },
+          "registrationEndDate": {
+            "type": "string",
+            "description": "Data de fim das inscrições",
+            "format": "date-time",
+            "example": "2024-01-15T23:59:59Z"
+          },
+          "registrationStartDate": {
+            "type": "string",
+            "description": "Data de início das inscrições",
+            "format": "date-time",
+            "example": "2024-01-01T00:00:00Z"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "type",
+          "startDate",
+          "registrationCount",
+          "registrationEndDate",
+          "registrationStartDate"
+        ]
+      },
+      "TournamentDetailsView": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID único do torneio",
+            "format": "uuid",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "name": {
+            "type": "string",
+            "description": "Nome do torneio",
+            "example": "Torneio Nacional de Debate Individual"
+          },
+          "type": {
+            "type": "string",
+            "description": "Tipo do torneio",
+            "example": "INDIVIDUAL",
+            "enum": [
+              "INDIVIDUAL",
+              "DUO"
+            ]
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Data de criação do torneio",
+            "format": "date-time",
+            "example": "2023-12-15T10:30:00Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "Data da última atualização do torneio",
+            "format": "date-time",
+            "example": "2023-12-20T15:45:00Z"
+          },
+          "startDate": {
+            "type": "string",
+            "description": "Data de início do torneio",
+            "format": "date-time",
+            "example": "2024-02-01T09:00:00Z"
+          },
+          "deletedAt": {
+            "type": "string",
+            "description": "Data de exclusão do torneio (soft delete)",
+            "format": "date-time",
+            "example": "2024-01-30T12:00:00Z",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "description": "Descrição detalhada do torneio",
+            "example": "Torneio nacional de debate para estudantes do ensino médio com foco em argumentação e oratória"
+          },
+          "registrationCount": {
+            "type": "number",
+            "description": "Número de inscrições no torneio",
+            "example": 25
+          },
+          "registrationEndDate": {
+            "type": "string",
+            "description": "Data de fim das inscrições",
+            "format": "date-time",
+            "example": "2024-01-15T23:59:59Z"
+          },
+          "registrationStartDate": {
+            "type": "string",
+            "description": "Data de início das inscrições",
+            "format": "date-time",
+            "example": "2024-01-01T00:00:00Z"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "type",
+          "createdAt",
+          "updatedAt",
+          "startDate",
+          "description",
+          "registrationCount",
+          "registrationEndDate",
+          "registrationStartDate"
         ]
       }
     }

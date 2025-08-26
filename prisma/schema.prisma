@@ -92,6 +92,21 @@ enum TournamentType {
   DUO
 }
 
+enum RegistrationType {
+  INDIVIDUAL
+}
+
+enum RegistrationStatus {
+  CONFIRMED
+  CANCELLED
+}
+
+enum SyncStatus {
+  PENDING
+  SYNCED
+  FAILED
+}
+
 model User {
   id           String  @id @default(uuid())
   email        String  @unique
@@ -117,6 +132,7 @@ model User {
   family      Family?       @relation("holder")
   Transaction Transaction[]
   ClubRequest ClubRequest[]
+  registrations Registration[]
 }
 
 model Family {
@@ -258,9 +274,40 @@ model Tournament {
   registration_start_date DateTime
   registration_end_date   DateTime
   start_date              DateTime
+  version                 Int            @default(1)
   deleted_at              DateTime?
   created_at              DateTime       @default(now())
   updated_at              DateTime       @updatedAt
 
+  registrations           Registration[]
+
   @@map("tournament")
+}
+
+model Registration {
+  id                 String             @id @default(uuid())
+  tournament         Tournament         @relation(fields: [tournament_id], references: [id])
+  tournament_id      String
+  competitor         User               @relation(fields: [competitor_id], references: [id])
+  competitor_id      String
+  status             RegistrationStatus
+  type               RegistrationType
+
+  sync               RegistrationSync?
+  created_at         DateTime           @default(now())
+  updated_at         DateTime           @updatedAt
+
+  @@map("registrations")
+  @@unique([tournament_id, competitor_id])
+}
+
+model RegistrationSync {
+  id              String       @id @default(uuid())
+  registration    Registration @relation(fields: [registration_id], references: [id])
+  registration_id String       @unique
+  status          SyncStatus   @default(PENDING)
+  created_at      DateTime     @default(now())
+  updated_at      DateTime     @updatedAt
+
+  @@map("registration_syncs")
 }

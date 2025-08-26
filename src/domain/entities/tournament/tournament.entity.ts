@@ -1,6 +1,8 @@
 import { InvalidOperationException } from '@/domain/exceptions/domain-exception';
 import { TournamentType } from '@/domain/enums/tournament-type.enum';
 import IdGenerator from '@/application/services/id-generator';
+import Registration from '@/domain/entities/registration/registration.entity';
+import Dependant from '@/domain/entities/dependant/dependant';
 
 export default class Tournament {
   private readonly _id: string;
@@ -14,6 +16,7 @@ export default class Tournament {
   private _deletedAt: Date | null;
   private _updatedAt: Date;
   private _registrationCount: number;
+  private _registrations: Registration[];
 
   constructor(props: TournamentConstructorProps) {
     this._id = props.id;
@@ -27,6 +30,7 @@ export default class Tournament {
     this._createdAt = props.createdAt;
     this._updatedAt = props.updatedAt;
     this._registrationCount = props.registrationCount || 0;
+    this._registrations = props.registrations || [];
   }
 
   public static create(props: CreateTournamentProps, idGenerator: IdGenerator): Tournament {
@@ -59,6 +63,7 @@ export default class Tournament {
       createdAt: now,
       updatedAt: now,
       registrationCount: 0,
+      registrations: [],
     });
   }
 
@@ -129,6 +134,36 @@ export default class Tournament {
     return this._deletedAt !== null;
   }
 
+  public requestIndividualRegistration(competitor: Dependant, idGenerator: IdGenerator): Registration {
+    if (this._type !== TournamentType.INDIVIDUAL) {
+      throw new InvalidOperationException('Cannot register for this tournament type. Tournament must be of type INDIVIDUAL.');
+    }
+
+    if (!this.isRegistrationOpen()) {
+      throw new InvalidOperationException('Registration period is not open for this tournament.');
+    }
+
+    if (this.isCompetitorAlreadyRegistered(competitor.id)) {
+      throw new InvalidOperationException(`Competitor ${competitor.firstName} ${competitor.lastName} is already registered for this tournament.`);
+    }
+
+    const newRegistration = Registration.create(this._id, competitor.id, idGenerator);
+    this._registrations.push(newRegistration);
+    this._registrationCount = this._registrations.length;
+    this._updatedAt = new Date();
+
+    return newRegistration;
+  }
+
+  private isRegistrationOpen(): boolean {
+    const now = new Date();
+    return now >= this._registrationStartDate && now <= this._registrationEndDate;
+  }
+
+  private isCompetitorAlreadyRegistered(competitorId: string): boolean {
+    return this._registrations.some((registration) => registration.competitorId === competitorId);
+  }
+
   get id(): string {
     return this._id;
   }
@@ -172,6 +207,10 @@ export default class Tournament {
   get registrationCount(): number {
     return this._registrationCount;
   }
+
+  get registrations(): Readonly<Registration[]> {
+    return this._registrations;
+  }
 }
 
 export interface CreateTournamentProps {
@@ -204,4 +243,5 @@ interface TournamentConstructorProps {
   createdAt: Date;
   updatedAt: Date;
   registrationCount?: number;
+  registrations?: Registration[];
 }
