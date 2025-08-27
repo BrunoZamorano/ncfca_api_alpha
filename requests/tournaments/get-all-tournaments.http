@@ -1,0 +1,3 @@
+### GetAllTournaments
+GET localhost:8000/tournaments
+Authorization: Bearer {{token}}

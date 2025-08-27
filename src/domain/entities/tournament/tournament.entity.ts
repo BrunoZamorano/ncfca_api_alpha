@@ -1,4 +1,4 @@
-import { InvalidOperationException } from '@/domain/exceptions/domain-exception';
+import { InvalidOperationException, OptimisticLockError } from '@/domain/exceptions/domain-exception';
 import { TournamentType } from '@/domain/enums/tournament-type.enum';
 import IdGenerator from '@/application/services/id-generator';
 import Registration from '@/domain/entities/registration/registration.entity';
@@ -149,7 +149,7 @@ export default class Tournament {
     }
 
     if (this.isCompetitorAlreadyRegistered(competitor.id)) {
-      throw new InvalidOperationException(`Competitor ${competitor.firstName} ${competitor.lastName} is already registered for this tournament.`);
+      throw new OptimisticLockError('Registration', `${this._id}-${competitor.id}`);
     }
 
     const newRegistration = Registration.create(this._id, competitor.id, idGenerator);

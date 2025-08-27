@@ -38,6 +38,27 @@ async function bootstrap() {
     },
   });
 
+  app.connectMicroservice({
+    transport: Transport.RMQ,
+    options: {
+      urls: [configService.get<string>('RABBITMQ_URL') || ''],
+      queue: 'TournamentRegistration',
+      queueOptions: {
+        durable: true,
+      },
+      socketOptions: {
+        heartbeatIntervalInSeconds: 60,
+        reconnectTimeInSeconds: 5,
+        clientProperties: {
+          connection_name: 'ncfca-api-tournament-microservice',
+        },
+      },
+      prefetchCount: 1,
+      isGlobalPrefetch: false,
+      noAck: false,
+    },
+  });
+
   app.enableCors({
     origin: configService.get<string>('CORS_ORIGIN') || '*',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',

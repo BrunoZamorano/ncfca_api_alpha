@@ -2209,6 +2209,81 @@
           "Torneios"
         ]
       }
+    },
+    "/tournaments/registrations/request-individual": {
+      "post": {
+        "operationId": "TournamentController_registerIndividualCompetitor",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestIndividualRegistrationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Inscrição realizada com sucesso."
+          },
+          "400": {
+            "description": "Dados inválidos."
+          },
+          "404": {
+            "description": "Torneio ou competidor não encontrado."
+          },
+          "409": {
+            "description": "Competidor já está inscrito neste torneio."
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Solicita inscrição individual em um torneio",
+        "tags": [
+          "Torneios"
+        ]
+      }
+    },
+    "/tournaments/registrations/cancel": {
+      "post": {
+        "operationId": "TournamentController_cancelCompetitorRegistration",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelRegistrationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Inscrição cancelada com sucesso."
+          },
+          "400": {
+            "description": "Dados inválidos."
+          },
+          "404": {
+            "description": "Inscrição não encontrada."
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Cancela uma inscrição em torneio",
+        "tags": [
+          "Torneios"
+        ]
+      }
     }
   },
   "info": {
@@ -4230,6 +4305,48 @@
           "registrationEndDate",
           "registrationStartDate"
         ]
+      },
+      "RequestIndividualRegistrationDto": {
+        "type": "object",
+        "properties": {
+          "tournamentId": {
+            "type": "string",
+            "description": "ID do torneio para o qual deseja se registrar",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "competitorId": {
+            "type": "string",
+            "description": "ID do competidor (dependente) que será registrado",
+            "example": "550e8400-e29b-41d4-a716-446655440001"
+          }
+        },
+        "required": [
+          "tournamentId",
+          "competitorId"
+        ]
+      },
+      "CancelRegistrationDto": {
+        "type": "object",
+        "properties": {
+          "registrationId": {
+            "type": "string",
+            "description": "ID da inscrição a ser cancelada",
+            "example": "550e8400-e29b-41d4-a716-446655440002"
+          },
+          "reason": {
+            "type": "string",
+            "description": "Motivo do cancelamento da inscrição",
+            "example": "Conflito de agenda"
+          }
+        },
+        "required": [
+          "registrationId",
+          "reason"
+        ]
+      },
+      "RegistrationConfirmed": {
+        "type": "object",
+        "properties": {}
       }
     }
   }

@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 import AuthModule from '@/shared/modules/auth.module';
 import ClubModule from '@/shared/modules/club.module';
@@ -26,6 +27,7 @@ const env = process.env.NODE_ENV ? `.env.${process.env.NODE_ENV}` : '.env.develo
       isGlobal: true,
       envFilePath: [env],
     }),
+    EventEmitterModule.forRoot(),
     AuthModule,
     ClubModule,
     AdminModule,

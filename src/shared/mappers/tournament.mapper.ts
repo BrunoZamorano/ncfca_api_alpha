@@ -1,9 +1,13 @@
-import { Tournament as Model, TournamentType as PrismaTournamentType } from '@prisma/client';
+import { Tournament as Model, TournamentType as PrismaTournamentType, Registration as RegistrationModel } from '@prisma/client';
 import Tournament from '@/domain/entities/tournament/tournament.entity';
+import Registration from '@/domain/entities/registration/registration.entity';
+import RegistrationMapper from './registration.mapper';
 import { TournamentType } from '@/domain/enums/tournament-type.enum';
 
 export default class TournamentMapper {
-  static modelToEntity(model: Model): Tournament {
+  static modelToEntity(model: Model & { registrations?: RegistrationModel[] }): Tournament {
+    const registrations = model.registrations ? model.registrations.map(reg => RegistrationMapper.modelToEntity(reg)) : [];
+    
     return new Tournament({
       id: model.id,
       name: model.name,
@@ -15,7 +19,8 @@ export default class TournamentMapper {
       deletedAt: model.deleted_at,
       createdAt: model.created_at,
       updatedAt: model.updated_at,
-      registrationCount: 0, // Will be hydrated by repository when needed
+      registrationCount: registrations.length,
+      registrations: registrations,
       version: model.version,
     });
   }

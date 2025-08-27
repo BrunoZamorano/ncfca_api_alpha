@@ -1,0 +1,10 @@
+### login
+
+POST http://localhost:8000/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@ncfca.com.br",
+  "password": "Admin@1234"
+}
+

@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { Transport } from '@nestjs/microservices';
+import { ConfigService } from '@nestjs/config';
 
 import { PrismaService } from '@/infraestructure/database/prisma.service';
 import { UserRoles } from '@/domain/enums/user-roles';
@@ -38,9 +40,31 @@ export async function setupTournamentApp(): Promise<{ app: INestApplication; pri
   }).compile();
 
   const app = moduleFixture.createNestApplication<NestExpressApplication>();
+  const configService = moduleFixture.get(ConfigService);
+
+  // Configure microservices for E2E tests  
+  app.connectMicroservice({
+    transport: Transport.RMQ,
+    options: {
+      urls: [configService.get<string>('RABBITMQ_URL') || ''],
+      queue: 'TournamentRegistration',
+      queueOptions: {
+        durable: true,
+      },
+      socketOptions: {
+        heartbeatIntervalInSeconds: 60,
+        reconnectTimeInSeconds: 5,
+      },
+      prefetchCount: 1,
+      noAck: false,
+    },
+  });
+
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }));
   app.useGlobalFilters(new GlobalExceptionFilter());
   app.set('query parser', 'extended');
+  
+  await app.startAllMicroservices();
   await app.init();
 
   const prisma = app.get(PrismaService);
@@ -187,12 +211,12 @@ export async function createDeletedTestTournament(
 
 /**
  * Cleanup cirúrgico específico para testes do Tournament Controller
- * Remove apenas os dados relacionados aos userIds fornecidos
+ * Remove apenas os dados relacionados aos userIds e tournamentIds fornecidos
  */
-export async function tournamentCleanup(prisma: PrismaService, userIds: string[]): Promise<void> {
-  if (userIds.length === 0) {
+export async function tournamentCleanup(prisma: PrismaService, userIds: string[], tournamentIds: string[] = []): Promise<void> {
+  if (userIds.length === 0 && tournamentIds.length === 0) {
     return;
   }
 
-  await surgicalCleanup(prisma, userIds);
+  await surgicalCleanup(prisma, userIds, tournamentIds);
 }
