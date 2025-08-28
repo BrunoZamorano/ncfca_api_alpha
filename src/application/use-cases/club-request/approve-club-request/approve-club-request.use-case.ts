@@ -1,10 +1,10 @@
 import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
-import { lastValueFrom } from 'rxjs';
-import { ClubRequestApprovedEvent } from '@/domain/events/club-request-approved.event';
+
 import { ClubRequestRepository } from '@/domain/repositories/club-request.repository';
+import { EventEmitterFacade } from '@/domain/events/event-emitter';
+
 import { CLUB_REQUEST_REPOSITORY } from '@/shared/constants/repository-constants';
-import { CLUB_EVENTS_SERVICE } from '@/shared/constants/service-constants';
+import { EVENT_EMITTER_FACADE } from '@/shared/constants/event.constants';
 
 @Injectable()
 export default class ApproveClubRequest {
@@ -12,21 +12,14 @@ export default class ApproveClubRequest {
 
   constructor(
     @Inject(CLUB_REQUEST_REPOSITORY) private readonly clubRequestRepository: ClubRequestRepository,
-    @Inject(CLUB_EVENTS_SERVICE) private readonly client: ClientProxy,
+    @Inject(EVENT_EMITTER_FACADE) private readonly eventEmitterFacade: EventEmitterFacade,
   ) {}
 
   async execute(input: { clubRequestId: string }): Promise<void> {
-    this.logger.debug(`[GEMINI_DEBUG] Approving club request: ${input.clubRequestId}`);
+    this.logger.debug(`[INIT] Approving club request: ${input.clubRequestId}`);
     const clubRequest = await this.clubRequestRepository.findById(input.clubRequestId);
-    if (!clubRequest) {
-      throw new NotFoundException('Solicitação de clube não encontrada');
-    }
-
-    clubRequest.approve();
+    if (!clubRequest) throw new NotFoundException('ClubRequest', input.clubRequestId);
+    clubRequest.approve(this.eventEmitterFacade.clubEmitter);
     await this.clubRequestRepository.save(clubRequest);
-
-    const event = new ClubRequestApprovedEvent(clubRequest.id, clubRequest.requesterId);
-    this.logger.debug(`[GEMINI_DEBUG] Sending ClubRequest.Approved event for: ${clubRequest.id}`);
-    this.client.emit('ClubRequest.Approved', event);
   }
 }

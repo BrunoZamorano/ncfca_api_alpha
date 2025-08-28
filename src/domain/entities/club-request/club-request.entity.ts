@@ -1,6 +1,9 @@
 import { DomainException, InvalidOperationException } from '@/domain/exceptions/domain-exception';
 import { ClubRequestStatus } from '@/domain/enums/club-request-status.enum';
 import Address from '@/domain/value-objects/address/address';
+import { EventEmitter } from '@/domain/events/event-emitter';
+import { ClubRequestApprovedEvent } from '@/domain/events/club-request-approved.event';
+import { ClubRequestRejectedEvent } from '@/domain/events/club-request-rejected.event';
 
 export default class ClubRequest {
   private readonly _id: string;
@@ -63,22 +66,23 @@ export default class ClubRequest {
     return this._resolvedAt;
   }
 
-  // Public methods
-  approve(): void {
+  approve(eventEmitter: EventEmitter): void {
     this.validateCanApprove();
     this.setStatus(ClubRequestStatus.APPROVED);
     this.setResolvedAt(new Date());
     this.setRejectionReason(null);
-    // TODO: Disparar evento ClubRequestApproved
+    const event = new ClubRequestApprovedEvent({ requestId: this._id, requesterId: this._requesterId });
+    eventEmitter.emit(event);
   }
 
-  reject(reason: string): void {
+  reject(rejectionReason: string, eventEmitter: EventEmitter): void {
     this.validateCanReject();
-    this.validateRejectionReason(reason);
+    this.validateRejectionReason(rejectionReason);
     this.setStatus(ClubRequestStatus.REJECTED);
-    this.setRejectionReason(reason.trim());
+    this.setRejectionReason(rejectionReason.trim());
     this.setResolvedAt(new Date());
-    // TODO: Disparar evento ClubRequestRejected
+    const event = new ClubRequestRejectedEvent({ requestId: this._id, requesterId: this._requesterId, rejectionReason })
+    eventEmitter.emit(event);
   }
 
   isPending(): boolean {

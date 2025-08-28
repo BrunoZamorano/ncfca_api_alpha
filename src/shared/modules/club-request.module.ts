@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ClientsModule, Transport } from '@nestjs/microservices';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import CreateClubRequestUseCase from '@/application/use-cases/club-request/create-club-request/create-club-request.use-case';
 import RejectClubRequestUseCase from '@/application/use-cases/club-request/reject-club-request/reject-club-request.use-case';
 import ApproveClubRequest from '@/application/use-cases/club-request/approve-club-request/approve-club-request.use-case';
@@ -8,32 +7,12 @@ import GetUserClubRequestsUseCase from '@/application/use-cases/club-request/get
 import ListPendingClubRequestsUseCase from '@/application/use-cases/club-request/list-pending-club-requests/list-pending-club-requests.use-case';
 import CreateClub from '@/application/use-cases/club/create-club/create-club';
 import SharedModule from './shared.module';
-import { CLUB_EVENTS_SERVICE } from '@/shared/constants/service-constants';
+import EventModule from './event.module';
 import { ClubEventsListener } from '@/infraestructure/controllers/listeners/club-events.listener';
 import ClubRequestController from '@/infraestructure/controllers/club-request.controller';
 
 @Module({
-  imports: [
-    ConfigModule,
-    SharedModule,
-    ClientsModule.registerAsync([
-      {
-        name: CLUB_EVENTS_SERVICE,
-        imports: [ConfigModule],
-        useFactory: (configService: ConfigService) => ({
-          transport: Transport.RMQ,
-          options: {
-            urls: [configService.get<string>('RABBITMQ_URL') || ''],
-            queue: 'ClubRequest',
-            queueOptions: {
-              durable: true,
-            },
-          },
-        }),
-        inject: [ConfigService],
-      },
-    ]),
-  ],
+  imports: [ConfigModule, SharedModule, EventModule],
   controllers: [ClubEventsListener, ClubRequestController],
   providers: [
     CreateClubRequestUseCase,
@@ -43,6 +22,6 @@ import ClubRequestController from '@/infraestructure/controllers/club-request.co
     ListPendingClubRequestsUseCase,
     CreateClub,
   ],
-  exports: [CreateClubRequestUseCase, ApproveClubRequest, RejectClubRequestUseCase, ClientsModule],
+  exports: [CreateClubRequestUseCase, ApproveClubRequest, RejectClubRequestUseCase],
 })
 export default class ClubRequestModule {}

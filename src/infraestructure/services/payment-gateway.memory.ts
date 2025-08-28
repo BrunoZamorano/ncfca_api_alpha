@@ -1,6 +1,6 @@
 // src/infraestructure/services/payment-gateway-memory.ts
 
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { PaymentGateway } from '@/application/services/payment-gateway';
 import { PaymentMethod } from '@/domain/enums/payment-method';
 import { PaymentStatus } from '@/domain/enums/payment-status';
@@ -8,13 +8,10 @@ import { CreditCardPaymentData, PaymentItem, PaymentPayer, PaymentResult, Paymen
 
 @Injectable()
 export class PaymentGatewayMemory implements PaymentGateway {
+  private readonly logger = new Logger(PaymentGatewayMemory.name);
   public readonly name = 'PaymentGatewayMemory';
   private transactions: Map<string, PaymentTransaction> = new Map();
 
-  /**
-   * Cria uma nova transação em memória.
-   * Simula a criação de uma transação num gateway real.
-   */
   async createTransaction(paymentMethod: PaymentMethod, items: PaymentItem[], payer: PaymentPayer): Promise<PaymentTransaction> {
     const transactionId = crypto.randomUUID();
     const amount = items.reduce((total, item) => total + item.price_cents * item.quantity, 0);
@@ -51,7 +48,7 @@ export class PaymentGatewayMemory implements PaymentGateway {
     }
 
     this.transactions.set(transactionId, specificTransaction);
-    console.log(`[PaymentGatewayMemory] Transação criada: ${transactionId}`);
+    this.logger.log(`[${this.createTransaction.name}] Transação criada: ${transactionId}`);
     return Promise.resolve(specificTransaction);
   }
 
@@ -70,7 +67,7 @@ export class PaymentGatewayMemory implements PaymentGateway {
     if (creditCardData.token === 'valid-token') {
       transaction.status = PaymentStatus.PAID;
       this.transactions.set(transactionId, transaction);
-      console.log(`[PaymentGatewayMemory] Pagamento APROVADO para a transação: ${transactionId}`);
+      this.logger.log(`[${this.createTransaction.name}] Pagamento APROVADO para a transação: ${transactionId}`);
       return Promise.resolve({
         success: true,
         transactionId: transactionId,
@@ -80,7 +77,7 @@ export class PaymentGatewayMemory implements PaymentGateway {
     } else {
       transaction.status = PaymentStatus.FAILED;
       this.transactions.set(transactionId, transaction);
-      console.log(`[PaymentGatewayMemory] Pagamento RECUSADO para a transação: ${transactionId}`);
+      this.logger.log(`[${this.createTransaction.name}] Pagamento RECUSADO para a transação: ${transactionId}`);
       return Promise.resolve({
         success: false,
         transactionId: transactionId,

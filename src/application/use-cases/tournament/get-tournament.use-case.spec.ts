@@ -42,7 +42,6 @@ describe('(UNIT) GetTournament', () => {
     startDate: new Date('2024-02-01'),
     registrationCount: 0,
     createdAt: new Date('2024-01-01'),
-    updatedAt: new Date('2024-01-01'),
   });
 
   it('Deve retornar os detalhes de um torneio', async () => {

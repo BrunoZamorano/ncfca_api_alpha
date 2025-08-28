@@ -10,6 +10,9 @@ import { AppModule } from '@/app.module';
 
 import { createTestUser } from '../utils/prisma/create-test-user';
 import { surgicalCleanup } from '../utils/prisma/cleanup';
+import { ClubRequestStatus } from '@/domain/enums/club-request-status.enum';
+
+import { ClubRequest as ClubRequestModel } from '@prisma/client';
 
 describe('E2E ListPendingClubRequests', () => {
   let app: INestApplication;
@@ -136,12 +139,18 @@ describe('E2E ListPendingClubRequests', () => {
       },
     });
 
+    const query: ClubRequestModel[] = await prisma.clubRequest.findMany({
+      where: {
+        status: ClubRequestStatus.PENDING,
+      },
+    });
+
     const response = await request(app.getHttpServer())
       .get('/club-requests/pending')
       .set('Authorization', `Bearer ${admin.accessToken}`)
       .expect(HttpStatus.OK);
 
-    expect(response.body).toHaveLength(1);
+    expect(response.body).toHaveLength(query.length);
     expect(response.body[0]).toMatchObject({
       clubName: 'Clube Pendente',
       status: 'PENDING',

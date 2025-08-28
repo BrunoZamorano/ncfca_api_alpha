@@ -9,8 +9,9 @@ import { AppModule } from '@/app.module';
 import { createTestUser } from '../utils/prisma/create-test-user';
 import { surgicalCleanup } from '../utils/prisma/cleanup';
 import { ClubRequestStatus } from '@/domain/enums/club-request-status.enum';
-import { CLUB_EVENTS_SERVICE } from '@/shared/constants/service-constants';
+import { CLUB_EVENTS_SERVICE } from '@/shared/constants/event.constants';
 import { pollForCondition } from '../utils/poll-for-condition';
+import { connectMicroservices } from '@/infraestructure/messaging/microservices.config';
 
 describe('E2E ApproveClubRequest', () => {
   let app: INestApplication;
@@ -50,27 +51,9 @@ describe('E2E ApproveClubRequest', () => {
     app = moduleFixture.createNestApplication({ logger: ['log', 'error', 'warn', 'debug', 'verbose'] });
     app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }));
 
-    const configService = moduleFixture.get(ConfigService);
-
-    app.connectMicroservice({
-      transport: Transport.RMQ,
-      options: {
-        urls: [configService.get<string>('RABBITMQ_URL') || ''],
-        queue: 'ClubRequest',
-        queueOptions: {
-          durable: true,
-        },
-        socketOptions: {
-          heartbeatIntervalInSeconds: 60,
-          reconnectTimeInSeconds: 5,
-        },
-        prefetchCount: 1,
-        noAck: false,
-      },
-    });
-
-    await app.startAllMicroservices();
+    connectMicroservices(app);
     await app.init();
+    await app.startAllMicroservices();
 
     prisma = app.get(PrismaService);
     client = app.get(CLUB_EVENTS_SERVICE);
@@ -138,22 +121,26 @@ describe('E2E ApproveClubRequest', () => {
       .set('Authorization', `Bearer ${admin.accessToken}`)
       .expect(HttpStatus.NO_CONTENT);
 
-    await pollForCondition(async () => {
-      const updatedRequest = await prisma.clubRequest.findUnique({
-        where: { id: clubRequest.id },
-      });
-      expect(updatedRequest?.status).toBe(ClubRequestStatus.APPROVED);
-      expect(updatedRequest?.resolved_at).toBeDefined();
+    await pollForCondition(
+      async () => {
+        const updatedRequest = await prisma.clubRequest.findUnique({
+          where: { id: clubRequest.id },
+        });
+        expect(updatedRequest?.status).toBe(ClubRequestStatus.APPROVED);
+        expect(updatedRequest?.resolved_at).toBeDefined();
 
-      const createdClub = await prisma.club.findFirst({
-        where: { principal_id: regularUser.userId },
-      });
-      expect(createdClub).toBeDefined();
-      expect(createdClub!.name).toBe('Clube Aprovado E2E');
-      expect(createdClub!.max_members).toBe(50);
-      expect(createdClub!.city).toBe('Cidade');
-      expect(createdClub!.state).toBe('TS');
-    }, 10000);
+        const createdClub = await prisma.club.findFirst({
+          where: { principal_id: regularUser.userId },
+        });
+        expect(createdClub).toBeDefined();
+        expect(createdClub!.name).toBe('Clube Aprovado E2E');
+        expect(createdClub!.max_members).toBe(50);
+        expect(createdClub!.city).toBe('Cidade');
+        expect(createdClub!.state).toBe('TS');
+      },
+      10000,
+      1000,
+    );
   }, 15000);
 
   it('Não deve aprovar solicitação já aprovada', async () => {

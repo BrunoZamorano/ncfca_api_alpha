@@ -72,7 +72,6 @@ describe('(E2E) CreateTournament', () => {
         createdAt: expect.any(String),
         updatedAt: expect.any(String),
         deletedAt: null,
-        registrationCount: 0,
       });
 
       // Verificar no banco se o torneio foi criado corretamente

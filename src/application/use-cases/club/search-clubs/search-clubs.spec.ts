@@ -1,4 +1,4 @@
-import SearchClubs from '@/application/use-cases/search-clubs/search-clubs';
+import SearchClubs from '@/application/use-cases/club/search-clubs/search-clubs';
 
 import SearchClubsQueryDto from '@/domain/dtos/search-clubs-query.dto';
 

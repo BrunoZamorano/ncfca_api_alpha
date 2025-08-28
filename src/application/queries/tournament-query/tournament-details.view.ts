@@ -30,14 +30,6 @@ export class TournamentDetailsView {
   createdAt: Date;
 
   @ApiProperty({
-    description: 'Data da última atualização do torneio',
-    type: String,
-    format: 'date-time',
-    example: '2023-12-20T15:45:00Z',
-  })
-  updatedAt: Date;
-
-  @ApiProperty({
     description: 'Data de início do torneio',
     type: String,
     format: 'date-time',

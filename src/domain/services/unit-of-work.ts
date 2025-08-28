@@ -5,6 +5,7 @@ import TransactionRepository from '@/domain/repositories/transaction.repository'
 import FamilyRepository from '@/domain/repositories/family-repository';
 import UserRepository from '@/domain/repositories/user-repository';
 import ClubRepository from '@/domain/repositories/club-repository';
+import { TournamentRepository } from '@/domain/repositories/tournament.repository';
 
 export interface UnitOfWork {
   readonly enrollmentRequestRepository: EnrollmentRequestRepository;
@@ -14,6 +15,7 @@ export interface UnitOfWork {
   readonly familyRepository: FamilyRepository;
   readonly clubRepository: ClubRepository;
   readonly userRepository: UserRepository;
+  readonly tournamentRepository: TournamentRepository;
 
   commit(): Promise<void>;
   rollback(): Promise<void>;

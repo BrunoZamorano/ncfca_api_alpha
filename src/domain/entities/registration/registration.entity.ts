@@ -1,6 +1,7 @@
 import IdGenerator from '@/application/services/id-generator';
 import { RegistrationStatus } from '@/domain/enums/registration-status.enum';
 import { RegistrationType } from '@/domain/enums/registration-type.enum';
+import RegistrationSync from './registration-sync.entity';
 
 export default class Registration {
   private readonly _id: string;
@@ -10,8 +11,10 @@ export default class Registration {
   private readonly _type: RegistrationType;
   private readonly _createdAt: Date;
   private _updatedAt: Date;
+  private readonly _sync: RegistrationSync;
 
-  constructor(props: RegistrationConstructorProps) {
+  // Construtor privado - apenas Tournament pode criar Registration
+  private constructor(props: RegistrationConstructorProps) {
     this._id = props.id;
     this._tournamentId = props.tournamentId;
     this._competitorId = props.competitorId;
@@ -19,19 +22,29 @@ export default class Registration {
     this._type = props.type;
     this._createdAt = props.createdAt;
     this._updatedAt = props.updatedAt;
+    this._sync = props.sync;
   }
 
-  public static create(tournamentId: string, competitorId: string, idGenerator: IdGenerator): Registration {
+  // Factory method interno usado apenas pelo Tournament
+  public static createForTournament(tournamentId: string, competitorId: string, idGenerator: IdGenerator): Registration {
     const now = new Date();
+    const registrationId = idGenerator.generate();
+    const sync = RegistrationSync.create(registrationId, idGenerator);
     return new Registration({
-      id: idGenerator.generate(),
-      tournamentId,
-      competitorId,
-      status: RegistrationStatus.CONFIRMED,
+      id: registrationId,
       type: RegistrationType.INDIVIDUAL,
+      sync,
+      status: RegistrationStatus.CONFIRMED,
       createdAt: now,
       updatedAt: now,
+      competitorId,
+      tournamentId,
     });
+  }
+
+  // Factory method for reconstruction from persistence
+  public static fromPersistence(props: RegistrationConstructorProps): Registration {
+    return new Registration(props);
   }
 
   get id(): string {
@@ -62,22 +75,28 @@ export default class Registration {
     return this._updatedAt;
   }
 
-  public cancel(): void {
-    if (this._status === RegistrationStatus.CANCELLED) {
-      throw new Error('Registration is already cancelled');
-    }
+  get sync(): RegistrationSync {
+    return this._sync;
+  }
 
+  public cancel(): void {
+    if (this._status === RegistrationStatus.CANCELLED) throw new Error('Registration is already cancelled');
     this._status = RegistrationStatus.CANCELLED;
     this._updatedAt = new Date();
+  }
+
+  public isConfirmed(): boolean {
+    return this._status === RegistrationStatus.CONFIRMED;
   }
 }
 
 interface RegistrationConstructorProps {
   id: string;
-  tournamentId: string;
-  competitorId: string;
   status: RegistrationStatus;
   type: RegistrationType;
+  sync: RegistrationSync;
   createdAt: Date;
   updatedAt: Date;
+  tournamentId: string;
+  competitorId: string;
 }

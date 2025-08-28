@@ -8,6 +8,7 @@ import SharedModule from '@/shared/modules/shared.module';
 import AccountModule from '@/shared/modules/account.module';
 import WebhookModule from '@/shared/modules/webhook.module';
 import CheckoutModule from '@/shared/modules/checkout.module';
+import EventModule from '@/shared/modules/event.module';
 
 import { AppService } from '@/app.service';
 import { AppController } from '@/app.controller';
@@ -28,6 +29,7 @@ const env = process.env.NODE_ENV ? `.env.${process.env.NODE_ENV}` : '.env.develo
       envFilePath: [env],
     }),
     EventEmitterModule.forRoot(),
+    EventModule,
     AuthModule,
     ClubModule,
     AdminModule,

@@ -20,7 +20,7 @@ describe('WebhookController (e2e)', () => {
   let prisma: PrismaService;
   let user: { userId: string; familyId: string; accessToken: string };
   const testUsers: string[] = [];
-  const gatewayTransactionId = 'e2e-gateway-tx-1';
+  const gatewayTransactionId = 'e2e-gateway-tx-1' + crypto.randomUUID();
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({

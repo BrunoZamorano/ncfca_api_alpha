@@ -11,8 +11,9 @@ import {
 import { JsonWebTokenError } from '@nestjs/jwt';
 import { Request, Response } from 'express';
 
-import { DomainException, EntityNotFoundException, InvalidOperationException } from '@/domain/exceptions/domain-exception';
+import { DomainException, EntityNotFoundException, InvalidOperationException, OptimisticLockError } from '@/domain/exceptions/domain-exception';
 
+//todo: align to ocp (open closed principle) and use chain of responsibility pattern to handle the error handling. then we will extend the functionality, not only add ifs on a class. we may have a folder shared/exceptions/ and there is the place of our exceptions.
 export default class GlobalExceptionFilter implements ExceptionFilter {
   catch(exception: Error, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
@@ -28,6 +29,9 @@ export default class GlobalExceptionFilter implements ExceptionFilter {
       body = { message: exception.message };
     } else if (exception instanceof InvalidOperationException) {
       status = HttpStatus.BAD_REQUEST;
+      body = { message: exception.message };
+    } else if (exception instanceof OptimisticLockError) {
+      status = HttpStatus.CONFLICT;
       body = { message: exception.message };
     } else if (exception instanceof DomainException) {
       status = HttpStatus.BAD_REQUEST;

@@ -42,7 +42,7 @@ export async function setupTournamentApp(): Promise<{ app: INestApplication; pri
   const app = moduleFixture.createNestApplication<NestExpressApplication>();
   const configService = moduleFixture.get(ConfigService);
 
-  // Configure microservices for E2E tests  
+  // Configure microservices for E2E tests
   app.connectMicroservice({
     transport: Transport.RMQ,
     options: {
@@ -63,7 +63,7 @@ export async function setupTournamentApp(): Promise<{ app: INestApplication; pri
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }));
   app.useGlobalFilters(new GlobalExceptionFilter());
   app.set('query parser', 'extended');
-  
+
   await app.startAllMicroservices();
   await app.init();
 

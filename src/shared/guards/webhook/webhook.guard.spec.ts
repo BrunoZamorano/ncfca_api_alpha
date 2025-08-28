@@ -1,14 +1,15 @@
 import * as crypto from 'crypto';
 import { ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 import { WebhookGuard } from './webhook.guard';
 
 describe('WebhookGuard', () => {
   let guard: WebhookGuard;
   let mockContext: ExecutionContext;
+  let mockConfigService: ConfigService;
 
   const secret = 'chave-secreta-para-teste';
-  process.env.PAYMENT_WEBHOOK_SECRET = secret;
 
   const createMockContext = (headers: any, rawBody: Buffer) => {
     return {
@@ -19,7 +20,10 @@ describe('WebhookGuard', () => {
   };
 
   beforeEach(() => {
-    guard = new WebhookGuard();
+    mockConfigService = {
+      get: jest.fn().mockReturnValue(secret),
+    } as any;
+    guard = new WebhookGuard(mockConfigService);
   });
 
   it('deve retornar true para uma assinatura válida', () => {
@@ -53,13 +57,13 @@ describe('WebhookGuard', () => {
   });
 
   it('deve lançar um Erro interno se a chave secreta não estiver configurada no ambiente', () => {
-    process.env.PAYMENT_WEBHOOK_SECRET = '';
+    (mockConfigService.get as jest.Mock).mockReturnValue('');
     const payload = JSON.stringify({ event: 'payment.paid' });
     const rawBody = Buffer.from(payload);
     const signature = 'uma-assinatura-qualquer';
     mockContext = createMockContext({ 'x-signature': signature }, rawBody);
     expect(() => guard.canActivate(mockContext)).toThrow(Error);
     expect(() => guard.canActivate(mockContext)).toThrow('Chave secreta do webhook não configurada no servidor.');
-    process.env.PAYMENT_WEBHOOK_SECRET = secret;
+    (mockConfigService.get as jest.Mock).mockReturnValue(secret);
   });
 });

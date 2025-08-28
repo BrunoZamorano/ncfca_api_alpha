@@ -86,7 +86,6 @@ describe('(E2E) GetTournamentDetails', () => {
         startDate: expect.any(String),
         registrationCount: expect.any(Number),
         createdAt: expect.any(String),
-        updatedAt: expect.any(String),
       });
 
       // Verificar se deletedAt não está presente (torneio não deletado)

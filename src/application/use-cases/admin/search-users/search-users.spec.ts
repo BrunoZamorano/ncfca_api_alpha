@@ -1,9 +1,9 @@
-import { SearchUsers } from '@/application/use-cases/search-users/search-users';
 import { UserQuery } from '@/application/queries/user-query/user-query.interface';
 import SearchUsersQueryDto from '@/domain/dtos/search-users-query.dto';
 import { PaginatedUserDto } from '@/domain/dtos/paginated-output.dto';
 import { UserDto } from '@/domain/dtos/user.dto';
 import { UserRoles } from '@/domain/enums/user-roles';
+import { SearchUsers } from '@/application/use-cases/admin/search-users/search-users';
 
 class MockUserQuery implements UserQuery {
   async search(query: SearchUsersQueryDto): Promise<PaginatedUserDto> {

@@ -1,41 +1,43 @@
 import { Tournament as Model, TournamentType as PrismaTournamentType, Registration as RegistrationModel } from '@prisma/client';
-import Tournament from '@/domain/entities/tournament/tournament.entity';
-import Registration from '@/domain/entities/registration/registration.entity';
-import RegistrationMapper from './registration.mapper';
+
 import { TournamentType } from '@/domain/enums/tournament-type.enum';
+import Tournament from '@/domain/entities/tournament/tournament.entity';
+
+import RegistrationMapper from './registration.mapper';
 
 export default class TournamentMapper {
   static modelToEntity(model: Model & { registrations?: RegistrationModel[] }): Tournament {
-    const registrations = model.registrations ? model.registrations.map(reg => RegistrationMapper.modelToEntity(reg)) : [];
-    
+    const registrations = model.registrations ? model.registrations.map((reg) => RegistrationMapper.modelToEntity(reg)) : [];
+
     return new Tournament({
       id: model.id,
       name: model.name,
-      description: model.description,
-      type: TournamentType[model.type as keyof typeof TournamentType],
-      registrationStartDate: model.registration_start_date,
-      registrationEndDate: model.registration_end_date,
+      type: model.type as TournamentType,
+      version: model.version,
       startDate: model.start_date,
       deletedAt: model.deleted_at,
       createdAt: model.created_at,
       updatedAt: model.updated_at,
-      registrationCount: registrations.length,
+      description: model.description,
       registrations: registrations,
-      version: model.version,
+      registrationEndDate: model.registration_end_date,
+      registrationStartDate: model.registration_start_date,
     });
   }
 
-  static entityToModel(entity: Tournament): Omit<Model, 'created_at' | 'updated_at'> {
+  static entityToModel(entity: Tournament): Model {
     return {
       id: entity.id,
       name: entity.name,
-      description: entity.description,
       type: entity.type as PrismaTournamentType,
-      registration_start_date: entity.registrationStartDate,
-      registration_end_date: entity.registrationEndDate,
-      start_date: entity.startDate,
-      deleted_at: entity.deletedAt,
       version: entity.version,
+      deleted_at: entity.deletedAt,
+      created_at: entity.createdAt,
+      updated_at: entity.updatedAt,
+      start_date: entity.startDate,
+      description: entity.description,
+      registration_end_date: entity.registrationEndDate,
+      registration_start_date: entity.registrationStartDate,
     };
   }
 }

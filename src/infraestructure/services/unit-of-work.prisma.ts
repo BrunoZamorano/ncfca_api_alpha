@@ -9,6 +9,7 @@ import FamilyRepository from '@/domain/repositories/family-repository';
 import { UnitOfWork } from '@/domain/services/unit-of-work';
 import ClubRepository from '@/domain/repositories/club-repository';
 import UserRepository from '@/domain/repositories/user-repository';
+import { TournamentRepository } from '@/domain/repositories/tournament.repository';
 
 import { PrismaService } from '@/infraestructure/database/prisma.service';
 
@@ -18,6 +19,7 @@ import {
   FAMILY_REPOSITORY,
   CLUB_REPOSITORY,
   USER_REPOSITORY,
+  TOURNAMENT_REPOSITORY,
 } from '@/shared/constants/repository-constants';
 
 @Injectable()
@@ -31,6 +33,7 @@ export class UnitOfWorkPrisma implements UnitOfWork {
     @Inject(CLUB_REQUEST_REPOSITORY) public readonly clubRequestRepository: ClubRequestRepository,
     @Inject(CLUB_MEMBERSHIP_REPOSITORY) public readonly clubMembershipRepository: ClubMembershipRepository,
     @Inject(ENROLLMENT_REQUEST_REPOSITORY) public readonly enrollmentRequestRepository: EnrollmentRequestRepository,
+    @Inject(TOURNAMENT_REPOSITORY) public readonly tournamentRepository: TournamentRepository,
   ) {}
 
   async executeInTransaction<T>(work: (transaction: Prisma.TransactionClient) => Promise<T>): Promise<T> {

@@ -52,12 +52,6 @@ export class TournamentResponseDto {
   startDate: Date;
 
   @ApiProperty({
-    description: 'Número de inscrições no torneio',
-    example: 0,
-  })
-  registrationCount: number;
-
-  @ApiProperty({
     description: 'Data de criação do torneio',
     type: String,
     format: 'date-time',

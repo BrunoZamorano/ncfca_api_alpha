@@ -1,11 +1,40 @@
 import { Registration as Model, RegistrationStatus as PrismaRegistrationStatus, RegistrationType as PrismaRegistrationType } from '@prisma/client';
 import Registration from '@/domain/entities/registration/registration.entity';
+import RegistrationSync from '@/domain/entities/registration/registration-sync.entity';
 import { RegistrationStatus } from '@/domain/enums/registration-status.enum';
 import { RegistrationType } from '@/domain/enums/registration-type.enum';
+import { SyncStatus } from '@/domain/entities/registration/registration-sync.entity';
 
 export default class RegistrationMapper {
-  static modelToEntity(model: Model): Registration {
-    return new Registration({
+  static modelToEntity(model: Model & { registrationSync?: any }): Registration {
+    // Create RegistrationSync if exists
+    let sync: RegistrationSync;
+    if (model.registrationSync) {
+      sync = RegistrationSync.fromPersistence({
+        id: model.registrationSync.id,
+        registrationId: model.id,
+        status: model.registrationSync.status as SyncStatus,
+        attempts: model.registrationSync.attempts || 0,
+        lastAttemptAt: model.registrationSync.lastAttemptAt,
+        nextAttemptAt: model.registrationSync.nextAttemptAt,
+        createdAt: model.registrationSync.createdAt,
+        updatedAt: model.registrationSync.updatedAt,
+      });
+    } else {
+      // Create default sync if not provided
+      sync = RegistrationSync.fromPersistence({
+        id: `${model.id}-sync`,
+        registrationId: model.id,
+        status: SyncStatus.PENDING,
+        attempts: 0,
+        lastAttemptAt: null,
+        nextAttemptAt: null,
+        createdAt: model.created_at,
+        updatedAt: model.updated_at,
+      });
+    }
+
+    return Registration.fromPersistence({
       id: model.id,
       tournamentId: model.tournament_id,
       competitorId: model.competitor_id,
@@ -13,16 +42,19 @@ export default class RegistrationMapper {
       type: RegistrationType[model.type as keyof typeof RegistrationType],
       createdAt: model.created_at,
       updatedAt: model.updated_at,
+      sync,
     });
   }
 
-  static entityToModel(entity: Registration): Omit<Model, 'created_at' | 'updated_at'> {
+  static entityToModel(entity: Registration): Model {
     return {
       id: entity.id,
+      type: entity.type as PrismaRegistrationType,
+      status: entity.status as PrismaRegistrationStatus,
       tournament_id: entity.tournamentId,
       competitor_id: entity.competitorId,
-      status: entity.status as PrismaRegistrationStatus,
-      type: entity.type as PrismaRegistrationType,
+      created_at: entity.createdAt,
+      updated_at: entity.updatedAt,
     };
   }
 }

@@ -1,4 +1,3 @@
-import { ClientProxy } from '@nestjs/microservices';
 import { Test } from '@nestjs/testing';
 
 import { ClubRequestRepository } from '@/domain/repositories/club-request.repository';
@@ -9,12 +8,12 @@ import { createClubRequestStub } from '@/application/use-cases/club-request/appr
 import ApproveClubRequest from '@/application/use-cases/club-request/approve-club-request/approve-club-request.use-case';
 
 import { CLUB_REQUEST_REPOSITORY } from '@/shared/constants/repository-constants';
-import { CLUB_EVENTS_SERVICE } from '@/shared/constants/service-constants';
+import { EVENT_EMITTER_FACADE } from "@/shared/constants/event.constants";
 
 describe('Approve Club Request Use Case', () => {
   let useCase: ApproveClubRequest;
   let repositoryMock: ClubRequestRepository;
-  let clientProxyMock: ClientProxy;
+  let eventEmitterFacadeMock: any;
   const clubRequestStub = createClubRequestStub();
 
   beforeEach(async () => {
@@ -29,9 +28,11 @@ describe('Approve Club Request Use Case', () => {
           },
         },
         {
-          provide: CLUB_EVENTS_SERVICE,
+          provide: EVENT_EMITTER_FACADE,
           useValue: {
-            emit: jest.fn(),
+            clubEmitter: {
+              emit: jest.fn(),
+            },
           },
         },
       ],
@@ -39,7 +40,7 @@ describe('Approve Club Request Use Case', () => {
 
     useCase = moduleRef.get<ApproveClubRequest>(ApproveClubRequest);
     repositoryMock = moduleRef.get<ClubRequestRepository>(CLUB_REQUEST_REPOSITORY);
-    clientProxyMock = moduleRef.get<ClientProxy>(CLUB_EVENTS_SERVICE);
+    eventEmitterFacadeMock = moduleRef.get(EVENT_EMITTER_FACADE);
   });
 
   it('Deve aprovar uma requisição de abertura de clube, salvar o novo estado e emitir um evento', async () => {
@@ -49,9 +50,12 @@ describe('Approve Club Request Use Case', () => {
     expect(repositoryMock.findById).toHaveBeenCalledWith(clubRequestId);
     expect(savedRequest.status).toBe(ClubRequestStatus.APPROVED);
     expect(repositoryMock.save).toHaveBeenCalledWith(savedRequest);
-    expect(clientProxyMock.emit).toHaveBeenCalledWith('ClubRequest.Approved', {
-      requestId: clubRequestStub.id,
-      requesterId: clubRequestStub.requesterId,
-    });
+    expect(eventEmitterFacadeMock.clubEmitter.emit).toHaveBeenCalledWith(expect.objectContaining({
+      eventType: 'ClubRequest.Approved',
+      payload: expect.objectContaining({
+        requestId: clubRequestStub.id,
+        requesterId: clubRequestStub.requesterId,
+      }),
+    }));
   });
 });

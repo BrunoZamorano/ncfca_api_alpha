@@ -3,6 +3,7 @@ import ClubMembership from '../club-membership/club-membership.entity';
 import { DomainException, EntityNotFoundException, InvalidOperationException } from '@/domain/exceptions/domain-exception';
 import IdGenerator from '@/application/services/id-generator';
 import { MembershipStatus } from '@/domain/enums/membership-status';
+import Address from '@/domain/value-objects/address/address';
 
 const mockIdGenerator: IdGenerator = {
   generate: jest.fn().mockImplementation(() => `mock-uuid-${Math.random()}`),
@@ -10,7 +11,19 @@ const mockIdGenerator: IdGenerator = {
 
 describe('Club Aggregate Root', () => {
   let club: Club;
-  const clubProps = { principalId: 'user-1', name: 'Alpha Debaters', city: 'Metropolis' };
+  const mockAddress = new Address({
+    street: 'Rua Principal',
+    number: '123',
+    district: 'Centro',
+    city: 'Metropolis',
+    state: 'SP',
+    zipCode: '12345-678',
+  });
+  const clubProps = { 
+    principalId: 'user-1', 
+    name: 'Alpha Debaters', 
+    address: mockAddress 
+  };
   const dependantId1 = 'dependant-001';
   const familyId1 = 'family-001';
 
@@ -23,7 +36,7 @@ describe('Club Aggregate Root', () => {
     it('Deve ser criado com sucesso através do método de fábrica estático', () => {
       expect(club).toBeInstanceOf(Club);
       expect(club.name).toBe(clubProps.name);
-      expect(club.city).toBe(clubProps.city);
+      expect(club.address).toBe(clubProps.address);
       expect(club.principalId).toBe(clubProps.principalId);
       expect(club.members).toHaveLength(0);
       expect(mockIdGenerator.generate).toHaveBeenCalledTimes(1);

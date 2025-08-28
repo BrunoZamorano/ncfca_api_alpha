@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Inject, Param, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import ApproveClubRequest from '@/application/use-cases/club-request/approve-club-request/approve-club-request.use-case';
@@ -24,29 +24,26 @@ export default class ClubRequestController {
     private readonly rejectClubRequestUseCase: RejectClubRequestUseCase,
   ) {}
 
-  // User Route
   @Post()
   @UseGuards(AuthGuard)
   @ApiBearerAuth('JWT-auth')
   @HttpCode(HttpStatus.ACCEPTED)
   @ApiOperation({ summary: 'Submete uma nova solicitação para criação de clube (Usuário)' })
   @ApiResponse({ status: 202, description: 'Solicitação recebida e pendente de aprovação.' })
-  async create(@Request() req: any, @Body() body: CreateClubRequestDto): Promise<void> {
+  async create(@Request() req: HttpUser, @Body() body: CreateClubRequestDto): Promise<void> {
     const loggedInUserId = req.user.id;
     await this.createClubRequestUseCase.execute({ ...body, requesterId: loggedInUserId });
   }
 
-  // User Route
   @Get('/my-requests')
   @UseGuards(AuthGuard)
   @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Lista as solicitações de clube do usuário autenticado (Usuário)' })
   @ApiResponse({ status: 200, type: [ClubRequestStatusDto] })
-  async getMyRequests(@Request() req: any): Promise<ClubRequestStatusDto[]> {
+  async getMyRequests(@Request() req: HttpUser): Promise<ClubRequestStatusDto[]> {
     return this.getUserClubRequestsUseCase.execute(req.user.id);
   }
 
-  // Admin Route
   @Get('/pending')
   @UseGuards(AuthGuard, AdminGuard)
   @ApiBearerAuth('JWT-auth')
@@ -56,7 +53,6 @@ export default class ClubRequestController {
     return this.listPendingClubRequestsUseCase.execute();
   }
 
-  // Admin Route
   @Post('/:id/approve')
   @UseGuards(AuthGuard, AdminGuard)
   @ApiBearerAuth('JWT-auth')
@@ -67,7 +63,6 @@ export default class ClubRequestController {
     await this.approveClubRequestUseCase.execute({ clubRequestId: id });
   }
 
-  // Admin Route
   @Post('/:id/reject')
   @UseGuards(AuthGuard, AdminGuard)
   @ApiBearerAuth('JWT-auth')
@@ -78,3 +73,6 @@ export default class ClubRequestController {
     await this.rejectClubRequestUseCase.execute({ clubRequestId: id, reason: body.reason });
   }
 }
+
+//todo: move it to its own file in shared/types/
+export type HttpUser = { user: { id: string } };

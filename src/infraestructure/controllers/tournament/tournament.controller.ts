@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body, Param, Query, UseGuards } from '@nestjs/common';
+import { Controller, Post, Get, Body, Param, Query, UseGuards, HttpCode } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { CreateTournament } from '@/application/use-cases/tournament/create-tournament.use-case';
@@ -6,7 +6,7 @@ import { UpdateTournament } from '@/application/use-cases/tournament/update-tour
 import { DeleteTournament } from '@/application/use-cases/tournament/delete-tournament.use-case';
 import { GetTournament } from '@/application/use-cases/tournament/get-tournament.use-case';
 import { ListTournaments } from '@/application/use-cases/tournament/list-tournaments.use-case';
-import { RequestIndividualRegistration } from '@/application/use-cases/tournament/request-individual-registration.use-case';
+import { RequestIndividualRegistration } from '@/application/use-cases/tournament/request-individual-registration/request-individual-registration.use-case';
 import { CancelRegistration } from '@/application/use-cases/tournament/cancel-registration.use-case';
 
 import { CreateTournamentDto } from '@/infraestructure/dtos/tournament/create-tournament.dto';
@@ -18,7 +18,6 @@ import { CancelRegistrationDto } from '@/infraestructure/dtos/tournament/cancel-
 import { TournamentDetailsView } from '@/application/queries/tournament-query/tournament-details.view';
 import { TournamentListItemView } from '@/application/queries/tournament-query/tournament-list-item.view';
 import { TournamentResponseDto } from '@/infraestructure/dtos/tournament/tournament-response.dto';
-import Tournament from '@/domain/entities/tournament/tournament.entity';
 
 import AuthGuard from '@/shared/guards/auth.guard';
 import { RolesGuard } from '@/shared/guards/roles.guard';
@@ -64,7 +63,6 @@ export default class TournamentController {
       registrationStartDate: tournament.registrationStartDate,
       registrationEndDate: tournament.registrationEndDate,
       startDate: tournament.startDate,
-      registrationCount: tournament.registrationCount,
       createdAt: tournament.createdAt,
       updatedAt: tournament.updatedAt,
       deletedAt: tournament.deletedAt,
@@ -98,7 +96,6 @@ export default class TournamentController {
       registrationStartDate: tournament.registrationStartDate,
       registrationEndDate: tournament.registrationEndDate,
       startDate: tournament.startDate,
-      registrationCount: tournament.registrationCount,
       createdAt: tournament.createdAt,
       updatedAt: tournament.updatedAt,
       deletedAt: tournament.deletedAt,
@@ -140,12 +137,12 @@ export default class TournamentController {
   @ApiResponse({ status: 400, description: 'Dados inválidos.' })
   @ApiResponse({ status: 409, description: 'Competidor já está inscrito neste torneio.' })
   @ApiResponse({ status: 404, description: 'Torneio ou competidor não encontrado.' })
+  //todo: create a dto as infra/controllers/[specificfolder]/dtos/ and doc it (openapi) for better documentation. must be a class using class validator and openapi docs. one file, input and output dtos. 
   async registerIndividualCompetitor(@Body() dto: RequestIndividualRegistrationDto): Promise<{ registrationId: string; status: string }> {
     const registration = await this.requestIndividualRegistration.execute({
       tournamentId: dto.tournamentId,
       competitorId: dto.competitorId,
     });
-
     return {
       registrationId: registration.id,
       status: registration.status,
@@ -153,10 +150,12 @@ export default class TournamentController {
   }
 
   @Post('registrations/cancel')
+  @HttpCode(200)
   @ApiOperation({ summary: 'Cancela uma inscrição em torneio' })
   @ApiResponse({ status: 200, description: 'Inscrição cancelada com sucesso.' })
   @ApiResponse({ status: 400, description: 'Dados inválidos.' })
   @ApiResponse({ status: 404, description: 'Inscrição não encontrada.' })
+  //todo: create a dto as infra/controllers/[specificfolder]/dtos/ and doc it (openapi) for better documentation. must be a class using class validator and openapi docs. one file, input and output dtos.
   async cancelCompetitorRegistration(@Body() dto: CancelRegistrationDto): Promise<{ message: string }> {
     await this.cancelRegistration.execute({
       registrationId: dto.registrationId,

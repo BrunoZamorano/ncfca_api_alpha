@@ -4,9 +4,9 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { Transport } from '@nestjs/microservices';
 import { ConfigService } from '@nestjs/config';
 import GlobalExceptionFilter from '@/infraestructure/filters/global-exception-filter';
+import { connectMicroservices } from '@/infraestructure/messaging/microservices.config';
 
 import { AppModule } from '@/app.module';
 import { adminSeed } from '@/admin.seed';
@@ -17,47 +17,7 @@ async function bootstrap() {
   });
   const configService = app.get(ConfigService);
 
-  app.connectMicroservice({
-    transport: Transport.RMQ,
-    options: {
-      urls: [configService.get<string>('RABBITMQ_URL') || ''],
-      queue: 'ClubRequest',
-      queueOptions: {
-        durable: true,
-      },
-      socketOptions: {
-        heartbeatIntervalInSeconds: 60,
-        reconnectTimeInSeconds: 5,
-        clientProperties: {
-          connection_name: 'ncfca-api-microservice',
-        },
-      },
-      prefetchCount: 1,
-      isGlobalPrefetch: false,
-      noAck: false,
-    },
-  });
-
-  app.connectMicroservice({
-    transport: Transport.RMQ,
-    options: {
-      urls: [configService.get<string>('RABBITMQ_URL') || ''],
-      queue: 'TournamentRegistration',
-      queueOptions: {
-        durable: true,
-      },
-      socketOptions: {
-        heartbeatIntervalInSeconds: 60,
-        reconnectTimeInSeconds: 5,
-        clientProperties: {
-          connection_name: 'ncfca-api-tournament-microservice',
-        },
-      },
-      prefetchCount: 1,
-      isGlobalPrefetch: false,
-      noAck: false,
-    },
-  });
+  connectMicroservices(app);
 
   app.enableCors({
     origin: configService.get<string>('CORS_ORIGIN') || '*',

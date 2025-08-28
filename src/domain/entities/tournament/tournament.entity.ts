@@ -1,164 +1,123 @@
 import { InvalidOperationException, OptimisticLockError } from '@/domain/exceptions/domain-exception';
+import { RegistrationConfirmed } from '@/domain/events/registration-confirmed.event';
 import { TournamentType } from '@/domain/enums/tournament-type.enum';
-import IdGenerator from '@/application/services/id-generator';
+import { EventEmitter } from '@/domain/events/event-emitter';
 import Registration from '@/domain/entities/registration/registration.entity';
 import Dependant from '@/domain/entities/dependant/dependant';
+
+import IdGenerator from '@/application/services/id-generator';
+import { ConflictException } from '@nestjs/common';
 
 export default class Tournament {
   private readonly _id: string;
   private readonly _createdAt: Date;
   private _name: string;
-  private _description: string;
   private _type: TournamentType;
-  private _registrationStartDate: Date;
-  private _registrationEndDate: Date;
-  private _startDate: Date;
+  private _version: number;
   private _deletedAt: Date | null;
   private _updatedAt: Date;
-  private _registrationCount: number;
+  private _startDate: Date;
+  private _description: string;
   private _registrations: Registration[];
-  private _version: number;
+  private _registrationEndDate: Date;
+  private _registrationStartDate: Date;
 
   constructor(props: TournamentConstructorProps) {
     this._id = props.id;
     this._name = props.name;
-    this._description = props.description;
     this._type = props.type;
-    this._registrationStartDate = props.registrationStartDate;
-    this._registrationEndDate = props.registrationEndDate;
+    this._version = props.version || 1;
     this._startDate = props.startDate;
     this._deletedAt = props.deletedAt || null;
     this._createdAt = props.createdAt;
     this._updatedAt = props.updatedAt;
-    this._registrationCount = props.registrationCount || 0;
+    this._description = props.description;
     this._registrations = props.registrations || [];
-    this._version = props.version || 1;
+    this._registrationEndDate = props.registrationEndDate;
+    this._registrationStartDate = props.registrationStartDate;
   }
 
   public static create(props: CreateTournamentProps, idGenerator: IdGenerator): Tournament {
-    if (!props.name || props.name.trim().length < 3) {
-      throw new InvalidOperationException('Tournament name is required and must have at least 3 characters.');
-    }
-
-    if (!props.description || props.description.trim().length < 10) {
-      throw new InvalidOperationException('Tournament description is required and must have at least 10 characters.');
-    }
-
-    if (props.registrationEndDate <= props.registrationStartDate) {
-      throw new InvalidOperationException('Registration end date cannot be before or equal to the start date.');
-    }
-
-    if (props.startDate < props.registrationEndDate) {
-      throw new InvalidOperationException('Tournament start date cannot be before registration end date.');
-    }
-
-    const now = new Date();
+    if (!props.name || props.name.trim().length < 3) throw new InvalidOperationException('Tournament name is required and must have at least 3 characters.');
+    if (!props.description || props.description.trim().length < 10) throw new InvalidOperationException('Tournament description is required and must have at least 10 characters.');
+    if (props.registrationEndDate <= props.registrationStartDate) throw new InvalidOperationException('Registration end date cannot be before or equal to the start date.');
+    if (props.startDate < props.registrationEndDate) throw new InvalidOperationException('Tournament start date cannot be before registration end date.');
     return new Tournament({
       id: idGenerator.generate(),
       name: props.name.trim(),
-      description: props.description.trim(),
       type: props.type,
-      registrationStartDate: props.registrationStartDate,
-      registrationEndDate: props.registrationEndDate,
+      version: 1,
       startDate: props.startDate,
       deletedAt: null,
-      createdAt: now,
-      updatedAt: now,
-      registrationCount: 0,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      description: props.description.trim(),
       registrations: [],
-      version: 1,
+      registrationEndDate: props.registrationEndDate,
+      registrationStartDate: props.registrationStartDate,
     });
   }
 
+  public requestIndividualRegistration(competitor: Dependant, idGenerator: IdGenerator, eventEmitter: EventEmitter): Registration {
+    this.validateCanModifyRegistrations();
+    this.validateTournamentType(TournamentType.INDIVIDUAL);
+    this.validateRegistrationPeriod();
+    this.validateNotAlreadyRegistered(competitor.id);
+    const newRegistration = Registration.createForTournament(this._id, competitor.id, idGenerator);
+    this._registrations.push(newRegistration);
+    this._updatedAt = new Date();
+    this._version++;
+    const event = new RegistrationConfirmed({
+      registrationId: newRegistration.id,
+      tournamentId: this._id,
+      competitorId: competitor.id,
+      isDuo: false,
+    });
+    eventEmitter.emit(event);
+    return newRegistration;
+  }
+
   public update(props: UpdateTournamentProps): void {
-    if (this._registrationCount > 0) {
-      throw new InvalidOperationException('Cannot update a tournament that already has registrations.');
-    }
-
-    if (this._deletedAt) {
-      throw new InvalidOperationException('Cannot update a deleted tournament.');
-    }
-
+    if (this._registrations.length > 0) throw new InvalidOperationException('Cannot update a tournament that already has registrations.');
+    if (this._deletedAt) throw new InvalidOperationException('Cannot update a deleted tournament.');
     if (props.name !== undefined) {
-      if (!props.name || props.name.trim().length < 3) {
-        throw new InvalidOperationException('Tournament name must have at least 3 characters.');
-      }
+      if (!props.name || props.name.trim().length < 3) throw new InvalidOperationException('Tournament name must have at least 3 characters.');
       this._name = props.name.trim();
     }
-
     if (props.description !== undefined) {
-      if (!props.description || props.description.trim().length < 10) {
-        throw new InvalidOperationException('Tournament description must have at least 10 characters.');
-      }
+      if (!props.description || props.description.trim().length < 10) throw new InvalidOperationException('Tournament description must have at least 10 characters.');
       this._description = props.description.trim();
     }
-
-    if (props.type !== undefined) {
-      this._type = props.type;
-    }
-
-    if (props.registrationStartDate !== undefined) {
-      this._registrationStartDate = props.registrationStartDate;
-    }
-
-    if (props.registrationEndDate !== undefined) {
-      this._registrationEndDate = props.registrationEndDate;
-    }
-
-    if (props.startDate !== undefined) {
-      this._startDate = props.startDate;
-    }
-
-    if (this._registrationEndDate <= this._registrationStartDate) {
-      throw new InvalidOperationException('Registration end date cannot be before or equal to the start date.');
-    }
-
-    if (this._startDate < this._registrationEndDate) {
-      throw new InvalidOperationException('Tournament start date cannot be before registration end date.');
-    }
-
+    if (props.type !== undefined) this._type = props.type;
+    if (props.registrationStartDate !== undefined) this._registrationStartDate = props.registrationStartDate;
+    if (props.registrationEndDate !== undefined) this._registrationEndDate = props.registrationEndDate;
+    if (props.startDate !== undefined) this._startDate = props.startDate;
+    if (this._registrationEndDate <= this._registrationStartDate) throw new InvalidOperationException('Registration end date cannot be before or equal to the start date.');
+    if (this._startDate < this._registrationEndDate) throw new InvalidOperationException('Tournament start date cannot be before registration end date.');
     this._updatedAt = new Date();
     this._version++;
   }
 
   public softDelete(): void {
-    if (this._registrationCount > 0) {
-      throw new InvalidOperationException('Cannot delete a tournament that already has registrations.');
-    }
-
-    if (this._deletedAt) {
-      throw new InvalidOperationException('Tournament is already deleted.');
-    }
-
+    if (this._registrations.length > 0) throw new InvalidOperationException('Cannot delete a tournament that already has registrations.');
+    if (this._deletedAt) throw new InvalidOperationException('Tournament is already deleted.');
+    this._version++;
     this._deletedAt = new Date();
     this._updatedAt = new Date();
-    this._version++;
   }
 
   public isDeleted(): boolean {
     return this._deletedAt !== null;
   }
 
-  public requestIndividualRegistration(competitor: Dependant, idGenerator: IdGenerator): Registration {
-    if (this._type !== TournamentType.INDIVIDUAL) {
-      throw new InvalidOperationException('Cannot register for this tournament type. Tournament must be of type INDIVIDUAL.');
-    }
-
-    if (!this.isRegistrationOpen()) {
-      throw new InvalidOperationException('Registration period is not open for this tournament.');
-    }
-
-    if (this.isCompetitorAlreadyRegistered(competitor.id)) {
-      throw new OptimisticLockError('Registration', `${this._id}-${competitor.id}`);
-    }
-
-    const newRegistration = Registration.create(this._id, competitor.id, idGenerator);
-    this._registrations.push(newRegistration);
-    this._registrationCount = this._registrations.length;
+  public cancelRegistration(registrationId: string): Registration {
+    this.validateCanModifyRegistrations();
+    const registration = this._registrations.find((reg) => reg.id === registrationId);
+    if (!registration) throw new InvalidOperationException(`Registration with ID ${registrationId} not found in this tournament.`);
+    registration.cancel();
     this._updatedAt = new Date();
     this._version++;
-
-    return newRegistration;
+    return registration;
   }
 
   private isRegistrationOpen(): boolean {
@@ -170,17 +129,26 @@ export default class Tournament {
     return this._registrations.some((registration) => registration.competitorId === competitorId);
   }
 
-  public cancelRegistration(registrationId: string): Registration {
-    const registration = this._registrations.find((reg) => reg.id === registrationId);
-    if (!registration) {
-      throw new InvalidOperationException(`Registration with ID ${registrationId} not found in this tournament.`);
+  private validateTournamentType(expectedType: TournamentType): void {
+    if (this._type !== expectedType) {
+      throw new InvalidOperationException(`Cannot register for this tournament type. Tournament must be of type ${expectedType}.`);
     }
+  }
 
-    registration.cancel();
-    this._updatedAt = new Date();
-    this._version++;
+  private validateRegistrationPeriod(): void {
+    if (!this.isRegistrationOpen()) throw new InvalidOperationException('Registration period is not open for this tournament.');
+  }
 
-    return registration;
+  private validateNotAlreadyRegistered(competitorId: string): void {
+    if (this.isCompetitorAlreadyRegistered(competitorId)) throw new ConflictException('Registration', `${this._id}-${competitorId}`);
+  }
+
+  private validateTournamentNotDeleted(): void {
+    if (this._deletedAt) throw new InvalidOperationException('Cannot perform operations on a deleted tournament.');
+  }
+
+  private validateCanModifyRegistrations(): void {
+    this.validateTournamentNotDeleted();
   }
 
   get id(): string {
@@ -223,10 +191,6 @@ export default class Tournament {
     return this._updatedAt;
   }
 
-  get registrationCount(): number {
-    return this._registrationCount;
-  }
-
   get registrations(): Readonly<Registration[]> {
     return this._registrations;
   }
@@ -234,38 +198,38 @@ export default class Tournament {
   get version(): number {
     return this._version;
   }
+
 }
 
 export interface CreateTournamentProps {
   name: string;
-  description: string;
   type: TournamentType;
-  registrationStartDate: Date;
-  registrationEndDate: Date;
   startDate: Date;
+  description: string;
+  registrationEndDate: Date;
+  registrationStartDate: Date;
 }
 
 export interface UpdateTournamentProps {
   name?: string;
-  description?: string;
   type?: TournamentType;
-  registrationStartDate?: Date;
-  registrationEndDate?: Date;
   startDate?: Date;
+  description?: string;
+  registrationEndDate?: Date;
+  registrationStartDate?: Date;
 }
 
 interface TournamentConstructorProps {
   id: string;
   name: string;
-  description: string;
   type: TournamentType;
-  registrationStartDate: Date;
-  registrationEndDate: Date;
+  version?: number;
   startDate: Date;
   deletedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
-  registrationCount?: number;
+  description: string;
   registrations?: Registration[];
-  version?: number;
+  registrationEndDate: Date;
+  registrationStartDate: Date;
 }

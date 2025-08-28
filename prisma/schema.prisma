@@ -92,10 +92,6 @@ enum TournamentType {
   DUO
 }
 
-enum RegistrationType {
-  INDIVIDUAL
-}
-
 enum RegistrationStatus {
   CONFIRMED
   CANCELLED
@@ -279,26 +275,25 @@ model Tournament {
   created_at              DateTime       @default(now())
   updated_at              DateTime       @updatedAt
 
-  registrations           Registration[]
+  registrations Registration[]
 
   @@map("tournament")
 }
 
 model Registration {
-  id                 String             @id @default(uuid())
-  tournament         Tournament         @relation(fields: [tournament_id], references: [id])
-  tournament_id      String
-  competitor         Dependant          @relation(fields: [competitor_id], references: [id])
-  competitor_id      String
-  status             RegistrationStatus
-  type               RegistrationType
+  id            String             @id @default(uuid())
+  tournament    Tournament         @relation(fields: [tournament_id], references: [id])
+  tournament_id String
+  competitor    Dependant          @relation(fields: [competitor_id], references: [id])
+  competitor_id String
+  status        RegistrationStatus
+  type          TournamentType
+  sync          RegistrationSync?
+  created_at    DateTime           @default(now())
+  updated_at    DateTime           @updatedAt
 
-  sync               RegistrationSync?
-  created_at         DateTime           @default(now())
-  updated_at         DateTime           @updatedAt
-
-  @@map("registrations")
   @@unique([tournament_id, competitor_id])
+  @@map("registrations")
 }
 
 model RegistrationSync {

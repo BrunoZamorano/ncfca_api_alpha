@@ -18,14 +18,12 @@ import AuthController from '@/infraestructure/controllers/auth/auth.controller';
 import { FAMILY_REPOSITORY, USER_REPOSITORY } from '@/shared/constants/repository-constants';
 import { HASHING_SERVICE, ID_GENERATOR, TOKEN_SERVICE } from '@/shared/constants/service-constants';
 import Logout from '@/application/use-cases/auth/logout/logout.use-case';
-import { USER_FACTORY } from '@/shared/constants/factories-constants';
-import UserFactory from '@/domain/factories/user.factory';
 import UuidGenerator from '@/infraestructure/services/uuid-generator';
 import Family from '@/domain/entities/family/family';
+import Password from '@/domain/value-objects/password/password';
 
 describe('AuthController', function () {
   let authController: AuthController;
-  let userFactory: UserFactory;
   let userRepository: UserRepositoryMemory;
   let familyRepository: FamilyRepositoryMemory;
 
@@ -38,7 +36,6 @@ describe('AuthController', function () {
         { provide: HASHING_SERVICE, useClass: AnemicHashingService },
         { provide: TOKEN_SERVICE, useClass: AnemicTokenService },
         { provide: ID_GENERATOR, useClass: UuidGenerator },
-        { provide: USER_FACTORY, useClass: UserFactory },
         ValidateToken,
         RefreshToken,
         Logout,
@@ -48,7 +45,6 @@ describe('AuthController', function () {
     authController = app.get<AuthController>(AuthController);
     userRepository = app.get<UserRepositoryMemory>(USER_REPOSITORY);
     familyRepository = app.get<FamilyRepositoryMemory>(FAMILY_REPOSITORY);
-    userFactory = app.get<UserFactory>(USER_FACTORY);
   });
 
   describe('Login', function () {
@@ -57,7 +53,27 @@ describe('AuthController', function () {
         email: User.DEFAULT_EMAIL,
         password: User.DEFAULT_PASSWORD,
       };
-      userRepository.populate(userFactory, { id: '1' }, 1);
+      // Create test user directly using populate with compatible data
+      const mockUser = {
+        id: '1',
+        _email: { value: User.DEFAULT_EMAIL },
+        _password: Password.fromHash(User.DEFAULT_PASSWORD + 'secret'),
+        firstName: 'Test',
+        lastName: 'User', 
+        rg: '123456789',
+        _cpf: { value: '123.456.789-10' },
+        phone: '11999999999',
+        roles: ['USER'],
+        street: 'Test Street',
+        number: '123',
+        neighborhood: 'Test',
+        city: 'Test City',
+        state: 'SP',
+        zipCode: '12345-678',
+        get password() { return this._password.value; },
+        get email() { return this._email.value; }
+      };
+      (userRepository as any).db.users.push(mockUser);
       await familyRepository.create(new Family({ id: '1', holderId: '1' }));
       const output = await authController.login(input);
       expect(output.accessToken).toBe(AnemicTokenService.ACCESS_TOKEN);
@@ -69,7 +85,7 @@ describe('AuthController', function () {
         email: 'invalid_email',
         password: User.DEFAULT_PASSWORD,
       };
-      await expect(authController.login(input)).rejects.toThrowError(Login.errorCodes.INVALID_CREDENTIALS);
+      await expect(authController.login(input)).rejects.toThrow(Login.errorCodes.INVALID_CREDENTIALS);
     });
 
     it('Não deve realizar o login com senha incorreta', async function () {
@@ -77,7 +93,7 @@ describe('AuthController', function () {
         email: User.DEFAULT_EMAIL,
         password: 'wrong_password',
       };
-      await expect(authController.login(input)).rejects.toThrowError(Login.errorCodes.INVALID_CREDENTIALS);
+      await expect(authController.login(input)).rejects.toThrow(Login.errorCodes.INVALID_CREDENTIALS);
     });
   });
 

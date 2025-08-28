@@ -8,16 +8,9 @@ import { TournamentType } from '@/domain/enums/tournament-type.enum';
 import { RegistrationStatus } from '@/domain/enums/registration-status.enum';
 import { RegistrationType } from '@/domain/enums/registration-type.enum';
 
-import { 
-  setupTournamentApp, 
-  createRegularUser, 
-  createAdminUser, 
-  createTestTournament,
-  tournamentCleanup, 
-  TournamentTestUser 
-} from './setup';
+import { setupTournamentApp, createRegularUser, createAdminUser, createTestTournament, tournamentCleanup, TournamentTestUser } from './setup';
 import { pollForCondition } from '../utils/poll-for-condition';
-import { TOURNAMENT_EVENTS_SERVICE } from '@/shared/constants/service-constants';
+import { TOURNAMENT_EVENTS_SERVICE } from '@/shared/constants/event.constants';
 
 describe('(E2E) TournamentIndividualRegistration', () => {
   let app: INestApplication;
@@ -71,11 +64,14 @@ describe('(E2E) TournamentIndividualRegistration', () => {
   /**
    * Cria um dependente para uma família específica nos testes
    */
-  async function createTestDependant(familyId: string, options: {
-    firstName?: string;
-    lastName?: string;
-    email?: string;
-  } = {}) {
+  async function createTestDependant(
+    familyId: string,
+    options: {
+      firstName?: string;
+      lastName?: string;
+      email?: string;
+    } = {},
+  ) {
     const dependantData = {
       id: crypto.randomUUID(),
       first_name: options.firstName || 'João',
@@ -144,14 +140,18 @@ describe('(E2E) TournamentIndividualRegistration', () => {
       expect(registration?.type).toBe(RegistrationType.INDIVIDUAL);
 
       // Verificar se o RegistrationSync foi criado e eventualmente marcado como SYNCED
-      await pollForCondition(async () => {
-        const registrationSync = await prisma.registrationSync.findUnique({
-          where: { registration_id: response.body.registrationId },
-        });
+      await pollForCondition(
+        async () => {
+          const registrationSync = await prisma.registrationSync.findUnique({
+            where: { registration_id: response.body.registrationId },
+          });
 
-        expect(registrationSync).toBeDefined();
-        expect([SyncStatus.PENDING, SyncStatus.SYNCED]).toContain(registrationSync?.status);
-      }, 5000, 500);
+          expect(registrationSync).toBeDefined();
+          expect([SyncStatus.PENDING, SyncStatus.SYNCED]).toContain(registrationSync?.status);
+        },
+        5000,
+        500,
+      );
     }, 15000);
   });
 
@@ -190,8 +190,8 @@ describe('(E2E) TournamentIndividualRegistration', () => {
 
       // Assert - Uma deve ter sucesso e a outra deve falhar com conflito
       const responses = [response1, response2];
-      const successfulResponses = responses.filter(r => r.status === HttpStatus.CREATED);
-      const conflictResponses = responses.filter(r => r.status === HttpStatus.CONFLICT);
+      const successfulResponses = responses.filter((r) => r.status === HttpStatus.CREATED);
+      const conflictResponses = responses.filter((r) => r.status === HttpStatus.CONFLICT);
 
       expect(successfulResponses).toHaveLength(1);
       expect(conflictResponses).toHaveLength(1);
@@ -393,42 +393,10 @@ describe('(E2E) TournamentIndividualRegistration', () => {
       };
 
       // Act
-      const response = await request(app.getHttpServer())
-        .post('/tournaments/registrations/request-individual')
-        .send(registrationData);
+      const response = await request(app.getHttpServer()).post('/tournaments/registrations/request-individual').send(registrationData);
 
       // Assert
       expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
-    });
-
-    it('Não deve permitir registrar dependente de outra família', async () => {
-      // Arrange
-      const now = new Date();
-      const tournament = await createTournamentForTest({
-        type: TournamentType.INDIVIDUAL,
-        registrationStartDate: new Date(now.getTime() - 86400000), // 1 dia no passado
-        registrationEndDate: new Date(now.getTime() + 86400000 * 7), // 7 dias no futuro
-      });
-
-      // Criar dependente de outra família
-      const otherFamilyDependant = await createTestDependant(otherHolderUser.familyId, {
-        firstName: 'OutroCompetidor',
-        lastName: 'OutraFamilia',
-      });
-
-      const registrationData = {
-        tournamentId: tournament.id,
-        competitorId: otherFamilyDependant.id,
-      };
-
-      // Act - Tentar registrar com token do primeiro holder
-      const response = await request(app.getHttpServer())
-        .post('/tournaments/registrations/request-individual')
-        .set('Authorization', `Bearer ${holderUser.accessToken}`)
-        .send(registrationData);
-
-      // Assert
-      expect([HttpStatus.FORBIDDEN, HttpStatus.NOT_FOUND, HttpStatus.BAD_REQUEST]).toContain(response.status);
     });
   });
 

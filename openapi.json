@@ -3867,10 +3867,6 @@
           "sex"
         ]
       },
-      "ClubRequestApprovedEvent": {
-        "type": "object",
-        "properties": {}
-      },
       "CreateClubRequestDto": {
         "type": "object",
         "properties": {
@@ -4083,11 +4079,6 @@
             "format": "date-time",
             "example": "2024-02-01T09:00:00Z"
           },
-          "registrationCount": {
-            "type": "number",
-            "description": "Número de inscrições no torneio",
-            "example": 0
-          },
           "createdAt": {
             "type": "string",
             "description": "Data de criação do torneio",
@@ -4116,7 +4107,6 @@
           "registrationStartDate",
           "registrationEndDate",
           "startDate",
-          "registrationCount",
           "createdAt",
           "updatedAt",
           "deletedAt"
@@ -4251,12 +4241,6 @@
             "format": "date-time",
             "example": "2023-12-15T10:30:00Z"
           },
-          "updatedAt": {
-            "type": "string",
-            "description": "Data da última atualização do torneio",
-            "format": "date-time",
-            "example": "2023-12-20T15:45:00Z"
-          },
           "startDate": {
             "type": "string",
             "description": "Data de início do torneio",
@@ -4298,7 +4282,6 @@
           "name",
           "type",
           "createdAt",
-          "updatedAt",
           "startDate",
           "description",
           "registrationCount",
@@ -4343,10 +4326,6 @@
           "registrationId",
           "reason"
         ]
-      },
-      "RegistrationConfirmed": {
-        "type": "object",
-        "properties": {}
       }
     }
   }
