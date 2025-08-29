@@ -46,6 +46,29 @@ export default class Registration {
     });
   }
 
+  // Factory method para registro de dupla com status pendente
+  public static createDuoRegistrationForTournament(
+    tournamentId: string,
+    competitorId: string,
+    partnerId: string,
+    idGenerator: IdGenerator,
+  ): Registration {
+    const now = new Date();
+    const registrationId = idGenerator.generate();
+    const sync = RegistrationSync.create(registrationId, idGenerator);
+    return new Registration({
+      id: registrationId,
+      type: TournamentType.DUO,
+      partnerId,
+      sync,
+      status: RegistrationStatus.PENDING_APPROVAL,
+      createdAt: now,
+      updatedAt: now,
+      competitorId,
+      tournamentId,
+    });
+  }
+
   // Factory method for reconstruction from persistence
   public static fromPersistence(props: RegistrationConstructorProps): Registration {
     return new Registration(props);

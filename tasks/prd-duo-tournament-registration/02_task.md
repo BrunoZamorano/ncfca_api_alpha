@@ -1,5 +1,5 @@
 ---
-status: pending
+status: complete
 ---
 
 <task_context>
@@ -25,8 +25,8 @@ Esta tarefa foca em modificar a entidade `Registration` para incluir os campos n
 
 ## Subtasks
 
-- [ ] 2.1 Atualizar os campos da entidade `Registration` em `src/domain/entities/registration/registration.entity.ts` para incluir `partnerId`, `status` e `version` para alinhar com as alterações do esquema do Prisma.
-- [ ] 2.2 Garantir que o construtor da entidade e quaisquer métodos de fábrica relacionados sejam atualizados para lidar com os novos campos.
+- [x] 2.1 Atualizar os campos da entidade `Registration` em `src/domain/entities/registration/registration.entity.ts` para incluir `partnerId`, `status` e `version` para alinhar com as alterações do esquema do Prisma.
+- [x] 2.2 Garantir que o construtor da entidade e quaisquer métodos de fábrica relacionados sejam atualizados para lidar com os novos campos.
 
 ## Implementation Examples
 

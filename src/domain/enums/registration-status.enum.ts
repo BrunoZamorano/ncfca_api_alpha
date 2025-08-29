@@ -1,4 +1,6 @@
 export enum RegistrationStatus {
   CONFIRMED = 'CONFIRMED',
   CANCELLED = 'CANCELLED',
+  PENDING_APPROVAL = 'PENDING_APPROVAL',
+  REJECTED = 'REJECTED',
 }
