@@ -76,12 +76,7 @@ describe('(UNIT) Registration Entity', () => {
         const partnerId = 'partner-456';
 
         // Act
-        const registration = Registration.createDuoRegistrationForTournament(
-          tournamentId,
-          competitorId,
-          partnerId,
-          mockIdGenerator,
-        );
+        const registration = Registration.createDuoRegistrationForTournament(tournamentId, competitorId, partnerId, mockIdGenerator);
 
         // Assert
         expect(registration).toBeInstanceOf(Registration);
@@ -104,18 +99,8 @@ describe('(UNIT) Registration Entity', () => {
         const partnerId = 'partner-456';
 
         // Act
-        const registration1 = Registration.createDuoRegistrationForTournament(
-          tournamentId,
-          competitorId,
-          partnerId,
-          mockIdGenerator,
-        );
-        const registration2 = Registration.createDuoRegistrationForTournament(
-          tournamentId,
-          competitorId,
-          partnerId,
-          mockIdGenerator,
-        );
+        const registration1 = Registration.createDuoRegistrationForTournament(tournamentId, competitorId, partnerId, mockIdGenerator);
+        const registration2 = Registration.createDuoRegistrationForTournament(tournamentId, competitorId, partnerId, mockIdGenerator);
 
         // Assert
         expect(registration1.id).toBeDefined();
@@ -213,12 +198,7 @@ describe('(UNIT) Registration Entity', () => {
 
       it('Deve cancelar um registro pendente', () => {
         // Arrange
-        const registration = Registration.createDuoRegistrationForTournament(
-          'tournament-123',
-          'competitor-123',
-          'partner-456',
-          mockIdGenerator,
-        );
+        const registration = Registration.createDuoRegistrationForTournament('tournament-123', 'competitor-123', 'partner-456', mockIdGenerator);
 
         // Act
         registration.cancel();
@@ -240,12 +220,7 @@ describe('(UNIT) Registration Entity', () => {
     describe('confirm', () => {
       it('Deve confirmar um registro pendente', () => {
         // Arrange
-        const registration = Registration.createDuoRegistrationForTournament(
-          'tournament-123',
-          'competitor-123',
-          'partner-456',
-          mockIdGenerator,
-        );
+        const registration = Registration.createDuoRegistrationForTournament('tournament-123', 'competitor-123', 'partner-456', mockIdGenerator);
         const initialVersion = registration.version;
         const initialUpdatedAt = registration.updatedAt;
 
@@ -268,12 +243,7 @@ describe('(UNIT) Registration Entity', () => {
 
       it('Não deve confirmar um registro cancelado', () => {
         // Arrange
-        const registration = Registration.createDuoRegistrationForTournament(
-          'tournament-123',
-          'competitor-123',
-          'partner-456',
-          mockIdGenerator,
-        );
+        const registration = Registration.createDuoRegistrationForTournament('tournament-123', 'competitor-123', 'partner-456', mockIdGenerator);
         registration.cancel();
 
         // Act & Assert
@@ -282,12 +252,7 @@ describe('(UNIT) Registration Entity', () => {
 
       it('Não deve confirmar um registro rejeitado', () => {
         // Arrange
-        const registration = Registration.createDuoRegistrationForTournament(
-          'tournament-123',
-          'competitor-123',
-          'partner-456',
-          mockIdGenerator,
-        );
+        const registration = Registration.createDuoRegistrationForTournament('tournament-123', 'competitor-123', 'partner-456', mockIdGenerator);
         registration.reject();
 
         // Act & Assert
@@ -298,12 +263,7 @@ describe('(UNIT) Registration Entity', () => {
     describe('reject', () => {
       it('Deve rejeitar um registro pendente', () => {
         // Arrange
-        const registration = Registration.createDuoRegistrationForTournament(
-          'tournament-123',
-          'competitor-123',
-          'partner-456',
-          mockIdGenerator,
-        );
+        const registration = Registration.createDuoRegistrationForTournament('tournament-123', 'competitor-123', 'partner-456', mockIdGenerator);
         const initialVersion = registration.version;
         const initialUpdatedAt = registration.updatedAt;
 
@@ -326,12 +286,7 @@ describe('(UNIT) Registration Entity', () => {
 
       it('Não deve rejeitar um registro cancelado', () => {
         // Arrange
-        const registration = Registration.createDuoRegistrationForTournament(
-          'tournament-123',
-          'competitor-123',
-          'partner-456',
-          mockIdGenerator,
-        );
+        const registration = Registration.createDuoRegistrationForTournament('tournament-123', 'competitor-123', 'partner-456', mockIdGenerator);
         registration.cancel();
 
         // Act & Assert
@@ -340,12 +295,7 @@ describe('(UNIT) Registration Entity', () => {
 
       it('Não deve rejeitar um registro já rejeitado', () => {
         // Arrange
-        const registration = Registration.createDuoRegistrationForTournament(
-          'tournament-123',
-          'competitor-123',
-          'partner-456',
-          mockIdGenerator,
-        );
+        const registration = Registration.createDuoRegistrationForTournament('tournament-123', 'competitor-123', 'partner-456', mockIdGenerator);
         registration.reject();
 
         // Act & Assert
@@ -366,12 +316,7 @@ describe('(UNIT) Registration Entity', () => {
 
       it('Deve retornar false para registro pendente', () => {
         // Arrange
-        const registration = Registration.createDuoRegistrationForTournament(
-          'tournament-123',
-          'competitor-123',
-          'partner-456',
-          mockIdGenerator,
-        );
+        const registration = Registration.createDuoRegistrationForTournament('tournament-123', 'competitor-123', 'partner-456', mockIdGenerator);
 
         // Act & Assert
         expect(registration.isConfirmed()).toBe(false);
@@ -388,12 +333,7 @@ describe('(UNIT) Registration Entity', () => {
 
       it('Deve retornar false para registro rejeitado', () => {
         // Arrange
-        const registration = Registration.createDuoRegistrationForTournament(
-          'tournament-123',
-          'competitor-123',
-          'partner-456',
-          mockIdGenerator,
-        );
+        const registration = Registration.createDuoRegistrationForTournament('tournament-123', 'competitor-123', 'partner-456', mockIdGenerator);
         registration.reject();
 
         // Act & Assert
@@ -402,12 +342,7 @@ describe('(UNIT) Registration Entity', () => {
 
       it('Deve retornar true após confirmação de registro pendente', () => {
         // Arrange
-        const registration = Registration.createDuoRegistrationForTournament(
-          'tournament-123',
-          'competitor-123',
-          'partner-456',
-          mockIdGenerator,
-        );
+        const registration = Registration.createDuoRegistrationForTournament('tournament-123', 'competitor-123', 'partner-456', mockIdGenerator);
 
         // Act
         registration.confirm();
@@ -421,12 +356,7 @@ describe('(UNIT) Registration Entity', () => {
   describe('Getters', () => {
     it('Deve retornar todas as propriedades corretamente', () => {
       // Arrange & Act
-      const registration = Registration.createDuoRegistrationForTournament(
-        'tournament-123',
-        'competitor-123',
-        'partner-456',
-        mockIdGenerator,
-      );
+      const registration = Registration.createDuoRegistrationForTournament('tournament-123', 'competitor-123', 'partner-456', mockIdGenerator);
 
       // Assert
       expect(registration.id).toBeDefined();
@@ -454,12 +384,7 @@ describe('(UNIT) Registration Entity', () => {
   describe('Version Control', () => {
     it('Deve incrementar version ao confirmar', () => {
       // Arrange
-      const registration = Registration.createDuoRegistrationForTournament(
-        'tournament-123',
-        'competitor-123',
-        'partner-456',
-        mockIdGenerator,
-      );
+      const registration = Registration.createDuoRegistrationForTournament('tournament-123', 'competitor-123', 'partner-456', mockIdGenerator);
       const initialVersion = registration.version;
 
       // Act
@@ -471,12 +396,7 @@ describe('(UNIT) Registration Entity', () => {
 
     it('Deve incrementar version ao rejeitar', () => {
       // Arrange
-      const registration = Registration.createDuoRegistrationForTournament(
-        'tournament-123',
-        'competitor-123',
-        'partner-456',
-        mockIdGenerator,
-      );
+      const registration = Registration.createDuoRegistrationForTournament('tournament-123', 'competitor-123', 'partner-456', mockIdGenerator);
       const initialVersion = registration.version;
 
       // Act
@@ -502,12 +422,7 @@ describe('(UNIT) Registration Entity', () => {
   describe('Timestamp Management', () => {
     it('Deve atualizar updatedAt ao confirmar', () => {
       // Arrange
-      const registration = Registration.createDuoRegistrationForTournament(
-        'tournament-123',
-        'competitor-123',
-        'partner-456',
-        mockIdGenerator,
-      );
+      const registration = Registration.createDuoRegistrationForTournament('tournament-123', 'competitor-123', 'partner-456', mockIdGenerator);
       const initialUpdatedAt = registration.updatedAt;
 
       // Act
@@ -519,12 +434,7 @@ describe('(UNIT) Registration Entity', () => {
 
     it('Deve atualizar updatedAt ao rejeitar', () => {
       // Arrange
-      const registration = Registration.createDuoRegistrationForTournament(
-        'tournament-123',
-        'competitor-123',
-        'partner-456',
-        mockIdGenerator,
-      );
+      const registration = Registration.createDuoRegistrationForTournament('tournament-123', 'competitor-123', 'partner-456', mockIdGenerator);
       const initialUpdatedAt = registration.updatedAt;
 
       // Act
@@ -548,12 +458,7 @@ describe('(UNIT) Registration Entity', () => {
 
     it('Não deve alterar createdAt durante operações', () => {
       // Arrange
-      const registration = Registration.createDuoRegistrationForTournament(
-        'tournament-123',
-        'competitor-123',
-        'partner-456',
-        mockIdGenerator,
-      );
+      const registration = Registration.createDuoRegistrationForTournament('tournament-123', 'competitor-123', 'partner-456', mockIdGenerator);
       const initialCreatedAt = registration.createdAt;
 
       // Act

@@ -1,28 +1,30 @@
 import { Controller, Post, Get, Body, Param, Query, UseGuards, HttpCode } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+import { UserRoles } from '@/domain/enums/user-roles';
+
+import { GetTournament } from '@/application/use-cases/tournament/get-tournament.use-case';
+import { ListTournaments } from '@/application/use-cases/tournament/list-tournaments.use-case';
 import { CreateTournament } from '@/application/use-cases/tournament/create-tournament.use-case';
 import { UpdateTournament } from '@/application/use-cases/tournament/update-tournament.use-case';
 import { DeleteTournament } from '@/application/use-cases/tournament/delete-tournament.use-case';
-import { GetTournament } from '@/application/use-cases/tournament/get-tournament.use-case';
-import { ListTournaments } from '@/application/use-cases/tournament/list-tournaments.use-case';
-import { RequestIndividualRegistration } from '@/application/use-cases/tournament/request-individual-registration/request-individual-registration.use-case';
 import { CancelRegistration } from '@/application/use-cases/tournament/cancel-registration.use-case';
+import { TournamentDetailsView } from '@/application/queries/tournament-query/tournament-details.view';
+import { TournamentListItemView } from '@/application/queries/tournament-query/tournament-list-item.view';
+import { RequestDuoRegistration } from '@/application/use-cases/tournament/request-duo-registration.use-case';
+import { RequestIndividualRegistration } from '@/application/use-cases/tournament/request-individual-registration/request-individual-registration.use-case';
 
 import { CreateTournamentDto } from '@/infraestructure/dtos/tournament/create-tournament.dto';
 import { UpdateTournamentDto } from '@/infraestructure/dtos/tournament/update-tournament.dto';
-import { ListTournamentsQueryDto } from '@/infraestructure/dtos/tournament/list-tournaments-query.dto';
-import { RequestIndividualRegistrationDto } from '@/infraestructure/dtos/tournament/request-individual-registration.dto';
 import { CancelRegistrationDto } from '@/infraestructure/dtos/tournament/cancel-registration.dto';
-
-import { TournamentDetailsView } from '@/application/queries/tournament-query/tournament-details.view';
-import { TournamentListItemView } from '@/application/queries/tournament-query/tournament-list-item.view';
 import { TournamentResponseDto } from '@/infraestructure/dtos/tournament/tournament-response.dto';
+import { ListTournamentsQueryDto } from '@/infraestructure/dtos/tournament/list-tournaments-query.dto';
+import { RequestDuoRegistrationDto, RequestDuoRegistrationOutputDto } from '@/infraestructure/dtos/tournament/request-duo-registration.dto';
+import { RequestIndividualRegistrationInputDto, RequestIndividualRegistrationOutputDto } from '@/infraestructure/dtos/tournament/request-individual-registration.dto';
 
 import AuthGuard from '@/shared/guards/auth.guard';
-import { RolesGuard } from '@/shared/guards/roles.guard';
 import { Roles } from '@/shared/decorators/role.decorator';
-import { UserRoles } from '@/domain/enums/user-roles';
+import { RolesGuard } from '@/shared/guards/roles.guard';
 
 @ApiTags('Torneios')
 @ApiBearerAuth('JWT-auth')
@@ -30,13 +32,14 @@ import { UserRoles } from '@/domain/enums/user-roles';
 @Controller('tournaments')
 export default class TournamentController {
   constructor(
+    private readonly getTournament: GetTournament,
+    private readonly listTournaments: ListTournaments,
     private readonly createTournament: CreateTournament,
     private readonly updateTournament: UpdateTournament,
     private readonly deleteTournament: DeleteTournament,
-    private readonly getTournament: GetTournament,
-    private readonly listTournaments: ListTournaments,
-    private readonly requestIndividualRegistration: RequestIndividualRegistration,
     private readonly cancelRegistration: CancelRegistration,
+    private readonly requestDuoRegistration: RequestDuoRegistration,
+    private readonly requestIndividualRegistration: RequestIndividualRegistration,
   ) {}
 
   @Post('create')
@@ -133,15 +136,32 @@ export default class TournamentController {
 
   @Post('registrations/request-individual')
   @ApiOperation({ summary: 'Solicita inscrição individual em um torneio' })
-  @ApiResponse({ status: 201, description: 'Inscrição realizada com sucesso.' })
+  @ApiResponse({ status: 201, description: 'Inscrição realizada com sucesso.', type: RequestIndividualRegistrationOutputDto })
   @ApiResponse({ status: 400, description: 'Dados inválidos.' })
   @ApiResponse({ status: 409, description: 'Competidor já está inscrito neste torneio.' })
   @ApiResponse({ status: 404, description: 'Torneio ou competidor não encontrado.' })
-  //todo: create a dto as infra/controllers/[specificfolder]/dtos/ and doc it (openapi) for better documentation. must be a class using class validator and openapi docs. one file, input and output dtos.
-  async registerIndividualCompetitor(@Body() dto: RequestIndividualRegistrationDto): Promise<{ registrationId: string; status: string }> {
+  async registerIndividualCompetitor(@Body() dto: RequestIndividualRegistrationInputDto): Promise<RequestIndividualRegistrationOutputDto> {
     const registration = await this.requestIndividualRegistration.execute({
       tournamentId: dto.tournamentId,
       competitorId: dto.competitorId,
+    });
+    return {
+      registrationId: registration.id,
+      status: registration.status,
+    };
+  }
+
+  @Post('registrations/request-duo')
+  @ApiOperation({ summary: 'Solicita inscrição de dupla em um torneio' })
+  @ApiResponse({ status: 201, description: 'Solicitação de inscrição de dupla criada com sucesso.', type: RequestDuoRegistrationOutputDto })
+  @ApiResponse({ status: 400, description: 'Dados inválidos.' })
+  @ApiResponse({ status: 409, description: 'Competidor ou parceiro já está inscrito neste torneio.' })
+  @ApiResponse({ status: 404, description: 'Torneio, competidor ou parceiro não encontrado.' })
+  async requestDuoCompetitorRegistration(@Body() dto: RequestDuoRegistrationDto): Promise<RequestDuoRegistrationOutputDto> {
+    const registration = await this.requestDuoRegistration.execute({
+      tournamentId: dto.tournamentId,
+      competitorId: dto.competitorId,
+      partnerId: dto.partnerId,
     });
     return {
       registrationId: registration.id,

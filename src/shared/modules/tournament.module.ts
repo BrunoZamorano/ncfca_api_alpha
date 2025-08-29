@@ -7,6 +7,7 @@ import { DeleteTournament } from '@/application/use-cases/tournament/delete-tour
 import { ListTournaments } from '@/application/use-cases/tournament/list-tournaments.use-case';
 import { GetTournament } from '@/application/use-cases/tournament/get-tournament.use-case';
 import { RequestIndividualRegistration } from '@/application/use-cases/tournament/request-individual-registration/request-individual-registration.use-case';
+import { RequestDuoRegistration } from '@/application/use-cases/tournament/request-duo-registration.use-case';
 import { CancelRegistration } from '@/application/use-cases/tournament/cancel-registration.use-case';
 import { SyncRegistrationUseCase } from '@/application/use-cases/tournament/sync-registration.use-case';
 
@@ -20,14 +21,15 @@ import EventModule from '@/shared/modules/event.module';
   imports: [ConfigModule, SharedModule, EventModule],
   controllers: [TournamentController, TournamentListener],
   providers: [
+    GetTournament,
+    ListTournaments,
     CreateTournament,
     UpdateTournament,
     DeleteTournament,
-    ListTournaments,
-    GetTournament,
-    RequestIndividualRegistration,
     CancelRegistration,
+    RequestDuoRegistration,
     SyncRegistrationUseCase,
+    RequestIndividualRegistration,
   ],
 })
 export default class TournamentModule {}
