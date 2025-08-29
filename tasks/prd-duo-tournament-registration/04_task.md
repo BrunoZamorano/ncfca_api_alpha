@@ -1,5 +1,5 @@
 ---
-status: pending
+status: complete
 ---
 
 <task_context>
@@ -26,11 +26,11 @@ Esta tarefa abrange a implementação da camada de aplicação e infraestrutura 
 
 ## Subtasks
 
-- [ ] 4.1 Criar o `RequestDuoRegistrationCommand` com os campos necessários (`tournamentId`, `competitorId`, `partnerId`).
-- [ ] 4.2 Criar testes de unidade para o `RequestDuoRegistrationUseCase`, zombando dos repositórios e do gerenciador de transações.
-- [ ] 4.3 Implementar o `RequestDuoRegistrationUseCase`, garantindo que ele use uma transação para salvar o agregado `Tournament` e a entidade `RegistrationSync`.
-- [ ] 4.4 Adicionar o endpoint `POST /tournaments/request-duo-registration` ao `TournamentController`.
-- [ ] 4.5 Criar o DTO (Data Transfer Object) para o novo endpoint com as devidas validações.
+- [x] 4.1 Criar o `RequestDuoRegistrationInput` com os campos necessários (`tournamentId`, `competitorId`, `partnerId`).
+- [x] 4.2 Criar testes de unidade para o `RequestDuoRegistrationUseCase`, zombando dos repositórios e do gerenciador de transações.
+- [x] 4.3 Implementar o `RequestDuoRegistrationUseCase`, garantindo que ele use uma transação para salvar o agregado `Tournament` e a entidade `RegistrationSync`.
+- [x] 4.4 Adicionar o endpoint `POST /tournaments/request-duo-registration` ao `TournamentController`.
+- [x] 4.5 Criar o DTO (Data Transfer Object) para o novo endpoint com as devidas validações.
 
 ## Implementation Examples
 

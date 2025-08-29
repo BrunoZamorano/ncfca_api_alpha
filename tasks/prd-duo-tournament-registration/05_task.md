@@ -23,25 +23,28 @@ Esta tarefa foca na implementação do fluxo de recuperação (leitura) para que
 - O endpoint deve ser seguro e acessível apenas por usuários autenticados.
 </requirements>
 
-## Subtasks
-
-- [ ] 5.1 Criar a `GetMyPendingDuoRegistrationsQuery` com os parâmetros necessários (ex: `userId`).
-- [ ] 5.2 Definir o modelo de visualização `GetMyPendingDuoRegistrationsListItemView` com os campos a serem retornados pela API.
-- [ ] 5.3 Criar o manipulador de consulta CQRS (`GetMyPendingDuoRegistrationsQueryHandler`) para buscar os dados diretamente do banco de dados.
-- [ ] 5.4 Adicionar o endpoint `GET /tournaments/my-pending-registrations` ao `TournamentController`.
 
 ## Implementation Examples
+look at the examples to understand how do we implement this. also see @.cursor/rules/tests-standards.mdc and @.cursor/rules/code-standards.mdc.
+-   **Interface de Consulta:** `@src/application/queries/dependant-query/dependant.query.ts`
+-   **Modelo de Visualização:** `@/src/application/queries/dependant-query/dependants-list-item.view.ts`
+-   **Caso de Uso de Consulta:** `@src/application/use-cases/admin/list-dependants/list-dependants.ts`
+-   **Implemented Query Prisma:** `@src/infraestructure/queries/dependant.query.prisma.ts`
+-   **Controller of Dependants:** `@src/infraestructure/controllers/dependant/dependant.controller.ts`
 
--   **Interface de Consulta:** `@src/application/queries/club-query/club.query.ts`
--   **Modelo de Visualização (View Model):** `@src/application/queries/enrollment-query/my-enrollment-request-item.view.ts`
--   **Caso de Uso de Consulta:** `@src/application/use-cases/enrollment/list-my-enrollment-requests/list-my-enrollment-requests.ts`
+## Subtasks
+
+- [ ] 5.1 Criar a `GetMyPendingRegistrations` com os parâmetros necessários (`holderId`) @in src/application/queries/tournament-query/tournament.query.ts
+- [ ] 5.2 Definir o modelo de visualização `GetMyPendingRegistrationsListItemView` com os campos a serem retornados pela API.
+- [ ] 5.3 Criar o use case de consulta CQRS (`GetMyPendingRegistrations`) para buscar os dados pelo QueryService -> Tournament Query. salve o use case em  em @/src/application/use-cases/tornament/, assim como o unit test.
+- [ ] 5.4 Adicionar o endpoint `GET /tournaments/my-pending-registrations` ao `TournamentController`.
+
+## Implementation Details
 
 ### Relevant Files
-
 -   `src/application/queries/tournaments/get-my-pending-duo-registrations.query.ts`
 -   `src/infraestructure/queries/tournaments/get-my-pending-duo-registrations.handler.ts`
 -   `src/infraestructure/controllers/tournament.controller.ts`
-
 ## Success Criteria
 
 - O endpoint da API retorna com sucesso uma lista de registros de dupla pendentes para o usuário autenticado.

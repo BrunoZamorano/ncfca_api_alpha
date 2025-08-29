@@ -34,7 +34,7 @@ export interface TournamentTestData {
 /**
  * Inicializa a aplicação de teste para os testes E2E do Tournament Controller
  */
-export async function setupTournamentApp(): Promise<{ app: INestApplication; prisma: PrismaService }> {
+export async function setupTournamentApp(): Promise<{ app: NestExpressApplication; prisma: PrismaService }> {
   const moduleFixture: TestingModule = await Test.createTestingModule({
     imports: [AppModule],
   }).compile();

@@ -1,8 +1,11 @@
 import * as request from 'supertest';
-import { INestApplication, HttpStatus } from '@nestjs/common';
+import { Response } from 'supertest';
+import { HttpStatus } from '@nestjs/common';
 import { DependantRelationship, Sex, DependantType, SyncStatus } from '@prisma/client';
 import { ClientProxy } from '@nestjs/microservices';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
+import { RequestIndividualRegistrationOutputDto } from '@/infraestructure/dtos/tournament/request-individual-registration.dto';
 import { PrismaService } from '@/infraestructure/database/prisma.service';
 import { TournamentType } from '@/domain/enums/tournament-type.enum';
 import { RegistrationStatus } from '@/domain/enums/registration-status.enum';
@@ -12,8 +15,14 @@ import { setupTournamentApp, createRegularUser, createAdminUser, createTestTourn
 import { pollForCondition } from '../utils/poll-for-condition';
 import { TOURNAMENT_EVENTS_SERVICE } from '@/shared/constants/event.constants';
 
+interface ErrorResponseDto {
+  statusCode: number;
+  message: string | string[];
+  error: string;
+}
+
 describe('(E2E) TournamentIndividualRegistration', () => {
-  let app: INestApplication;
+  let app: NestExpressApplication;
   let prisma: PrismaService;
   let client: ClientProxy;
   let holderUser: TournamentTestUser;
@@ -48,7 +57,7 @@ describe('(E2E) TournamentIndividualRegistration', () => {
     await app.close();
   });
 
-  afterEach(async () => {
+  afterEach(() => {
     jest.clearAllMocks();
   });
 
@@ -112,25 +121,22 @@ describe('(E2E) TournamentIndividualRegistration', () => {
       };
 
       // Act
-      const response = await request(app.getHttpServer())
+      const response: Response = await request(app.getHttpServer())
         .post('/tournaments/registrations/request-individual')
         .set('Authorization', `Bearer ${holderUser.accessToken}`)
         .send(registrationData);
 
       // Assert
-      if (response.status !== HttpStatus.CREATED) {
-        console.log('Response status:', response.status);
-        console.log('Response body:', response.body);
-      }
       expect(response.status).toBe(HttpStatus.CREATED);
-      expect(response.body).toMatchObject({
-        registrationId: expect.any(String),
-        status: RegistrationStatus.CONFIRMED,
-      });
+      const body = response.body as RequestIndividualRegistrationOutputDto;
+
+      expect(body.registrationId).toEqual(expect.any(String));
+      expect(body.status).toBe(RegistrationStatus.CONFIRMED);
+      expect(Object.keys(body)).toHaveLength(2);
 
       // Verificar se o registro foi criado no banco
       const registration = await prisma.registration.findUnique({
-        where: { id: response.body.registrationId },
+        where: { id: body.registrationId },
       });
 
       expect(registration).toBeDefined();
@@ -143,11 +149,11 @@ describe('(E2E) TournamentIndividualRegistration', () => {
       await pollForCondition(
         async () => {
           const registrationSync = await prisma.registrationSync.findUnique({
-            where: { registration_id: response.body.registrationId },
+            where: { registration_id: body.registrationId },
           });
 
           expect(registrationSync).toBeDefined();
-          expect([SyncStatus.PENDING, SyncStatus.SYNCED]).toContain(registrationSync?.status);
+          expect([SyncStatus.PENDING, SyncStatus.SYNCED]).toContain(registrationSync!.status);
         },
         5000,
         500,
@@ -177,7 +183,7 @@ describe('(E2E) TournamentIndividualRegistration', () => {
       };
 
       // Act - Enviar duas requisições simultâneas
-      const [response1, response2] = await Promise.all([
+      const [response1, response2]: Response[] = await Promise.all([
         request(app.getHttpServer())
           .post('/tournaments/registrations/request-individual')
           .set('Authorization', `Bearer ${holderUser.accessToken}`)
@@ -190,8 +196,8 @@ describe('(E2E) TournamentIndividualRegistration', () => {
 
       // Assert - Uma deve ter sucesso e a outra deve falhar com conflito
       const responses = [response1, response2];
-      const successfulResponses = responses.filter((r) => r.status === HttpStatus.CREATED);
-      const conflictResponses = responses.filter((r) => r.status === HttpStatus.CONFLICT);
+      const successfulResponses = responses.filter((r) => r.status === (HttpStatus.CREATED as number));
+      const conflictResponses = responses.filter((r) => r.status === (HttpStatus.CONFLICT as number));
 
       expect(successfulResponses).toHaveLength(1);
       expect(conflictResponses).toHaveLength(1);
@@ -225,7 +231,7 @@ describe('(E2E) TournamentIndividualRegistration', () => {
       });
 
       // Criar registro primeiro
-      const registrationResponse = await request(app.getHttpServer())
+      const registrationResponse: Response = await request(app.getHttpServer())
         .post('/tournaments/registrations/request-individual')
         .set('Authorization', `Bearer ${holderUser.accessToken}`)
         .send({
@@ -234,31 +240,27 @@ describe('(E2E) TournamentIndividualRegistration', () => {
         });
 
       expect(registrationResponse.status).toBe(HttpStatus.CREATED);
+      const registrationBody = registrationResponse.body as RequestIndividualRegistrationOutputDto;
 
       const cancelData = {
-        registrationId: registrationResponse.body.registrationId,
+        registrationId: registrationBody.registrationId,
         reason: 'Conflito de agenda',
       };
 
       // Act
-      const response = await request(app.getHttpServer())
+      const response: Response = await request(app.getHttpServer())
         .post('/tournaments/registrations/cancel')
         .set('Authorization', `Bearer ${holderUser.accessToken}`)
         .send(cancelData);
 
       // Assert
-      if (response.status !== HttpStatus.OK) {
-        console.log('Cancellation response status:', response.status);
-        console.log('Cancellation response body:', response.body);
-      }
       expect(response.status).toBe(HttpStatus.OK);
-      expect(response.body).toMatchObject({
-        message: 'Inscrição cancelada com sucesso',
-      });
+      const body = response.body as { message: string };
+      expect(body.message).toBe('Inscrição cancelada com sucesso');
 
       // Verificar se o status foi atualizado no banco
       const registration = await prisma.registration.findUnique({
-        where: { id: registrationResponse.body.registrationId },
+        where: { id: registrationBody.registrationId },
       });
 
       expect(registration?.status).toBe(RegistrationStatus.CANCELLED);
@@ -287,7 +289,7 @@ describe('(E2E) TournamentIndividualRegistration', () => {
       };
 
       // Registrar pela primeira vez
-      const firstRegistration = await request(app.getHttpServer())
+      const firstRegistration: Response = await request(app.getHttpServer())
         .post('/tournaments/registrations/request-individual')
         .set('Authorization', `Bearer ${holderUser.accessToken}`)
         .send(registrationData);
@@ -295,17 +297,15 @@ describe('(E2E) TournamentIndividualRegistration', () => {
       expect(firstRegistration.status).toBe(HttpStatus.CREATED);
 
       // Act - Tentar registrar novamente
-      const secondRegistration = await request(app.getHttpServer())
+      const secondRegistration: Response = await request(app.getHttpServer())
         .post('/tournaments/registrations/request-individual')
         .set('Authorization', `Bearer ${holderUser.accessToken}`)
         .send(registrationData);
 
       // Assert
-      if (secondRegistration.status !== HttpStatus.CONFLICT) {
-        console.log('Duplicate registration response status:', secondRegistration.status);
-        console.log('Duplicate registration response body:', secondRegistration.body);
-      }
       expect(secondRegistration.status).toBe(HttpStatus.CONFLICT);
+      const errorBody = secondRegistration.body as ErrorResponseDto;
+      expect(errorBody.statusCode).toBe(HttpStatus.CONFLICT);
 
       // Verificar se apenas um registro existe no banco
       const registrations = await prisma.registration.findMany({
@@ -330,13 +330,15 @@ describe('(E2E) TournamentIndividualRegistration', () => {
       };
 
       // Act
-      const response = await request(app.getHttpServer())
+      const response: Response = await request(app.getHttpServer())
         .post('/tournaments/registrations/request-individual')
         .set('Authorization', `Bearer ${holderUser.accessToken}`)
         .send(registrationData);
 
       // Assert
       expect(response.status).toBe(HttpStatus.NOT_FOUND);
+      const errorBody = response.body as ErrorResponseDto;
+      expect(errorBody.statusCode).toBe(HttpStatus.NOT_FOUND);
     });
 
     it('Não deve registrar com competitorId inválido', async () => {
@@ -351,13 +353,15 @@ describe('(E2E) TournamentIndividualRegistration', () => {
       };
 
       // Act
-      const response = await request(app.getHttpServer())
+      const response: Response = await request(app.getHttpServer())
         .post('/tournaments/registrations/request-individual')
         .set('Authorization', `Bearer ${holderUser.accessToken}`)
         .send(registrationData);
 
       // Assert
       expect(response.status).toBe(HttpStatus.NOT_FOUND);
+      const errorBody = response.body as ErrorResponseDto;
+      expect(errorBody.statusCode).toBe(HttpStatus.NOT_FOUND);
     });
 
     it('Não deve registrar com campos obrigatórios faltando', async () => {
@@ -368,13 +372,15 @@ describe('(E2E) TournamentIndividualRegistration', () => {
       };
 
       // Act
-      const response = await request(app.getHttpServer())
+      const response: Response = await request(app.getHttpServer())
         .post('/tournaments/registrations/request-individual')
         .set('Authorization', `Bearer ${holderUser.accessToken}`)
         .send(incompleteData);
 
       // Assert
       expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+      const errorBody = response.body as ErrorResponseDto;
+      expect(errorBody.statusCode).toBe(HttpStatus.BAD_REQUEST);
     });
   });
 
@@ -393,10 +399,12 @@ describe('(E2E) TournamentIndividualRegistration', () => {
       };
 
       // Act
-      const response = await request(app.getHttpServer()).post('/tournaments/registrations/request-individual').send(registrationData);
+      const response: Response = await request(app.getHttpServer()).post('/tournaments/registrations/request-individual').send(registrationData);
 
       // Assert
       expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
+      const errorBody = response.body as ErrorResponseDto;
+      expect(errorBody.statusCode).toBe(HttpStatus.UNAUTHORIZED);
     });
   });
 
@@ -419,13 +427,15 @@ describe('(E2E) TournamentIndividualRegistration', () => {
       };
 
       // Act
-      const response = await request(app.getHttpServer())
+      const response: Response = await request(app.getHttpServer())
         .post('/tournaments/registrations/request-individual')
         .set('Authorization', `Bearer ${holderUser.accessToken}`)
         .send(registrationData);
 
       // Assert
       expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+      const errorBody = response.body as ErrorResponseDto;
+      expect(errorBody.statusCode).toBe(HttpStatus.BAD_REQUEST);
     });
 
     it('Não deve registrar em torneio com inscrições fechadas', async () => {
@@ -447,13 +457,15 @@ describe('(E2E) TournamentIndividualRegistration', () => {
       };
 
       // Act
-      const response = await request(app.getHttpServer())
+      const response: Response = await request(app.getHttpServer())
         .post('/tournaments/registrations/request-individual')
         .set('Authorization', `Bearer ${holderUser.accessToken}`)
         .send(registrationData);
 
       // Assert
       expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+      const errorBody = response.body as ErrorResponseDto;
+      expect(errorBody.statusCode).toBe(HttpStatus.BAD_REQUEST);
     });
   });
 });

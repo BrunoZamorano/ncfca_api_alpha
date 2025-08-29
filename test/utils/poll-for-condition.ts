@@ -9,18 +9,23 @@ export function pollForCondition(assertion: () => Promise<void>, timeout = 5000,
   const startTime = Date.now();
 
   return new Promise((resolve, reject) => {
-    const tryAssertion = async () => {
+    async function tryAssertion() {
       try {
         await assertion();
         resolve();
-      } catch (error) {
-        if (Date.now() - startTime > timeout) {
+      } catch (error: any) {
+        if (!(error instanceof Error)) return;
+        if (isTimeOver()) {
           reject(new Error(`Polling timed out after ${timeout}ms. Last error: ${error.message}`));
         } else {
           setTimeout(tryAssertion, interval);
         }
       }
-    };
+    }
     tryAssertion();
   });
+
+  function isTimeOver() {
+    return Date.now() - startTime > timeout;
+  }
 }

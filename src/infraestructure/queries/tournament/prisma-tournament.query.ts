@@ -3,9 +3,11 @@ import { Inject } from '@nestjs/common';
 import { TournamentQuery } from '@/application/queries/tournament-query/tournament.query';
 import { TournamentDetailsView } from '@/application/queries/tournament-query/tournament-details.view';
 import { TournamentListItemView } from '@/application/queries/tournament-query/tournament-list-item.view';
+import { GetMyPendingRegistrationsListItemView } from '@/application/queries/tournament-query/get-my-pending-registrations-list-item.view';
 import { ListTournamentsQueryDto } from '@/infraestructure/dtos/tournament/list-tournaments-query.dto';
 
 import { PrismaService } from '@/infraestructure/database/prisma.service';
+import { RegistrationStatus } from '@/domain/enums/registration-status.enum';
 
 export class PrismaTournamentQuery implements TournamentQuery {
   constructor(@Inject(PrismaService) private readonly prisma: PrismaService) {}
@@ -79,6 +81,48 @@ export class PrismaTournamentQuery implements TournamentQuery {
       registrationCount: tournament._count.registrations,
       registrationEndDate: tournament.registration_end_date,
       registrationStartDate: tournament.registration_start_date,
+    }));
+  }
+
+  async getMyPendingRegistrations(holderId: string): Promise<GetMyPendingRegistrationsListItemView[]> {
+    const registrations = await this.prisma.registration.findMany({
+      where: {
+        status: RegistrationStatus.PENDING_APPROVAL,
+        partner: {
+          family: {
+            holder_id: holderId,
+          },
+        },
+      },
+      select: {
+        id: true,
+        created_at: true,
+        tournament: {
+          select: {
+            name: true,
+            type: true,
+          },
+        },
+        competitor: {
+          select: {
+            id: true,
+            first_name: true,
+            last_name: true,
+          },
+        },
+      },
+      orderBy: {
+        created_at: 'desc',
+      },
+    });
+
+    return registrations.map((registration) => ({
+      registrationId: registration.id,
+      tournamentName: registration.tournament.name,
+      tournamentType: registration.tournament.type,
+      competitorId: registration.competitor.id,
+      competitorName: `${registration.competitor.first_name} ${registration.competitor.last_name}`,
+      requestedAt: registration.created_at,
     }));
   }
 }

@@ -10,7 +10,6 @@ import {
   createRegularUser,
   createTestDependant,
   createMultipleTestDependants,
-  createIsolatedFamily,
   dependantCleanup,
   DependantTestUser,
 } from './setup';

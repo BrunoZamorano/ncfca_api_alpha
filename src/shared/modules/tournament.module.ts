@@ -10,6 +10,7 @@ import { RequestIndividualRegistration } from '@/application/use-cases/tournamen
 import { RequestDuoRegistration } from '@/application/use-cases/tournament/request-duo-registration.use-case';
 import { CancelRegistration } from '@/application/use-cases/tournament/cancel-registration.use-case';
 import { SyncRegistrationUseCase } from '@/application/use-cases/tournament/sync-registration.use-case';
+import { GetMyPendingRegistrations } from '@/application/use-cases/tournament/get-my-pending-registrations.use-case';
 
 import TournamentController from '@/infraestructure/controllers/tournament/tournament.controller';
 import { TournamentListener } from '@/infraestructure/controllers/listeners/tournament.listener';
@@ -30,6 +31,7 @@ import EventModule from '@/shared/modules/event.module';
     RequestDuoRegistration,
     SyncRegistrationUseCase,
     RequestIndividualRegistration,
+    GetMyPendingRegistrations,
   ],
 })
 export default class TournamentModule {}

@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body, Param, Query, UseGuards, HttpCode } from '@nestjs/common';
+import { Controller, Post, Get, Body, Param, Query, UseGuards, HttpCode, Request } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { UserRoles } from '@/domain/enums/user-roles';
@@ -11,8 +11,10 @@ import { DeleteTournament } from '@/application/use-cases/tournament/delete-tour
 import { CancelRegistration } from '@/application/use-cases/tournament/cancel-registration.use-case';
 import { TournamentDetailsView } from '@/application/queries/tournament-query/tournament-details.view';
 import { TournamentListItemView } from '@/application/queries/tournament-query/tournament-list-item.view';
+import { GetMyPendingRegistrationsListItemView } from '@/application/queries/tournament-query/get-my-pending-registrations-list-item.view';
 import { RequestDuoRegistration } from '@/application/use-cases/tournament/request-duo-registration.use-case';
 import { RequestIndividualRegistration } from '@/application/use-cases/tournament/request-individual-registration/request-individual-registration.use-case';
+import { GetMyPendingRegistrations } from '@/application/use-cases/tournament/get-my-pending-registrations.use-case';
 
 import { CreateTournamentDto } from '@/infraestructure/dtos/tournament/create-tournament.dto';
 import { UpdateTournamentDto } from '@/infraestructure/dtos/tournament/update-tournament.dto';
@@ -20,7 +22,10 @@ import { CancelRegistrationDto } from '@/infraestructure/dtos/tournament/cancel-
 import { TournamentResponseDto } from '@/infraestructure/dtos/tournament/tournament-response.dto';
 import { ListTournamentsQueryDto } from '@/infraestructure/dtos/tournament/list-tournaments-query.dto';
 import { RequestDuoRegistrationDto, RequestDuoRegistrationOutputDto } from '@/infraestructure/dtos/tournament/request-duo-registration.dto';
-import { RequestIndividualRegistrationInputDto, RequestIndividualRegistrationOutputDto } from '@/infraestructure/dtos/tournament/request-individual-registration.dto';
+import {
+  RequestIndividualRegistrationInputDto,
+  RequestIndividualRegistrationOutputDto,
+} from '@/infraestructure/dtos/tournament/request-individual-registration.dto';
 
 import AuthGuard from '@/shared/guards/auth.guard';
 import { Roles } from '@/shared/decorators/role.decorator';
@@ -40,6 +45,7 @@ export default class TournamentController {
     private readonly cancelRegistration: CancelRegistration,
     private readonly requestDuoRegistration: RequestDuoRegistration,
     private readonly requestIndividualRegistration: RequestIndividualRegistration,
+    private readonly getMyPendingRegistrations: GetMyPendingRegistrations,
   ) {}
 
   @Post('create')
@@ -132,6 +138,15 @@ export default class TournamentController {
   @ApiResponse({ status: 404, description: 'Torneio não encontrado.' })
   async getById(@Param('id') id: string): Promise<TournamentDetailsView> {
     return await this.getTournament.execute(id);
+  }
+
+  @Get('my-pending-registrations')
+  @ApiOperation({ summary: 'Lista inscrições de dupla pendentes para meus dependentes' })
+  @ApiResponse({ status: 200, description: 'Lista de inscrições pendentes retornada com sucesso.', type: [GetMyPendingRegistrationsListItemView] })
+  @ApiResponse({ status: 403, description: 'Acesso negado.' })
+  async listMyPendingRegistrations(@Request() req: any): Promise<GetMyPendingRegistrationsListItemView[]> {
+    const holderId = req.user.id;
+    return await this.getMyPendingRegistrations.execute(holderId);
   }
 
   @Post('registrations/request-individual')

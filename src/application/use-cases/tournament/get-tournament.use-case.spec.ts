@@ -10,7 +10,7 @@ describe('(UNIT) GetTournament', () => {
   let useCase: GetTournament;
   let queryService: QueryService;
   const mockQueryService = {
-    tournamentQuery: { findById: jest.fn(), search: jest.fn(), },
+    tournamentQuery: { findById: jest.fn(), search: jest.fn() },
     enrollmentQuery: {},
     dependantQuery: {},
     trainingQuery: {},
@@ -18,7 +18,9 @@ describe('(UNIT) GetTournament', () => {
   };
 
   beforeEach(async () => {
-    const moduleRef = await Test.createTestingModule({ providers: [GetTournament, { provide: QUERY_SERVICE, useValue: mockQueryService }], }).compile();
+    const moduleRef = await Test.createTestingModule({
+      providers: [GetTournament, { provide: QUERY_SERVICE, useValue: mockQueryService }],
+    }).compile();
     useCase = moduleRef.get(GetTournament);
     queryService = moduleRef.get(QUERY_SERVICE);
     jest.clearAllMocks();
@@ -57,5 +59,4 @@ describe('(UNIT) GetTournament', () => {
     await expect(useCase.execute(tournamentId)).rejects.toThrow(`Tournament with id ${tournamentId} not found.`);
     expect(mockQueryService.tournamentQuery.findById).toHaveBeenCalledWith(tournamentId);
   });
-
 });
