@@ -18,7 +18,7 @@
 
 ## Tasks
 
-- [ ] 1.0 Database Schema Migration
+- [x] 1.0 Database Schema Migration
 - [ ] 2.0 Enhance Registration Entity (as part of Tournament Aggregate)
 - [ ] 3.0 Enhance Tournament Aggregate with Duo Registration Management
 - [ ] 4.0 Implement Request Duo Registration Workflow

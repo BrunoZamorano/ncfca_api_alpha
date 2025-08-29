@@ -25,12 +25,12 @@ Esta tarefa envolve a modificação do esquema do Prisma para suportar a funcion
 
 ## Subtasks
 
-- [ ] 1.1 Modificar `prisma/schema.prisma` para atualizar o enum `RegistrationStatus` com `PENDING_APPROVAL` e `REJECTED`.
-- [ ] 1.2 Modificar o modelo `Registration` no esquema para adicionar os campos `partner_id` (opcional) e `version` (para travamento otimista).
-- [ ] 1.3 Atualizar a restrição única para o modelo `Registration` para incluir `partner_id`.
-- [ ] 1.4 Gerar o novo arquivo de migração do banco de dados usando `npx prisma migrate dev`.
-- [ ] 1.5 Revisar o arquivo de migração SQL gerado para garantir que ele esteja correto e não cause perda de dados.
-- [ ] 1.6 Aplicar a migração ao banco de dados de desenvolvimento.
+- [x] 1.1 Modificar `prisma/schema.prisma` para atualizar o enum `RegistrationStatus` com `PENDING_APPROVAL` e `REJECTED`.
+- [x] 1.2 Modificar o modelo `Registration` no esquema para adicionar os campos `partner_id` (opcional) e `version` (para travamento otimista).
+- [x] 1.3 Atualizar a restrição única para o modelo `Registration` para incluir `partner_id`.
+- [x] 1.4 Gerar o novo arquivo de migração do banco de dados usando `npx prisma migrate dev`.
+- [x] 1.5 Revisar o arquivo de migração SQL gerado para garantir que ele esteja correto e não cause perda de dados.
+- [x] 1.6 Aplicar a migração ao banco de dados de desenvolvimento.
 
 ## Implementation Examples
 
