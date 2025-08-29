@@ -59,7 +59,7 @@ describe('AuthController', function () {
         _email: { value: User.DEFAULT_EMAIL },
         _password: Password.fromHash(User.DEFAULT_PASSWORD + 'secret'),
         firstName: 'Test',
-        lastName: 'User', 
+        lastName: 'User',
         rg: '123456789',
         _cpf: { value: '123.456.789-10' },
         phone: '11999999999',
@@ -70,8 +70,12 @@ describe('AuthController', function () {
         city: 'Test City',
         state: 'SP',
         zipCode: '12345-678',
-        get password() { return this._password.value; },
-        get email() { return this._email.value; }
+        get password() {
+          return this._password.value;
+        },
+        get email() {
+          return this._email.value;
+        },
       };
       (userRepository as any).db.users.push(mockUser);
       await familyRepository.create(new Family({ id: '1', holderId: '1' }));

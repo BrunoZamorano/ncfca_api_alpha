@@ -1,5 +1,5 @@
 ---
-status: pending
+status: complete
 ---
 
 <task_context>

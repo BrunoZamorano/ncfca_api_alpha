@@ -6,13 +6,12 @@ import { EventEmitterFacade } from '@/domain/events/event-emitter';
 import { CLUB_REQUEST_REPOSITORY } from '@/shared/constants/repository-constants';
 import { EVENT_EMITTER_FACADE } from '@/shared/constants/event.constants';
 
-
-
 @Injectable()
 export default class RejectClubRequestUseCase {
   constructor(
     @Inject(CLUB_REQUEST_REPOSITORY) private readonly clubRequestRepository: ClubRequestRepository,
-    @Inject(EVENT_EMITTER_FACADE) private readonly eventEmitter: EventEmitterFacade) { }
+    @Inject(EVENT_EMITTER_FACADE) private readonly eventEmitter: EventEmitterFacade,
+  ) {}
 
   async execute(input: RejectClubRequestInput): Promise<void> {
     const clubRequest = await this.clubRequestRepository.findById(input.clubRequestId);

@@ -8,8 +8,8 @@ export class SyncRegistrationUseCase {
   private readonly logger = new Logger(SyncRegistrationUseCase.name);
 
   constructor(
-    @Inject(TOURNAMENT_REPOSITORY) 
-    private readonly tournamentRepository: TournamentRepository
+    @Inject(TOURNAMENT_REPOSITORY)
+    private readonly tournamentRepository: TournamentRepository,
   ) {}
 
   async execute(registrationId: string): Promise<void> {

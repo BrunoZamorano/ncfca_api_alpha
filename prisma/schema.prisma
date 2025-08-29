@@ -95,6 +95,8 @@ enum TournamentType {
 enum RegistrationStatus {
   CONFIRMED
   CANCELLED
+  PENDING_APPROVAL
+  REJECTED
 }
 
 enum SyncStatus {
@@ -160,10 +162,11 @@ model Dependant {
   created_at   DateTime              @default(now())
   updated_at   DateTime              @updatedAt
 
-  family             Family              @relation(fields: [family_id], references: [id])
-  memberships        ClubMembership[]
-  enrollmentRequests EnrollmentRequest[]
-  registrations      Registration[]
+  family                  Family              @relation(fields: [family_id], references: [id])
+  memberships             ClubMembership[]
+  enrollmentRequests      EnrollmentRequest[]
+  competitorRegistrations Registration[]      @relation("RegistrationCompetitor")
+  partnerRegistrations    Registration[]      @relation("RegistrationPartner")
 }
 
 model Club {
@@ -284,15 +287,18 @@ model Registration {
   id            String             @id @default(uuid())
   tournament    Tournament         @relation(fields: [tournament_id], references: [id])
   tournament_id String
-  competitor    Dependant          @relation(fields: [competitor_id], references: [id])
+  competitor    Dependant          @relation("RegistrationCompetitor", fields: [competitor_id], references: [id])
   competitor_id String
+  partner       Dependant?         @relation("RegistrationPartner", fields: [partner_id], references: [id])
+  partner_id    String?
   status        RegistrationStatus
   type          TournamentType
+  version       Int                @default(1)
   sync          RegistrationSync?
   created_at    DateTime           @default(now())
   updated_at    DateTime           @updatedAt
 
-  @@unique([tournament_id, competitor_id])
+  @@unique([tournament_id, competitor_id, partner_id])
   @@map("registrations")
 }
 

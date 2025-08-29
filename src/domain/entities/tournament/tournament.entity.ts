@@ -38,10 +38,14 @@ export default class Tournament {
   }
 
   public static create(props: CreateTournamentProps, idGenerator: IdGenerator): Tournament {
-    if (!props.name || props.name.trim().length < 3) throw new InvalidOperationException('Tournament name is required and must have at least 3 characters.');
-    if (!props.description || props.description.trim().length < 10) throw new InvalidOperationException('Tournament description is required and must have at least 10 characters.');
-    if (props.registrationEndDate <= props.registrationStartDate) throw new InvalidOperationException('Registration end date cannot be before or equal to the start date.');
-    if (props.startDate < props.registrationEndDate) throw new InvalidOperationException('Tournament start date cannot be before registration end date.');
+    if (!props.name || props.name.trim().length < 3)
+      throw new InvalidOperationException('Tournament name is required and must have at least 3 characters.');
+    if (!props.description || props.description.trim().length < 10)
+      throw new InvalidOperationException('Tournament description is required and must have at least 10 characters.');
+    if (props.registrationEndDate <= props.registrationStartDate)
+      throw new InvalidOperationException('Registration end date cannot be before or equal to the start date.');
+    if (props.startDate < props.registrationEndDate)
+      throw new InvalidOperationException('Tournament start date cannot be before registration end date.');
     return new Tournament({
       id: idGenerator.generate(),
       name: props.name.trim(),
@@ -85,15 +89,18 @@ export default class Tournament {
       this._name = props.name.trim();
     }
     if (props.description !== undefined) {
-      if (!props.description || props.description.trim().length < 10) throw new InvalidOperationException('Tournament description must have at least 10 characters.');
+      if (!props.description || props.description.trim().length < 10)
+        throw new InvalidOperationException('Tournament description must have at least 10 characters.');
       this._description = props.description.trim();
     }
     if (props.type !== undefined) this._type = props.type;
     if (props.registrationStartDate !== undefined) this._registrationStartDate = props.registrationStartDate;
     if (props.registrationEndDate !== undefined) this._registrationEndDate = props.registrationEndDate;
     if (props.startDate !== undefined) this._startDate = props.startDate;
-    if (this._registrationEndDate <= this._registrationStartDate) throw new InvalidOperationException('Registration end date cannot be before or equal to the start date.');
-    if (this._startDate < this._registrationEndDate) throw new InvalidOperationException('Tournament start date cannot be before registration end date.');
+    if (this._registrationEndDate <= this._registrationStartDate)
+      throw new InvalidOperationException('Registration end date cannot be before or equal to the start date.');
+    if (this._startDate < this._registrationEndDate)
+      throw new InvalidOperationException('Tournament start date cannot be before registration end date.');
     this._updatedAt = new Date();
     this._version++;
   }
@@ -198,7 +205,6 @@ export default class Tournament {
   get version(): number {
     return this._version;
   }
-
 }
 
 export interface CreateTournamentProps {

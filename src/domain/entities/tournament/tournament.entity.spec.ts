@@ -189,7 +189,7 @@ describe('(UNIT) Tournament Entity', () => {
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date(),
-        registrations: new Array(5).fill(null).map(() => ({} as Registration)),
+        registrations: new Array(5).fill(null).map(() => ({}) as Registration),
       });
 
       // Act & Assert
@@ -278,7 +278,7 @@ describe('(UNIT) Tournament Entity', () => {
         deletedAt: null,
         createdAt: new Date(),
         updatedAt: new Date(),
-        registrations: new Array(3).fill(null).map(() => ({} as Registration)),
+        registrations: new Array(3).fill(null).map(() => ({}) as Registration),
       });
 
       // Act & Assert
@@ -532,15 +532,17 @@ describe('(UNIT) Tournament Entity', () => {
       const registration = openTournament.requestIndividualRegistration(mockDependant as Dependant, mockIdGenerator, mockEventEmitter);
 
       // Assert
-      expect(mockEventEmitter.emit).toHaveBeenCalledWith(expect.objectContaining({
-        eventType: 'Registration.Confirmed',
-        payload: expect.objectContaining({
-          registrationId: registration.id,
-          tournamentId: openTournament.id,
-          competitorId: mockDependant.id,
-          isDuo: false,
+      expect(mockEventEmitter.emit).toHaveBeenCalledWith(
+        expect.objectContaining({
+          eventType: 'Registration.Confirmed',
+          payload: expect.objectContaining({
+            registrationId: registration.id,
+            tournamentId: openTournament.id,
+            competitorId: mockDependant.id,
+            isDuo: false,
+          }),
         }),
-      }));
+      );
     });
 
     it('Deve emitir eventos para múltiplos registros', () => {

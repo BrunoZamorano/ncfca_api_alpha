@@ -33,7 +33,7 @@ describe('(UNIT) AdminListClubMembersUseCase', () => {
       type: DependantType.STUDENT,
       sex: Sex.FEMALE,
       status: MembershipStatus.ACTIVE,
-    }
+    },
   ];
 
   beforeEach(async () => {
@@ -44,10 +44,7 @@ describe('(UNIT) AdminListClubMembersUseCase', () => {
     };
 
     const moduleRef = await Test.createTestingModule({
-      providers: [
-        AdminListClubMembersUseCase,
-        { provide: QUERY_SERVICE, useValue: mockQueryService }
-      ],
+      providers: [AdminListClubMembersUseCase, { provide: QUERY_SERVICE, useValue: mockQueryService }],
     }).compile();
 
     useCase = moduleRef.get(AdminListClubMembersUseCase);

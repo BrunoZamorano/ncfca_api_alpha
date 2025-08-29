@@ -81,7 +81,7 @@ export default class ClubRequest {
     this.setStatus(ClubRequestStatus.REJECTED);
     this.setRejectionReason(rejectionReason.trim());
     this.setResolvedAt(new Date());
-    const event = new ClubRequestRejectedEvent({ requestId: this._id, requesterId: this._requesterId, rejectionReason })
+    const event = new ClubRequestRejectedEvent({ requestId: this._id, requesterId: this._requesterId, rejectionReason });
     eventEmitter.emit(event);
   }
 

@@ -1,8 +1,8 @@
-import { Registration as Model, RegistrationStatus as PrismaRegistrationStatus, RegistrationType as PrismaRegistrationType } from '@prisma/client';
+import { Registration as Model, RegistrationStatus as PrismaRegistrationStatus, TournamentType as PrismaTournamentType } from '@prisma/client';
 import Registration from '@/domain/entities/registration/registration.entity';
 import RegistrationSync from '@/domain/entities/registration/registration-sync.entity';
 import { RegistrationStatus } from '@/domain/enums/registration-status.enum';
-import { RegistrationType } from '@/domain/enums/registration-type.enum';
+import { TournamentType } from '@/domain/enums/tournament-type.enum';
 import { SyncStatus } from '@/domain/entities/registration/registration-sync.entity';
 
 export default class RegistrationMapper {
@@ -38,8 +38,10 @@ export default class RegistrationMapper {
       id: model.id,
       tournamentId: model.tournament_id,
       competitorId: model.competitor_id,
+      partnerId: model.partner_id,
+      version: model.version,
       status: RegistrationStatus[model.status as keyof typeof RegistrationStatus],
-      type: RegistrationType[model.type as keyof typeof RegistrationType],
+      type: TournamentType[model.type as keyof typeof TournamentType],
       createdAt: model.created_at,
       updatedAt: model.updated_at,
       sync,
@@ -49,10 +51,12 @@ export default class RegistrationMapper {
   static entityToModel(entity: Registration): Model {
     return {
       id: entity.id,
-      type: entity.type as PrismaRegistrationType,
+      type: entity.type as PrismaTournamentType,
       status: entity.status as PrismaRegistrationStatus,
       tournament_id: entity.tournamentId,
       competitor_id: entity.competitorId,
+      partner_id: entity.partnerId || null,
+      version: entity.version || 1,
       created_at: entity.createdAt,
       updated_at: entity.updatedAt,
     };

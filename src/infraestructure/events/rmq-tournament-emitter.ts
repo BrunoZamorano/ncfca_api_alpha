@@ -6,7 +6,7 @@ import { DomainEvent } from '@/domain/events/domain-event';
 
 @Injectable()
 export class RMQTournamentEmitter implements TournamentEmitter {
-  constructor(@Inject(TOURNAMENT_EVENTS_SERVICE) private readonly client: ClientProxy) { }
+  constructor(@Inject(TOURNAMENT_EVENTS_SERVICE) private readonly client: ClientProxy) {}
 
   emit<T>(event: DomainEvent<T>): void {
     this.client.emit(event.eventType, event.payload);

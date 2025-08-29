@@ -118,10 +118,12 @@ describe('(UNIT) RequestIndividualRegistration', () => {
       expect(mockUnitOfWork.tournamentRepository.findById).toHaveBeenCalledWith(tournamentId);
       expect(mockUnitOfWork.familyRepository.findDependant).toHaveBeenCalledWith(competitorId);
       expect(mockUnitOfWork.tournamentRepository.save).toHaveBeenCalledWith(tournament);
-      expect(mockEventEmitterFacade.tournamentEmitter.emit).toHaveBeenCalledWith(expect.objectContaining({
-        eventType: 'Registration.Confirmed',
-        payload: expect.any(Object)
-      }));
+      expect(mockEventEmitterFacade.tournamentEmitter.emit).toHaveBeenCalledWith(
+        expect.objectContaining({
+          eventType: 'Registration.Confirmed',
+          payload: expect.any(Object),
+        }),
+      );
       expect(result.competitorId).toBe(competitorId);
       expect(result.tournamentId).toBe(tournamentId);
     });

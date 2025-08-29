@@ -18,7 +18,7 @@ export class RequestIndividualRegistration {
     @Inject(UNIT_OF_WORK) private readonly unitOfWork: UnitOfWork,
   ) {}
 
-  //todo: security: it is possible to register a dependant from other family to a tournament. Raise solutions... 
+  //todo: security: it is possible to register a dependant from other family to a tournament. Raise solutions...
   async execute(props: RequestIndividualRegistrationProps): Promise<Registration> {
     return await this.unitOfWork.executeInTransaction(async () => {
       const tournament = await this.unitOfWork.tournamentRepository.findById(props.tournamentId);

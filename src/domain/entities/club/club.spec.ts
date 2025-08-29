@@ -19,10 +19,10 @@ describe('Club Aggregate Root', () => {
     state: 'SP',
     zipCode: '12345-678',
   });
-  const clubProps = { 
-    principalId: 'user-1', 
-    name: 'Alpha Debaters', 
-    address: mockAddress 
+  const clubProps = {
+    principalId: 'user-1',
+    name: 'Alpha Debaters',
+    address: mockAddress,
   };
   const dependantId1 = 'dependant-001';
   const familyId1 = 'family-001';

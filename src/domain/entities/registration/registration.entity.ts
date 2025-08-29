@@ -1,14 +1,16 @@
 import IdGenerator from '@/application/services/id-generator';
 import { RegistrationStatus } from '@/domain/enums/registration-status.enum';
-import { RegistrationType } from '@/domain/enums/registration-type.enum';
+import { TournamentType } from '@/domain/enums/tournament-type.enum';
 import RegistrationSync from './registration-sync.entity';
 
 export default class Registration {
   private readonly _id: string;
   private readonly _tournamentId: string;
   private readonly _competitorId: string;
+  private readonly _partnerId: string | null;
   private _status: RegistrationStatus;
-  private readonly _type: RegistrationType;
+  private readonly _type: TournamentType;
+  private _version: number;
   private readonly _createdAt: Date;
   private _updatedAt: Date;
   private readonly _sync: RegistrationSync;
@@ -18,8 +20,10 @@ export default class Registration {
     this._id = props.id;
     this._tournamentId = props.tournamentId;
     this._competitorId = props.competitorId;
+    this._partnerId = props.partnerId || null;
     this._status = props.status;
     this._type = props.type;
+    this._version = props.version || 1;
     this._createdAt = props.createdAt;
     this._updatedAt = props.updatedAt;
     this._sync = props.sync;
@@ -32,7 +36,7 @@ export default class Registration {
     const sync = RegistrationSync.create(registrationId, idGenerator);
     return new Registration({
       id: registrationId,
-      type: RegistrationType.INDIVIDUAL,
+      type: TournamentType.INDIVIDUAL,
       sync,
       status: RegistrationStatus.CONFIRMED,
       createdAt: now,
@@ -59,11 +63,15 @@ export default class Registration {
     return this._competitorId;
   }
 
+  get partnerId(): string | null {
+    return this._partnerId;
+  }
+
   get status(): RegistrationStatus {
     return this._status;
   }
 
-  get type(): RegistrationType {
+  get type(): TournamentType {
     return this._type;
   }
 
@@ -73,6 +81,10 @@ export default class Registration {
 
   get updatedAt(): Date {
     return this._updatedAt;
+  }
+
+  get version(): number {
+    return this._version;
   }
 
   get sync(): RegistrationSync {
@@ -93,7 +105,9 @@ export default class Registration {
 interface RegistrationConstructorProps {
   id: string;
   status: RegistrationStatus;
-  type: RegistrationType;
+  type: TournamentType;
+  partnerId?: string | null;
+  version?: number;
   sync: RegistrationSync;
   createdAt: Date;
   updatedAt: Date;

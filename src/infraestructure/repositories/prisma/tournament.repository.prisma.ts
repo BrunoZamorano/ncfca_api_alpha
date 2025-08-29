@@ -11,7 +11,7 @@ import { PrismaService } from '@/infraestructure/database/prisma.service';
 
 @Injectable()
 export class PrismaTournamentRepository implements TournamentRepository {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async save(tournament: Tournament): Promise<void> {
     const tournamentData = TournamentMapper.entityToModel(tournament);
@@ -19,17 +19,17 @@ export class PrismaTournamentRepository implements TournamentRepository {
       await this.prisma.$transaction(async (prisma) => {
         // First, try to update the tournament with optimistic locking
         const result = await prisma.tournament.updateMany({
-          where: { id: tournament.id, version: tournament.version - 1, },
-          data: { ...tournamentData, updated_at: new Date(), },
+          where: { id: tournament.id, version: tournament.version - 1 },
+          data: { ...tournamentData, updated_at: new Date() },
         });
         if (result.count === 0) {
           const existingTournament = await prisma.tournament.findUnique({
             where: { id: tournament.id, deleted_at: null },
           });
           if (existingTournament) throw new OptimisticLockError('Tournament', tournament.id);
-          await prisma.tournament.create({ data: { ...tournamentData, created_at: new Date(), updated_at: new Date(), }, });
+          await prisma.tournament.create({ data: { ...tournamentData, created_at: new Date(), updated_at: new Date() } });
         }
-        const existingRegistrations = await prisma.registration.findMany({ where: { tournament_id: tournament.id }, });
+        const existingRegistrations = await prisma.registration.findMany({ where: { tournament_id: tournament.id } });
         const currentRegistrations = tournament.registrations;
         const existingRegistrationIds = new Set(existingRegistrations.map((r) => r.id));
         const currentRegistrationIds = new Set(currentRegistrations.map((r) => r.id));

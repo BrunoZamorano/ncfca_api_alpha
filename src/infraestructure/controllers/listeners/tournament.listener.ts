@@ -7,7 +7,7 @@ import { SyncRegistrationUseCase } from '@/application/use-cases/tournament/sync
 export class TournamentListener {
   private readonly logger = new Logger(TournamentListener.name);
 
-  constructor(private readonly syncRegistrationUseCase: SyncRegistrationUseCase) { }
+  constructor(private readonly syncRegistrationUseCase: SyncRegistrationUseCase) {}
 
   @MessagePattern(RegistrationConfirmed.eventType)
   async handleRegistrationConfirmedEvent(@Payload() event: RegistrationConfirmedPayload, @Ctx() context: RmqContext): Promise<void> {

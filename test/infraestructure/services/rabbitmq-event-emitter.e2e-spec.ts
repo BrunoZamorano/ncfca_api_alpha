@@ -4,7 +4,13 @@ import { of } from 'rxjs';
 
 import { RMQEventEmitterFacade } from '@/infraestructure/events/rmq-event-emitter.facade';
 import { EventEmitterFacade, ClubEmitter, TournamentEmitter } from '@/domain/events/event-emitter';
-import { CLUB_EVENTS_SERVICE, TOURNAMENT_EVENTS_SERVICE, EVENT_EMITTER_FACADE, CLUB_EMITTER, TOURNAMENT_EMITTER } from '@/shared/constants/event.constants';
+import {
+  CLUB_EVENTS_SERVICE,
+  TOURNAMENT_EVENTS_SERVICE,
+  EVENT_EMITTER_FACADE,
+  CLUB_EMITTER,
+  TOURNAMENT_EMITTER,
+} from '@/shared/constants/event.constants';
 import { RMQClubEmitter } from '@/infraestructure/events/rmq-club-emitter';
 import { RMQTournamentEmitter } from '@/infraestructure/events/rmq-tournament-emitter';
 
@@ -83,7 +89,7 @@ describe('RabbitMqEventEmitter (Unit)', () => {
     it('should call club emitter emit method', () => {
       const mockEvent = {
         eventType: 'club.created',
-        payload: { clubId: '123' }
+        payload: { clubId: '123' },
       };
       clubEmitter.emit(mockEvent);
       expect(clubClient.emit).toHaveBeenCalledWith('club.created', { clubId: '123' });
@@ -92,7 +98,7 @@ describe('RabbitMqEventEmitter (Unit)', () => {
     it('should call tournament emitter emit method', () => {
       const mockEvent = {
         eventType: 'tournament.created',
-        payload: { tournamentId: '456' }
+        payload: { tournamentId: '456' },
       };
       tournamentEmitter.emit(mockEvent);
       expect(tournamentClient.emit).toHaveBeenCalledWith('tournament.created', { tournamentId: '456' });

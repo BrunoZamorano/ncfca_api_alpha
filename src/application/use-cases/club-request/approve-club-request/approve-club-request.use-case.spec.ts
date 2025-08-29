@@ -8,7 +8,7 @@ import { createClubRequestStub } from '@/application/use-cases/club-request/appr
 import ApproveClubRequest from '@/application/use-cases/club-request/approve-club-request/approve-club-request.use-case';
 
 import { CLUB_REQUEST_REPOSITORY } from '@/shared/constants/repository-constants';
-import { EVENT_EMITTER_FACADE } from "@/shared/constants/event.constants";
+import { EVENT_EMITTER_FACADE } from '@/shared/constants/event.constants';
 
 describe('Approve Club Request Use Case', () => {
   let useCase: ApproveClubRequest;
@@ -50,12 +50,14 @@ describe('Approve Club Request Use Case', () => {
     expect(repositoryMock.findById).toHaveBeenCalledWith(clubRequestId);
     expect(savedRequest.status).toBe(ClubRequestStatus.APPROVED);
     expect(repositoryMock.save).toHaveBeenCalledWith(savedRequest);
-    expect(eventEmitterFacadeMock.clubEmitter.emit).toHaveBeenCalledWith(expect.objectContaining({
-      eventType: 'ClubRequest.Approved',
-      payload: expect.objectContaining({
-        requestId: clubRequestStub.id,
-        requesterId: clubRequestStub.requesterId,
+    expect(eventEmitterFacadeMock.clubEmitter.emit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        eventType: 'ClubRequest.Approved',
+        payload: expect.objectContaining({
+          requestId: clubRequestStub.id,
+          requesterId: clubRequestStub.requesterId,
+        }),
       }),
-    }));
+    );
   });
 });

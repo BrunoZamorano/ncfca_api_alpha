@@ -69,13 +69,15 @@ describe('ClubRequest', () => {
       expect(clubRequest.rejectionReason).toBeNull();
       expect(clubRequest.resolvedAt).toBeInstanceOf(Date);
       expect(clubRequest.resolvedAt!.getTime()).toBeGreaterThanOrEqual(beforeResolvedAt.getTime());
-      expect(mockEventEmitter.emit).toHaveBeenCalledWith(expect.objectContaining({
-        eventType: 'ClubRequest.Approved',
-        payload: expect.objectContaining({
-          requestId: 'club-request-1',
-          requesterId: 'user-1'
-        })
-      }));
+      expect(mockEventEmitter.emit).toHaveBeenCalledWith(
+        expect.objectContaining({
+          eventType: 'ClubRequest.Approved',
+          payload: expect.objectContaining({
+            requestId: 'club-request-1',
+            requesterId: 'user-1',
+          }),
+        }),
+      );
     });
 
     it('should throw InvalidOperationException when trying to approve an already approved request', () => {
@@ -111,14 +113,16 @@ describe('ClubRequest', () => {
       expect(clubRequest.rejectionReason).toBe(reason);
       expect(clubRequest.resolvedAt).toBeInstanceOf(Date);
       expect(clubRequest.resolvedAt!.getTime()).toBeGreaterThanOrEqual(beforeResolvedAt.getTime());
-      expect(mockEventEmitter.emit).toHaveBeenCalledWith(expect.objectContaining({
-        eventType: 'ClubRequest.Rejected',
-        payload: expect.objectContaining({
-          requestId: 'club-request-1',
-          requesterId: 'user-1',
-          rejectionReason: reason
-        })
-      }));
+      expect(mockEventEmitter.emit).toHaveBeenCalledWith(
+        expect.objectContaining({
+          eventType: 'ClubRequest.Rejected',
+          payload: expect.objectContaining({
+            requestId: 'club-request-1',
+            requesterId: 'user-1',
+            rejectionReason: reason,
+          }),
+        }),
+      );
     });
 
     it('should throw InvalidOperationException when trying to reject an already approved request', () => {

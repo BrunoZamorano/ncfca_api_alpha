@@ -137,7 +137,7 @@ export default class TournamentController {
   @ApiResponse({ status: 400, description: 'Dados inválidos.' })
   @ApiResponse({ status: 409, description: 'Competidor já está inscrito neste torneio.' })
   @ApiResponse({ status: 404, description: 'Torneio ou competidor não encontrado.' })
-  //todo: create a dto as infra/controllers/[specificfolder]/dtos/ and doc it (openapi) for better documentation. must be a class using class validator and openapi docs. one file, input and output dtos. 
+  //todo: create a dto as infra/controllers/[specificfolder]/dtos/ and doc it (openapi) for better documentation. must be a class using class validator and openapi docs. one file, input and output dtos.
   async registerIndividualCompetitor(@Body() dto: RequestIndividualRegistrationDto): Promise<{ registrationId: string; status: string }> {
     const registration = await this.requestIndividualRegistration.execute({
       tournamentId: dto.tournamentId,
