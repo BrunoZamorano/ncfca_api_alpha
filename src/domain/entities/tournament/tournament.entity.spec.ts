@@ -7,6 +7,9 @@ import Registration from '@/domain/entities/registration/registration.entity';
 import { RegistrationStatus } from '@/domain/enums/registration-status.enum';
 import { RegistrationType } from '@/domain/enums/registration-type.enum';
 import { EventEmitter } from '@/domain/events/event-emitter';
+import { DuoRegistrationRequested } from '@/domain/events/duo-registration-requested.event';
+import { DuoRegistrationAccepted } from '@/domain/events/duo-registration-accepted.event';
+import { DuoRegistrationRejected } from '@/domain/events/duo-registration-rejected.event';
 
 const mockIdGenerator: IdGenerator = {
   generate: jest.fn().mockImplementation(() => `mock-uuid-${Math.random()}`),
@@ -17,6 +20,13 @@ const mockDependant: Partial<Dependant> = {
   firstName: 'João',
   lastName: 'Silva',
   familyId: 'family-123',
+};
+
+const mockPartner: Partial<Dependant> = {
+  id: 'partner-456',
+  firstName: 'Maria',
+  lastName: 'Santos',
+  familyId: 'family-456',
 };
 
 const mockEventEmitter: EventEmitter = {
@@ -619,6 +629,427 @@ describe('(UNIT) Tournament Entity', () => {
       expect(registration.sync).toBeDefined();
       expect(registration.sync.status).toBe('PENDING');
       expect(registration.sync.attempts).toBe(0);
+    });
+  });
+
+  describe('Duo Registration', () => {
+    let openDuoTournament: Tournament;
+    let closedDuoTournament: Tournament;
+    let individualTournament: Tournament;
+
+    beforeEach(() => {
+      const now = new Date();
+      const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+      const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+      const nextWeek = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+
+      openDuoTournament = Tournament.create(
+        {
+          ...validTournamentProps,
+          type: TournamentType.DUO,
+          registrationStartDate: yesterday,
+          registrationEndDate: tomorrow,
+          startDate: nextWeek,
+        },
+        mockIdGenerator,
+      );
+
+      closedDuoTournament = Tournament.create(
+        {
+          ...validTournamentProps,
+          type: TournamentType.DUO,
+          registrationStartDate: new Date('2024-01-01'),
+          registrationEndDate: new Date('2024-01-15'),
+          startDate: new Date('2024-02-01'),
+        },
+        mockIdGenerator,
+      );
+
+      individualTournament = Tournament.create(
+        {
+          ...validTournamentProps,
+          type: TournamentType.INDIVIDUAL,
+          registrationStartDate: yesterday,
+          registrationEndDate: tomorrow,
+          startDate: nextWeek,
+        },
+        mockIdGenerator,
+      );
+    });
+
+    describe('requestDuoRegistration', () => {
+      describe('Success scenarios', () => {
+        it('Deve criar um registro de dupla com sucesso', () => {
+          // Act
+          const registration = openDuoTournament.requestDuoRegistration(
+            mockDependant as Dependant,
+            mockPartner as Dependant,
+            mockIdGenerator,
+            mockEventEmitter,
+          );
+
+          // Assert
+          expect(registration).toBeInstanceOf(Registration);
+          expect(registration.tournamentId).toBe(openDuoTournament.id);
+          expect(registration.competitorId).toBe(mockDependant.id);
+          expect(registration.partnerId).toBe(mockPartner.id);
+          expect(registration.status).toBe(RegistrationStatus.PENDING_APPROVAL);
+          expect(registration.type).toBe(TournamentType.DUO);
+          expect(openDuoTournament.registrations.length).toBe(1);
+          expect(mockIdGenerator.generate).toHaveBeenCalled();
+        });
+
+        it('Deve emitir evento DuoRegistration.Requested', () => {
+          // Act
+          const registration = openDuoTournament.requestDuoRegistration(
+            mockDependant as Dependant,
+            mockPartner as Dependant,
+            mockIdGenerator,
+            mockEventEmitter,
+          );
+
+          // Assert
+          expect(mockEventEmitter.emit).toHaveBeenCalledWith(
+            expect.objectContaining({
+              eventType: 'DuoRegistration.Requested',
+              payload: expect.objectContaining({
+                registrationId: registration.id,
+                tournamentId: openDuoTournament.id,
+                competitorId: mockDependant.id,
+                partnerId: mockPartner.id,
+              }),
+            }),
+          );
+        });
+      });
+
+      describe('Tournament type validation', () => {
+        it('Não deve criar registro para torneio que não seja DUO', () => {
+          // Act & Assert
+          expect(() =>
+            individualTournament.requestDuoRegistration(mockDependant as Dependant, mockPartner as Dependant, mockIdGenerator, mockEventEmitter),
+          ).toThrow(new InvalidOperationException('Cannot register for this tournament type. Tournament must be of type DUO.'));
+        });
+      });
+
+      describe('Registration period validation', () => {
+        it('Não deve criar registro fora do período de inscrição', () => {
+          // Act & Assert
+          expect(() =>
+            closedDuoTournament.requestDuoRegistration(mockDependant as Dependant, mockPartner as Dependant, mockIdGenerator, mockEventEmitter),
+          ).toThrow(new InvalidOperationException('Registration period is not open for this tournament.'));
+        });
+      });
+
+      describe('Competitor and partner validation', () => {
+        it('Não deve permitir que competitor e partner sejam a mesma pessoa', () => {
+          // Act & Assert
+          expect(() =>
+            openDuoTournament.requestDuoRegistration(mockDependant as Dependant, mockDependant as Dependant, mockIdGenerator, mockEventEmitter),
+          ).toThrow(new InvalidOperationException('Competitor and partner cannot be the same person.'));
+        });
+
+        it('Não deve permitir competitor já registrado', () => {
+          // Arrange
+          openDuoTournament.requestDuoRegistration(mockDependant as Dependant, mockPartner as Dependant, mockIdGenerator, mockEventEmitter);
+          const anotherPartner = { ...mockPartner, id: 'partner-789' };
+
+          // Act & Assert
+          expect(() =>
+            openDuoTournament.requestDuoRegistration(mockDependant as Dependant, anotherPartner as Dependant, mockIdGenerator, mockEventEmitter),
+          ).toThrow(/Registration/);
+        });
+
+        it('Não deve permitir partner já registrado', () => {
+          // Arrange
+          openDuoTournament.requestDuoRegistration(mockDependant as Dependant, mockPartner as Dependant, mockIdGenerator, mockEventEmitter);
+          const anotherCompetitor = { ...mockDependant, id: 'competitor-789' };
+
+          // Act & Assert
+          expect(() =>
+            openDuoTournament.requestDuoRegistration(anotherCompetitor as Dependant, mockPartner as Dependant, mockIdGenerator, mockEventEmitter),
+          ).toThrow(/Registration/);
+        });
+      });
+    });
+
+    describe('approveDuoRegistration', () => {
+      let registrationToApprove: Registration;
+
+      beforeEach(() => {
+        // Create a duo registration first
+        registrationToApprove = openDuoTournament.requestDuoRegistration(
+          mockDependant as Dependant,
+          mockPartner as Dependant,
+          mockIdGenerator,
+          mockEventEmitter,
+        );
+        jest.clearAllMocks(); // Clear previous calls for clean tests
+      });
+
+      describe('Success scenarios', () => {
+        it('Deve aprovar um registro de dupla com sucesso', () => {
+          // Act
+          openDuoTournament.approveDuoRegistration(registrationToApprove.id, mockEventEmitter);
+
+          // Assert
+          const updatedRegistration = openDuoTournament.registrations.find((r) => r.id === registrationToApprove.id);
+          expect(updatedRegistration?.status).toBe(RegistrationStatus.CONFIRMED);
+        });
+
+        it('Deve emitir evento DuoRegistration.Accepted quando aprovar', () => {
+          // Act
+          openDuoTournament.approveDuoRegistration(registrationToApprove.id, mockEventEmitter);
+
+          // Assert
+          expect(mockEventEmitter.emit).toHaveBeenCalledWith(
+            expect.objectContaining({
+              eventType: 'DuoRegistration.Accepted',
+              payload: expect.objectContaining({
+                registrationId: registrationToApprove.id,
+                tournamentId: openDuoTournament.id,
+                competitorId: mockDependant.id,
+                partnerId: mockPartner.id,
+              }),
+            }),
+          );
+        });
+
+        it('Deve atualizar version e updatedAt do torneio', () => {
+          // Arrange - capture version AFTER registration creation in beforeEach
+          const versionBeforeApproval = openDuoTournament.version;
+          const updatedAtBeforeApproval = openDuoTournament.updatedAt;
+
+          // Act
+          openDuoTournament.approveDuoRegistration(registrationToApprove.id, mockEventEmitter);
+
+          // Assert
+          expect(openDuoTournament.version).toBe(versionBeforeApproval + 1);
+          expect(openDuoTournament.updatedAt.getTime()).toBeGreaterThanOrEqual(updatedAtBeforeApproval.getTime());
+        });
+      });
+
+      describe('Validation scenarios', () => {
+        it('Deve rejeitar aprovação de registro inexistente', () => {
+          // Act & Assert
+          expect(() => openDuoTournament.approveDuoRegistration('non-existent-id', mockEventEmitter)).toThrow(
+            new InvalidOperationException('Registration with ID non-existent-id not found in this tournament.'),
+          );
+        });
+
+        it('Deve rejeitar aprovação de registro já confirmado', () => {
+          // Arrange
+          openDuoTournament.approveDuoRegistration(registrationToApprove.id, mockEventEmitter);
+
+          // Act & Assert
+          expect(() => openDuoTournament.approveDuoRegistration(registrationToApprove.id, mockEventEmitter)).toThrow(
+            new InvalidOperationException('Registration is not pending approval.'),
+          );
+        });
+
+        it('Deve rejeitar aprovação de registro já rejeitado', () => {
+          // Arrange
+          openDuoTournament.rejectDuoRegistration(registrationToApprove.id, mockEventEmitter);
+
+          // Act & Assert
+          expect(() => openDuoTournament.approveDuoRegistration(registrationToApprove.id, mockEventEmitter)).toThrow(
+            new InvalidOperationException('Registration is not pending approval.'),
+          );
+        });
+
+        it('Não deve permitir aprovar registro em torneio deletado', () => {
+          // Arrange - Use a manual construction to bypass registration validation during deletion
+          const deletedTournament = new Tournament({
+            id: 'deleted-tournament',
+            name: validTournamentProps.name,
+            description: validTournamentProps.description,
+            type: TournamentType.DUO,
+            registrationStartDate: validTournamentProps.registrationStartDate,
+            registrationEndDate: validTournamentProps.registrationEndDate,
+            startDate: validTournamentProps.startDate,
+            deletedAt: new Date(), // Already deleted
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            registrations: [], // Start with no registrations
+          });
+
+          // Add a registration manually after tournament is marked as deleted
+          const pendingReg = Registration.createDuoRegistrationForTournament(
+            deletedTournament.id,
+            mockDependant.id!,
+            mockPartner.id!,
+            mockIdGenerator,
+          );
+          deletedTournament['_registrations'].push(pendingReg);
+
+          // Act & Assert
+          expect(() => deletedTournament.approveDuoRegistration(pendingReg.id, mockEventEmitter)).toThrow(
+            new InvalidOperationException('Cannot perform operations on a deleted tournament.'),
+          );
+        });
+      });
+
+      describe('Capacity scenarios', () => {
+        it('Deve cancelar registro se torneio estiver cheio durante aprovação', () => {
+          // Arrange - Create a tournament with registrations already at capacity
+          const fullTournament = new Tournament({
+            id: 'full-tournament',
+            name: validTournamentProps.name,
+            description: validTournamentProps.description,
+            type: TournamentType.DUO,
+            registrationStartDate: validTournamentProps.registrationStartDate,
+            registrationEndDate: validTournamentProps.registrationEndDate,
+            startDate: validTournamentProps.startDate,
+            deletedAt: null,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            registrations: [], // We'll add registrations manually
+          });
+
+          // Add enough confirmed registrations to fill capacity (assuming 10 is max for test)
+          for (let i = 0; i < 10; i++) {
+            fullTournament['_registrations'].push({
+              id: `confirmed-${i}`,
+              status: RegistrationStatus.CONFIRMED,
+              competitorId: `competitor-${i}`,
+              partnerId: `partner-${i}`,
+            } as Registration);
+          }
+
+          // Add a pending registration
+          const pendingReg = Registration.createDuoRegistrationForTournament(
+            fullTournament.id,
+            'pending-competitor',
+            'pending-partner',
+            mockIdGenerator,
+          );
+          fullTournament['_registrations'].push(pendingReg);
+
+          // Act
+          fullTournament.approveDuoRegistration(pendingReg.id, mockEventEmitter);
+
+          // Assert - should be cancelled instead of confirmed
+          const updatedRegistration = fullTournament.registrations.find((r) => r.id === pendingReg.id);
+          expect(updatedRegistration?.status).toBe(RegistrationStatus.CANCELLED);
+        });
+      });
+    });
+
+    describe('rejectDuoRegistration', () => {
+      let registrationToReject: Registration;
+
+      beforeEach(() => {
+        // Create a duo registration first
+        registrationToReject = openDuoTournament.requestDuoRegistration(
+          mockDependant as Dependant,
+          mockPartner as Dependant,
+          mockIdGenerator,
+          mockEventEmitter,
+        );
+        jest.clearAllMocks(); // Clear previous calls for clean tests
+      });
+
+      describe('Success scenarios', () => {
+        it('Deve rejeitar um registro de dupla com sucesso', () => {
+          // Act
+          openDuoTournament.rejectDuoRegistration(registrationToReject.id, mockEventEmitter);
+
+          // Assert
+          const updatedRegistration = openDuoTournament.registrations.find((r) => r.id === registrationToReject.id);
+          expect(updatedRegistration?.status).toBe(RegistrationStatus.REJECTED);
+        });
+
+        it('Deve emitir evento DuoRegistration.Rejected quando rejeitar', () => {
+          // Act
+          openDuoTournament.rejectDuoRegistration(registrationToReject.id, mockEventEmitter);
+
+          // Assert
+          expect(mockEventEmitter.emit).toHaveBeenCalledWith(
+            expect.objectContaining({
+              eventType: 'DuoRegistration.Rejected',
+              payload: expect.objectContaining({
+                registrationId: registrationToReject.id,
+                tournamentId: openDuoTournament.id,
+                competitorId: mockDependant.id,
+                partnerId: mockPartner.id,
+              }),
+            }),
+          );
+        });
+
+        it('Deve atualizar version e updatedAt do torneio', () => {
+          // Arrange
+          const versionBeforeRejection = openDuoTournament.version;
+          const updatedAtBeforeRejection = openDuoTournament.updatedAt;
+
+          // Act
+          openDuoTournament.rejectDuoRegistration(registrationToReject.id, mockEventEmitter);
+
+          // Assert
+          expect(openDuoTournament.version).toBe(versionBeforeRejection + 1);
+          expect(openDuoTournament.updatedAt.getTime()).toBeGreaterThanOrEqual(updatedAtBeforeRejection.getTime());
+        });
+      });
+
+      describe('Validation scenarios', () => {
+        it('Deve rejeitar rejeição de registro inexistente', () => {
+          // Act & Assert
+          expect(() => openDuoTournament.rejectDuoRegistration('non-existent-id', mockEventEmitter)).toThrow(
+            new InvalidOperationException('Registration with ID non-existent-id not found in this tournament.'),
+          );
+        });
+
+        it('Deve rejeitar rejeição de registro já confirmado', () => {
+          // Arrange
+          openDuoTournament.approveDuoRegistration(registrationToReject.id, mockEventEmitter);
+
+          // Act & Assert
+          expect(() => openDuoTournament.rejectDuoRegistration(registrationToReject.id, mockEventEmitter)).toThrow(
+            new InvalidOperationException('Registration is not pending approval.'),
+          );
+        });
+
+        it('Deve rejeitar rejeição de registro já rejeitado', () => {
+          // Arrange
+          openDuoTournament.rejectDuoRegistration(registrationToReject.id, mockEventEmitter);
+
+          // Act & Assert
+          expect(() => openDuoTournament.rejectDuoRegistration(registrationToReject.id, mockEventEmitter)).toThrow(
+            new InvalidOperationException('Registration is not pending approval.'),
+          );
+        });
+
+        it('Não deve permitir rejeitar registro em torneio deletado', () => {
+          // Arrange - Use manual construction to bypass validation
+          const deletedTournament = new Tournament({
+            id: 'deleted-tournament',
+            name: validTournamentProps.name,
+            description: validTournamentProps.description,
+            type: TournamentType.DUO,
+            registrationStartDate: validTournamentProps.registrationStartDate,
+            registrationEndDate: validTournamentProps.registrationEndDate,
+            startDate: validTournamentProps.startDate,
+            deletedAt: new Date(), // Already deleted
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            registrations: [], // Start with no registrations
+          });
+
+          // Add a registration manually after tournament is marked as deleted
+          const pendingReg = Registration.createDuoRegistrationForTournament(
+            deletedTournament.id,
+            mockDependant.id!,
+            mockPartner.id!,
+            mockIdGenerator,
+          );
+          deletedTournament['_registrations'].push(pendingReg);
+
+          // Act & Assert
+          expect(() => deletedTournament.rejectDuoRegistration(pendingReg.id, mockEventEmitter)).toThrow(
+            new InvalidOperationException('Cannot perform operations on a deleted tournament.'),
+          );
+        });
+      });
     });
   });
 });

@@ -120,6 +120,24 @@ export default class Registration {
     this._updatedAt = new Date();
   }
 
+  public confirm(): void {
+    if (this._status !== RegistrationStatus.PENDING_APPROVAL) {
+      throw new Error('Registration must be pending approval to be confirmed');
+    }
+    this._status = RegistrationStatus.CONFIRMED;
+    this._updatedAt = new Date();
+    this._version++;
+  }
+
+  public reject(): void {
+    if (this._status !== RegistrationStatus.PENDING_APPROVAL) {
+      throw new Error('Registration must be pending approval to be rejected');
+    }
+    this._status = RegistrationStatus.REJECTED;
+    this._updatedAt = new Date();
+    this._version++;
+  }
+
   public isConfirmed(): boolean {
     return this._status === RegistrationStatus.CONFIRMED;
   }
