@@ -102,7 +102,7 @@ describe('E2E ApproveEnrollment', () => {
     expect([HttpStatus.NO_CONTENT, HttpStatus.OK, HttpStatus.NOT_FOUND]).toContain(response.status);
 
     // Se não foi 404, verificar se foi processado
-    if (response.status !== HttpStatus.NOT_FOUND) {
+    if (response.status !== (HttpStatus.NOT_FOUND as number)) {
       const updatedRequest = await prisma.enrollmentRequest.findUnique({
         where: { id: enrollmentRequest.id },
       });

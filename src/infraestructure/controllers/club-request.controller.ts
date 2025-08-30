@@ -12,6 +12,7 @@ import { CreateClubRequestDto } from '@/infraestructure/dtos/create-club-request
 import { ClubRequestStatusDto } from '@/domain/dtos/club-request-status.dto';
 import { AdminGuard } from '@/shared/guards/admin.guard';
 import AuthGuard from '@/shared/guards/auth.guard';
+import { UserRoles } from '@/domain/enums/user-roles';
 
 @ApiTags('Clubes - Solicitações')
 @Controller('club-requests')
@@ -75,4 +76,4 @@ export default class ClubRequestController {
 }
 
 //todo: move it to its own file in shared/types/
-export type HttpUser = { user: { id: string } };
+export type HttpUser = { user: { id: string; roles: UserRoles[] } };

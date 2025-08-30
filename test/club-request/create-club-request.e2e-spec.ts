@@ -2,14 +2,16 @@ import * as request from 'supertest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { HttpStatus, ValidationPipe } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
+
 import { UserRoles } from '@/domain/enums/user-roles';
+import { FamilyStatus } from '@/domain/enums/family-status';
 
 import { PrismaService } from '@/infraestructure/database/prisma.service';
 
 import { AppModule } from '@/app.module';
 
 import { createTestUser } from '../utils/prisma/create-test-user';
-import { FamilyStatus } from '@/domain/enums/family-status';
+import { surgicalCleanup } from '../utils/prisma/cleanup';
 
 describe('Club Request Creation (e2e)', () => {
   let app: NestExpressApplication;
@@ -31,15 +33,15 @@ describe('Club Request Creation (e2e)', () => {
     testUsers.push(user.userId);
   });
 
-  // afterAll(async () => {
-  //   await surgicalCleanup(prisma, testUsers);
-  //   await app.close();
-  // });
+  afterAll(async () => {
+    await surgicalCleanup(prisma, testUsers);
+    await app.close();
+  });
 
-  // afterEach(() => {
-  //   await prisma.clubRequest.deleteMany({ where: { requester_id: user.userId } });
-  //   await prisma.club.deleteMany({ where: { principal_id: user.userId } });
-  // });
+  afterEach(async () => {
+    await prisma.clubRequest.deleteMany({ where: { requester_id: user.userId } });
+    await prisma.club.deleteMany({ where: { principal_id: user.userId } });
+  });
 
   const createRequestDto = {
     clubName: 'Meu Clube E2E',

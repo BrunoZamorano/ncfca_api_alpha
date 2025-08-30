@@ -11,6 +11,8 @@ import GlobalExceptionFilter from '@/infraestructure/filters/global-exception-fi
 
 import { createTestUser } from '../utils/prisma/create-test-user';
 import { surgicalCleanup } from '../utils/prisma/cleanup';
+import DependantMapper from '@/shared/mappers/dependant.mapper';
+import Dependant from '@/domain/entities/dependant/dependant';
 
 export interface EnrollmentTestUser {
   userId: string;
@@ -120,7 +122,7 @@ export async function createTestDependant(
     email: string;
     phone: string;
   }> = {},
-) {
+): Promise<Dependant> {
   const dependantData = {
     id: crypto.randomUUID(),
     first_name: overrides.firstName || 'Maria',
@@ -133,10 +135,11 @@ export async function createTestDependant(
     phone: overrides.phone || null,
     family_id: familyId,
   };
-
-  return prisma.dependant.create({
+  const dependantModel = await prisma.dependant.create({
     data: dependantData,
   });
+  const dependantEntity = DependantMapper.toEntity(dependantModel);
+  return dependantEntity;
 }
 
 /**

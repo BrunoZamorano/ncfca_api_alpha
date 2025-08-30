@@ -7,7 +7,7 @@ import RequestEnrollment from '@/application/use-cases/enrollment/request-enroll
 
 import AuthGuard from '@/shared/guards/auth.guard';
 
-import { RequestEnrollmentDto } from '../dtos/request-enrollment.dto';
+import { RequestEnrollmentInputDto } from '../dtos/request-enrollment.dto';
 
 @ApiTags('Matrículas (Responsável)')
 @ApiBearerAuth('JWT-auth')
@@ -23,7 +23,7 @@ export default class EnrollmentController {
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Solicita a matrícula de um dependente em um clube' })
   @ApiResponse({ status: 201, description: 'Solicitação de matrícula criada com sucesso.' })
-  async request(@Request() req: any, @Body() body: RequestEnrollmentDto): Promise<void> {
+  async request(@Request() req: any, @Body() body: RequestEnrollmentInputDto): Promise<void> {
     const loggedInUserId = req.user.id;
     await this.requestEnrollmentUseCase.execute({
       loggedInUserId,

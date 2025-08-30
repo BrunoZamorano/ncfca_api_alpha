@@ -11,7 +11,7 @@ type ClubWithMembersData = Model & { memberships?: ClubMembershipModel[] };
 
 export default class ClubMapper {
   static modelToEntity(data: ClubWithMembersData): Entity {
-    const members: ClubMembership[] = data.memberships ? data.memberships.map(ClubMembershipMapper.toEntity) : [];
+    const members: ClubMembership[] = data.memberships ? data.memberships.map((member) => ClubMembershipMapper.toEntity(member)) : [];
     return new Entity({
       id: data.id,
       name: data.name,

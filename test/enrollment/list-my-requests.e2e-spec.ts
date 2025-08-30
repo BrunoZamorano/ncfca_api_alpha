@@ -14,13 +14,14 @@ import {
   EnrollmentTestUser,
   ClubTestData,
 } from './setup';
+import Dependant from '@/domain/entities/dependant/dependant';
 
 describe('(E2E) ListMyEnrollmentRequests', () => {
   let app: NestExpressApplication;
   let prisma: PrismaService;
   let testUser: EnrollmentTestUser;
   let testClub: ClubTestData;
-  let testDependant: any;
+  let testDependant: Dependant;
   let clubOwnerUser: EnrollmentTestUser;
   const testUserIds: string[] = [];
 
@@ -67,14 +68,16 @@ describe('(E2E) ListMyEnrollmentRequests', () => {
     });
 
     // Act
-    const response = await request(app.getHttpServer()).get('/enrollments/my-requests').set('Authorization', `Bearer ${testUser.accessToken}`);
+    const response: request.Response = await request(app.getHttpServer())
+      .get('/enrollments/my-requests')
+      .set('Authorization', `Bearer ${testUser.accessToken}`);
+    const body = response.body as MyEnrollmentRequestItemView[];
 
     // Assert
     expect(response.status).toBe(200);
-    expect(Array.isArray(response.body)).toBe(true);
-    expect(response.body.length).toBeGreaterThan(0);
-
-    const enrollmentRequest = response.body[0] as MyEnrollmentRequestItemView;
+    expect(Array.isArray(body)).toBe(true);
+    expect(body.length).toBeGreaterThan(0);
+    const enrollmentRequest = body[0];
     expect(enrollmentRequest).toHaveProperty('id');
     expect(enrollmentRequest).toHaveProperty('status');
     expect(enrollmentRequest).toHaveProperty('clubName');
@@ -89,14 +92,15 @@ describe('(E2E) ListMyEnrollmentRequests', () => {
     testUserIds.push(userWithoutRequests.userId);
 
     // Act
-    const response = await request(app.getHttpServer())
+    const response: request.Response = await request(app.getHttpServer())
       .get('/enrollments/my-requests')
       .set('Authorization', `Bearer ${userWithoutRequests.accessToken}`);
+    const body = response.body as MyEnrollmentRequestItemView[];
 
     // Assert
     expect(response.status).toBe(200);
     expect(Array.isArray(response.body)).toBe(true);
-    expect(response.body.length).toBe(0);
+    expect(body.length).toBe(0);
   });
 
   it('Não deve retornar solicitações de outras famílias', async () => {
@@ -119,7 +123,9 @@ describe('(E2E) ListMyEnrollmentRequests', () => {
     });
 
     // Act - Buscar como o primeiro usuário
-    const response = await request(app.getHttpServer()).get('/enrollments/my-requests').set('Authorization', `Bearer ${testUser.accessToken}`);
+    const response: { body: MyEnrollmentRequestItemView[]; status: number } = await request(app.getHttpServer())
+      .get('/enrollments/my-requests')
+      .set('Authorization', `Bearer ${testUser.accessToken}`);
 
     // Assert - Deve retornar apenas as solicitações da própria família
     expect(response.status).toBe(200);
@@ -127,7 +133,7 @@ describe('(E2E) ListMyEnrollmentRequests', () => {
 
     // Verificar que nenhuma das solicitações retornadas pertence à outra família
     const userFamilyRequests = response.body.filter(
-      (req: any) => req.id !== undefined, // Only valid requests from this user's family
+      (req: MyEnrollmentRequestItemView) => req.id !== undefined, // Only valid requests from this user's family
     );
 
     // Se existem solicitações, devem ser apenas da família do usuário testado

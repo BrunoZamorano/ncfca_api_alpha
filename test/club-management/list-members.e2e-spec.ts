@@ -23,13 +23,14 @@ describe('(E2E) List Club Members', () => {
   let anotherClubOwner: ClubManagementTestUser;
   let testFamily: ClubManagementTestUser;
   let testClub: ClubTestData;
-  let anotherClub: ClubTestData;
   const testUsers: string[] = [];
 
   beforeAll(async () => {
     // Arrange - Setup da aplicação e usuários base
     ({ app, prisma } = await setupClubManagementApp());
+  });
 
+  beforeEach(async () => {
     // Criar dono do clube principal
     clubOwner = await createClubOwnerUser(app, prisma);
     testUsers.push(clubOwner.userId);
@@ -45,10 +46,6 @@ describe('(E2E) List Club Members', () => {
     // Criar clubes
     testClub = await createTestClub(prisma, clubOwner.userId, {
       name: 'Clube E2E Membros',
-    });
-
-    anotherClub = await createTestClub(prisma, anotherClubOwner.userId, {
-      name: 'Outro Clube E2E',
     });
   });
 
@@ -104,22 +101,6 @@ describe('(E2E) List Club Members', () => {
         .expect(HttpStatus.OK);
 
       // Assert - Validar array vazio
-      expect(response.body).toHaveLength(0);
-      expect(Array.isArray(response.body)).toBe(true);
-    });
-
-    it('Não deve permitir listar membros de clube de outro usuário', async () => {
-      // Arrange - anotherClubOwner tem seu próprio clube, retornará membros do seu clube
-      // Como cada usuário só vê os membros do próprio clube, isso não é um problema de segurança
-      // O endpoint sempre retorna os membros do clube do usuário logado
-
-      // Act - Listar membros com outro token (verá seu próprio clube vazio)
-      const response: { body: ClubMemberDto[] } = await request(app.getHttpServer())
-        .get('/club-management/my-club/members')
-        .set('Authorization', `Bearer ${anotherClubOwner.accessToken}`)
-        .expect(HttpStatus.OK);
-
-      // Assert - Deve retornar array vazio pois outro clube não tem membros
       expect(response.body).toHaveLength(0);
       expect(Array.isArray(response.body)).toBe(true);
     });

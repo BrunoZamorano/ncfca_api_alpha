@@ -12,6 +12,7 @@ import { FamilyStatus } from '@/domain/enums/family-status';
 import { PaymentStatus } from '@/domain/enums/payment-status';
 import { UserRoles } from '@/domain/enums/user-roles';
 import { randomUUID } from 'crypto';
+import { PaymentTransaction } from '@/domain/types/payment';
 
 describe('E2E CheckoutUseCase', () => {
   let app: NestExpressApplication;
@@ -37,15 +38,18 @@ describe('E2E CheckoutUseCase', () => {
 
   it('Deve processar pagamento de afiliação com cartão de crédito e ativar família', async () => {
     // Arrange
-    const { userId, accessToken, familyId } = await createTestUser(`test-${randomUUID()}@example.com`, [UserRoles.SEM_FUNCAO], prisma, app);
+    const { userId, accessToken } = await createTestUser(`test-${randomUUID()}@example.com`, [UserRoles.SEM_FUNCAO], prisma, app);
     createdUsers.push(userId);
 
     // Act
-    const response = await request(app.getHttpServer()).post('/checkout').set('Authorization', `Bearer ${accessToken}`).send({
-      paymentMethod: PaymentMethod.CREDIT_CARD,
-      paymentToken: 'valid-token', // Token válido para sucesso no mock
-      installments: 1,
-    });
+    const response: { body: { id: string; status: PaymentStatus }; status: number } = await request(app.getHttpServer())
+      .post('/checkout')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({
+        paymentMethod: PaymentMethod.CREDIT_CARD,
+        paymentToken: 'valid-token', // Token válido para sucesso no mock
+        installments: 1,
+      });
 
     // Assert
     expect(response.status).toBe(201);
@@ -58,18 +62,20 @@ describe('E2E CheckoutUseCase', () => {
 
   it('Deve processar pagamento de afiliação com PIX e manter família como não afiliada', async () => {
     // Arrange
-    const { userId, accessToken, familyId } = await createTestUser(`test-${randomUUID()}@example.com`, [UserRoles.SEM_FUNCAO], prisma, app);
+    const { userId, accessToken } = await createTestUser(`test-${randomUUID()}@example.com`, [UserRoles.SEM_FUNCAO], prisma, app);
     createdUsers.push(userId);
 
     // Act
-    const response = await request(app.getHttpServer()).post('/checkout').set('Authorization', `Bearer ${accessToken}`).send({
+    const response: request.Response = await request(app.getHttpServer()).post('/checkout').set('Authorization', `Bearer ${accessToken}`).send({
       paymentMethod: PaymentMethod.PIX,
     });
+    const body = response.body as PaymentTransaction;
+    const status = response.status;
 
     // Assert
-    expect(response.status).toBe(201);
-    expect(response.body).toHaveProperty('id');
-    expect(response.body.status).toBe(PaymentStatus.PENDING);
+    expect(status).toBe(201);
+    expect(body).toHaveProperty('id');
+    expect(body.status).toBe(PaymentStatus.PENDING);
 
     const family = await prisma.family.findUnique({ where: { holder_id: userId } });
     expect(family?.status).toBe(FamilyStatus.NOT_AFFILIATED);
@@ -92,7 +98,7 @@ describe('E2E CheckoutUseCase', () => {
 
   it('Não deve processar pagamento se a família já estiver afiliada', async () => {
     // Arrange
-    const { userId, accessToken, familyId } = await createTestUser(`test-${randomUUID()}@example.com`, [UserRoles.SEM_FUNCAO], prisma, app);
+    const { userId, accessToken } = await createTestUser(`test-${randomUUID()}@example.com`, [UserRoles.SEM_FUNCAO], prisma, app);
     createdUsers.push(userId);
     await prisma.family.update({
       where: { holder_id: userId },
@@ -105,15 +111,16 @@ describe('E2E CheckoutUseCase', () => {
       paymentToken: 'valid-token',
       installments: 1,
     });
+    const body = response.body as { message: string };
 
     // Assert
     expect(response.status).toBe(400);
-    expect(response.body.message).toBe('FAMILY_ALREADY_AFFILIATED');
+    expect(body.message).toBe('FAMILY_ALREADY_AFFILIATED');
   });
 
   it('Não deve processar pagamento com cartão de crédito sem paymentToken', async () => {
     // Arrange
-    const { userId, accessToken, familyId } = await createTestUser(`test-${randomUUID()}@example.com`, [UserRoles.SEM_FUNCAO], prisma, app);
+    const { userId, accessToken } = await createTestUser(`test-${randomUUID()}@example.com`, [UserRoles.SEM_FUNCAO], prisma, app);
     createdUsers.push(userId);
 
     // Act
@@ -121,15 +128,16 @@ describe('E2E CheckoutUseCase', () => {
       paymentMethod: PaymentMethod.CREDIT_CARD,
       installments: 1,
     });
+    const body = response.body as { message: string };
 
     // Assert
     expect(response.status).toBe(400);
-    expect(response.body.message).toContain('O token de pagamento é obrigatório para cartão de crédito.');
+    expect(body.message).toContain('O token de pagamento é obrigatório para cartão de crédito.');
   });
 
   it('Não deve processar pagamento se o processamento do cartão de crédito falhar', async () => {
     // Arrange
-    const { userId, accessToken, familyId } = await createTestUser(`test-${randomUUID()}@example.com`, [UserRoles.SEM_FUNCAO], prisma, app);
+    const { userId, accessToken } = await createTestUser(`test-${randomUUID()}@example.com`, [UserRoles.SEM_FUNCAO], prisma, app);
     createdUsers.push(userId);
     // Mock Stripe to simulate failure - this would typically be done at a lower level (e.g., PaymentGateway mock)
     // For E2E, we rely on Stripe's test tokens for specific scenarios.
@@ -142,9 +150,10 @@ describe('E2E CheckoutUseCase', () => {
       paymentToken: failingToken,
       installments: 1,
     });
+    const body = response.body as { message: string };
 
     // Assert
     expect(response.status).toBe(400);
-    expect(response.body.message).toContain('PAYMENT_FAILED');
+    expect(body.message).toContain('PAYMENT_FAILED');
   });
 });

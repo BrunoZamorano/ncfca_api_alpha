@@ -309,6 +309,9 @@ model RegistrationSync {
   status          SyncStatus   @default(PENDING)
   created_at      DateTime     @default(now())
   updated_at      DateTime     @updatedAt
+  attempts        Int          @default(0)
+  last_attempt_at DateTime?
+  next_attempt_at DateTime?
 
   @@map("registration_syncs")
 }

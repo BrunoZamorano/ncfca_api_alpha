@@ -3,7 +3,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsUUID } from 'class-validator';
 
-export class RequestEnrollmentDto {
+export class RequestEnrollmentInputDto {
   @ApiProperty({
     description: 'ID do dependente para o qual a matrícula está sendo solicitada.',
     example: 'b1f8b5a0-9c1e-4b8a-8c1a-9c8b8a0c1e2f',

@@ -13,13 +13,15 @@ import {
   EnrollmentTestUser,
   ClubTestData,
 } from './setup';
+import { RequestEnrollmentInputDto } from '@/infraestructure/dtos/request-enrollment.dto';
+import Dependant from '@/domain/entities/dependant/dependant';
 
 describe('(E2E) RequestEnrollment', () => {
   let app: NestExpressApplication;
   let prisma: PrismaService;
   let testUser: EnrollmentTestUser;
   let testClub: ClubTestData;
-  let testDependant: any;
+  let testDependant: Dependant;
   let clubOwnerUser: EnrollmentTestUser;
   const testUserIds: string[] = [];
 
@@ -54,7 +56,7 @@ describe('(E2E) RequestEnrollment', () => {
 
   it('Deve criar uma solicitação de matrícula com sucesso', async () => {
     // Arrange
-    const enrollmentData = {
+    const enrollmentData: RequestEnrollmentInputDto = {
       dependantId: testDependant.id,
       clubId: testClub.id,
     };

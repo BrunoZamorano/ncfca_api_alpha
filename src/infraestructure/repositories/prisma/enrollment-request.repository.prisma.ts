@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '@/infraestructure/database/prisma.service';
+
 import EnrollmentRequestRepository from '@/domain/repositories/enrollment-request-repository';
 import EnrollmentRequest from '@/domain/entities/enrollment-request/enrollment-request';
+
+import { PrismaService } from '@/infraestructure/database/prisma.service';
+
 import EnrollmentRequestMapper from '@/shared/mappers/enrollment-request.mapper';
 
 @Injectable()
@@ -15,24 +18,24 @@ export class EnrollmentRequestRepositoryPrisma implements EnrollmentRequestRepos
 
   async findByClubId(clubId: string): Promise<EnrollmentRequest[]> {
     const requests = await this.prisma.enrollmentRequest.findMany({ where: { club_id: clubId }, include: { dependant: true } });
-    return requests.map(EnrollmentRequestMapper.toDomain);
+    return requests.map((model) => EnrollmentRequestMapper.toDomain(model));
   }
 
   async findByFamilyId(familyId: string): Promise<EnrollmentRequest[]> {
     const requests = await this.prisma.enrollmentRequest.findMany({ where: { family_id: familyId }, orderBy: { requested_at: 'desc' } });
-    return requests.map(EnrollmentRequestMapper.toDomain);
+    return requests.map((model) => EnrollmentRequestMapper.toDomain(model));
   }
 
   async findByDependantAndClub(dependantId: string, clubId: string): Promise<EnrollmentRequest[]> {
     const requests = await this.prisma.enrollmentRequest.findMany({
       where: { member_id: dependantId, club_id: clubId },
     });
-    return requests.map(EnrollmentRequestMapper.toDomain);
+    return requests.map((model) => EnrollmentRequestMapper.toDomain(model));
   }
 
   async findAll(): Promise<EnrollmentRequest[]> {
     const requests = await this.prisma.enrollmentRequest.findMany();
-    return requests.map(EnrollmentRequestMapper.toDomain);
+    return requests.map((model) => EnrollmentRequestMapper.toDomain(model));
   }
 
   async save(request: EnrollmentRequest): Promise<EnrollmentRequest> {

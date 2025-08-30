@@ -18,6 +18,7 @@ import { EnrollmentRequestDto } from '@/domain/dtos/enrollment-request.dto';
 import { ClubMemberDto } from '@/domain/dtos/club-member.dto';
 import ListAllEnrollments from '@/application/use-cases/club-management/list-all-enrollments/list-all-enrollments';
 import { ListPendingEnrollmentsOutputDto } from '@/infraestructure/dtos/list-pending-enrollments.dto';
+import { HttpUser } from '../club-request.controller';
 
 @ApiTags('Gestão de Clube (Diretor)')
 @ApiBearerAuth('JWT-auth')
@@ -39,7 +40,7 @@ export default class ClubManagementController {
   @Get('my-club')
   @ApiOperation({ summary: 'Obtém as informações do clube do diretor autenticado' })
   @ApiResponse({ status: 200, description: 'Dados do clube retornados com sucesso.', type: ClubDto })
-  async getMyClubInfo(@Request() req: any) {
+  async getMyClubInfo(@Request() req: HttpUser) {
     const input = { loggedInUserId: req.user.id };
     return this._getMyClubInfo.execute(input);
   }
@@ -48,7 +49,7 @@ export default class ClubManagementController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Atualiza as informações de um clube específico que o usuário dirige' })
   @ApiResponse({ status: 204, description: 'Clube atualizado com sucesso.' })
-  async updateClub(@Request() req: any, @Body() body: UpdateClubDto): Promise<void> {
+  async updateClub(@Request() req: HttpUser, @Body() body: UpdateClubDto): Promise<void> {
     await this._updateClubInfo.execute({
       principalId: req.user.id,
       address: body.address,
@@ -59,7 +60,7 @@ export default class ClubManagementController {
   @Get('/my-club/enrollments')
   @ApiOperation({ summary: 'Lista todas as solicitações de matrícula para o clube do usuário logado.' })
   @ApiResponse({ status: 200, description: 'Lista de solicitações pendentes.', type: [EnrollmentRequestDto] })
-  async listEnrollments(@Request() req: any) {
+  async listEnrollments(@Request() req: HttpUser) {
     return this._listAllEnrollments.execute({ loggedInUserId: req.user.id });
   }
 
@@ -70,7 +71,7 @@ export default class ClubManagementController {
     description: 'Lista de solicitações pendentes.',
     type: [ListPendingEnrollmentsOutputDto],
   })
-  async listPending(@Request() req: any, @Param('clubId') clubId: string) {
+  async listPending(@Request() req: HttpUser, @Param('clubId') clubId: string) {
     return this._listPendingEnrollments.execute({ loggedInUserId: req.user.id, clubId });
   }
 
@@ -78,7 +79,7 @@ export default class ClubManagementController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Aprova uma solicitação de matrícula' })
   @ApiResponse({ status: 204, description: 'Matrícula aprovada com sucesso.' })
-  async approve(@Request() req: any, @Param('enrollmentId') enrollmentId: string) {
+  async approve(@Request() req: HttpUser, @Param('enrollmentId') enrollmentId: string) {
     await this._approveEnrollment.execute({ loggedInUserId: req.user.id, enrollmentRequestId: enrollmentId });
   }
 
@@ -86,7 +87,7 @@ export default class ClubManagementController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Rejeita uma solicitação de matrícula' })
   @ApiResponse({ status: 204, description: 'Matrícula rejeitada com sucesso.' })
-  async reject(@Request() req: any, @Param('enrollmentId') enrollmentId: string, @Body() body: RejectEnrollmentDto) {
+  async reject(@Request() req: HttpUser, @Param('enrollmentId') enrollmentId: string, @Body() body: RejectEnrollmentDto) {
     await this._rejectEnrollment.execute({
       loggedInUserId: req.user.id,
       enrollmentRequestId: enrollmentId,
@@ -97,7 +98,7 @@ export default class ClubManagementController {
   @Get('/my-club/members')
   @ApiOperation({ summary: 'Lista todos os membros ativos do meu clube' })
   @ApiResponse({ status: 200, description: 'Lista de membros ativos.', type: [ClubMemberDto] }) // Nota: Deveria ser um DTO de Membro, mas usando o de request por ora.
-  async listMembersOfMyClub(@Request() req: any) {
+  async listMembersOfMyClub(@Request() req: HttpUser) {
     return this._listMembersOfMyClub.execute({ loggedInUserId: req.user.id });
   }
 
@@ -105,7 +106,7 @@ export default class ClubManagementController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Revoga a afiliação de um membro do clube' })
   @ApiResponse({ status: 204, description: 'Afiliação do membro revogada com sucesso.' })
-  async removeMember(@Request() req: any, @Param('membershipId') membershipId: string) {
+  async removeMember(@Request() req: HttpUser, @Param('membershipId') membershipId: string) {
     await this._removeClubMember.execute({ loggedInUserId: req.user.id, membershipId: membershipId });
   }
 }

@@ -11,7 +11,7 @@ describe('WebhookGuard', () => {
 
   const secret = 'chave-secreta-para-teste';
 
-  const createMockContext = (headers: any, rawBody: Buffer) => {
+  const createMockContext = (headers: Record<string, string>, rawBody: Buffer) => {
     return {
       switchToHttp: () => ({
         getRequest: () => ({ headers, rawBody }),
@@ -22,7 +22,7 @@ describe('WebhookGuard', () => {
   beforeEach(() => {
     mockConfigService = {
       get: jest.fn().mockReturnValue(secret),
-    } as any;
+    } as unknown as ConfigService;
     guard = new WebhookGuard(mockConfigService);
   });
 

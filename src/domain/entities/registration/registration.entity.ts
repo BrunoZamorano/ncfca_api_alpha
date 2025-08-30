@@ -145,11 +145,11 @@ export default class Registration {
 
 interface RegistrationConstructorProps {
   id: string;
-  status: RegistrationStatus;
-  type: TournamentType;
-  partnerId?: string | null;
-  version?: number;
   sync: RegistrationSync;
+  type: TournamentType;
+  status: RegistrationStatus;
+  version?: number;
+  partnerId?: string | null;
   createdAt: Date;
   updatedAt: Date;
   tournamentId: string;

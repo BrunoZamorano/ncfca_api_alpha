@@ -13,23 +13,23 @@ export default class TransactionRepositoryMemory implements TransactionRepositor
     this.db = InMemoryDatabase.getInstance();
   }
 
-  async findByGatewayTransactionId(gatewayId: string): Promise<Transaction | null> {
+  findByGatewayTransactionId(gatewayId: string): Promise<Transaction | null> {
     const transaction = this.db.transactions.find((t) => t.gatewayTransactionId === gatewayId);
-    return transaction ?? null;
+    return Promise.resolve(transaction ?? null);
   }
 
-  async findById(id: string): Promise<Transaction | null> {
+  findById(id: string): Promise<Transaction | null> {
     const transaction = this.db.transactions.find((t) => t.id === id);
-    return transaction ?? null;
+    return Promise.resolve(transaction ?? null);
   }
 
-  async save(transaction: Transaction): Promise<Transaction> {
+  save(transaction: Transaction): Promise<Transaction> {
     const existingIndex = this.db.transactions.findIndex((t) => t.id === transaction.id);
     if (existingIndex !== -1) {
       this.db.transactions[existingIndex] = transaction;
     } else {
       this.db.transactions.push(transaction);
     }
-    return transaction;
+    return Promise.resolve(transaction);
   }
 }

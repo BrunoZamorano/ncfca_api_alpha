@@ -1,8 +1,9 @@
 import { Inject, Injectable, ForbiddenException } from '@nestjs/common';
+
+//todo: move the UNIT_OF_WORK constant to the @/src/shared/constants/services/ file.
 import { UNIT_OF_WORK, UnitOfWork } from '@/domain/services/unit-of-work';
 import { EntityNotFoundException } from '@/domain/exceptions/domain-exception';
 import { MembershipStatus } from '@/domain/enums/membership-status';
-import ClubMembership from '@/domain/entities/club-membership/club-membership.entity';
 import { ClubMemberDto } from '@/domain/dtos/club-member.dto';
 
 @Injectable()

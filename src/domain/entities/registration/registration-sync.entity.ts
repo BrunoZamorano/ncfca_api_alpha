@@ -1,6 +1,7 @@
 import { InvalidOperationException } from '@/domain/exceptions/domain-exception';
 import IdGenerator from '@/application/services/id-generator';
 
+//todo: move to a new file in domain/enum/ folder. follow rules : @./cursor/rules/*.mdc
 export enum SyncStatus {
   PENDING = 'PENDING',
   SYNCED = 'SYNCED',
@@ -10,9 +11,9 @@ export enum SyncStatus {
 export default class RegistrationSync {
   private readonly _id: string;
   private readonly _registrationId: string;
+  private readonly _createdAt: Date;
   private _status: SyncStatus;
   private _attempts: number;
-  private readonly _createdAt: Date;
   private _updatedAt: Date;
   private _lastAttemptAt: Date | null;
   private _nextAttemptAt: Date | null;

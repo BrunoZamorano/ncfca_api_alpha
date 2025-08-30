@@ -92,6 +92,7 @@ describe('RabbitMqEventEmitter (Unit)', () => {
         payload: { clubId: '123' },
       };
       clubEmitter.emit(mockEvent);
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(clubClient.emit).toHaveBeenCalledWith('club.created', { clubId: '123' });
     });
 
@@ -101,6 +102,7 @@ describe('RabbitMqEventEmitter (Unit)', () => {
         payload: { tournamentId: '456' },
       };
       tournamentEmitter.emit(mockEvent);
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(tournamentClient.emit).toHaveBeenCalledWith('tournament.created', { tournamentId: '456' });
     });
   });
