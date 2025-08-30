@@ -1,8 +1,10 @@
 import * as request from 'supertest';
+import { Response } from 'supertest';
 import { HttpStatus } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { PrismaService } from '@/infraestructure/database/prisma.service';
 import { TournamentType } from '@/domain/enums/tournament-type.enum';
+import { TournamentListItemView } from '@/application/queries/tournament-query/tournament-list-item.view';
 
 import {
   setupTournamentApp,
@@ -82,23 +84,24 @@ describe('(E2E) ListTournaments', () => {
       // Arrange - Torneios já criados no beforeAll
 
       // Act
-      const response = await request(app.getHttpServer()).get('/tournaments').set('Authorization', `Bearer ${adminUser.accessToken}`);
+      const response: Response = await request(app.getHttpServer()).get('/tournaments').set('Authorization', `Bearer ${adminUser.accessToken}`);
 
       // Assert
       expect(response.status).toBe(HttpStatus.OK);
-      expect(Array.isArray(response.body)).toBe(true);
-      expect(response.body.length).toBeGreaterThanOrEqual(3);
+      const body = response.body as TournamentListItemView[];
+      expect(Array.isArray(body)).toBe(true);
+      expect(body.length).toBeGreaterThanOrEqual(3);
 
       // Verificar estrutura dos itens da lista
-      const tournament = response.body.find((t: any) => t.id === testTournament1.id);
+      const tournament = body.find((t) => t.id === testTournament1.id);
       expect(tournament).toMatchObject({
         id: testTournament1.id,
         name: testTournament1.name,
         type: testTournament1.type,
-        registrationStartDate: expect.any(String),
-        registrationEndDate: expect.any(String),
-        startDate: expect.any(String),
-        registrationCount: expect.any(Number),
+        registrationStartDate: expect.any(String) as string,
+        registrationEndDate: expect.any(String) as string,
+        startDate: expect.any(String) as string,
+        registrationCount: expect.any(Number) as number,
       });
     });
 
@@ -106,12 +109,13 @@ describe('(E2E) ListTournaments', () => {
       // Arrange - Torneios já criados no beforeAll
 
       // Act
-      const response = await request(app.getHttpServer()).get('/tournaments').set('Authorization', `Bearer ${holderUser.accessToken}`);
+      const response: Response = await request(app.getHttpServer()).get('/tournaments').set('Authorization', `Bearer ${holderUser.accessToken}`);
 
       // Assert
       expect(response.status).toBe(HttpStatus.OK);
-      expect(Array.isArray(response.body)).toBe(true);
-      expect(response.body.length).toBeGreaterThanOrEqual(3);
+      const body = response.body as TournamentListItemView[];
+      expect(Array.isArray(body)).toBe(true);
+      expect(body.length).toBeGreaterThanOrEqual(3);
     });
 
     it('Deve retornar uma lista vazia se não houver torneios ativos', async () => {
@@ -126,12 +130,13 @@ describe('(E2E) ListTournaments', () => {
       });
 
       // Act - Lista torneios para holder (não deve ver deletados)
-      const response = await request(app.getHttpServer()).get('/tournaments').set('Authorization', `Bearer ${holderUser.accessToken}`);
+      const response: Response = await request(app.getHttpServer()).get('/tournaments').set('Authorization', `Bearer ${holderUser.accessToken}`);
 
       // Assert
       expect(response.status).toBe(HttpStatus.OK);
-      expect(Array.isArray(response.body)).toBe(true);
-      expect(response.body.length).toBe(0);
+      const body = response.body as TournamentListItemView[];
+      expect(Array.isArray(body)).toBe(true);
+      expect(body.length).toBe(0);
 
       // Restore - Restaurar torneios para outros testes
       await prisma.tournament.updateMany({
@@ -150,7 +155,7 @@ describe('(E2E) ListTournaments', () => {
   describe('Autorização e Autenticação', () => {
     it('Não deve permitir o acesso por um usuário não autenticado e deve retornar 401', async () => {
       // Act
-      const response = await request(app.getHttpServer()).get('/tournaments');
+      const response: Response = await request(app.getHttpServer()).get('/tournaments');
 
       // Assert
       expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
@@ -160,83 +165,92 @@ describe('(E2E) ListTournaments', () => {
   describe('Filtragem e Lógica de Negócio', () => {
     it('Não deve incluir torneios deletados na lista para um Holder', async () => {
       // Act
-      const response = await request(app.getHttpServer()).get('/tournaments').set('Authorization', `Bearer ${holderUser.accessToken}`);
+      const response: Response = await request(app.getHttpServer()).get('/tournaments').set('Authorization', `Bearer ${holderUser.accessToken}`);
 
       // Assert
       expect(response.status).toBe(HttpStatus.OK);
-      const deletedTournamentInList = response.body.find((t: any) => t.id === deletedTournament.id);
+      const body = response.body as TournamentListItemView[];
+      const deletedTournamentInList = body.find((t) => t.id === deletedTournament.id);
       expect(deletedTournamentInList).toBeUndefined();
     });
 
     it('Deve incluir torneios deletados na lista para um Admin se o filtro showDeleted=true for usado', async () => {
       // Act
-      const response = await request(app.getHttpServer())
+      const response: Response = await request(app.getHttpServer())
         .get('/tournaments')
         .query({ filter: { showDeleted: true } })
         .set('Authorization', `Bearer ${adminUser.accessToken}`);
 
       // Assert
       expect(response.status).toBe(HttpStatus.OK);
-      const deletedTournamentInList = response.body.find((t: any) => t.id === deletedTournament.id);
+      const body = response.body as TournamentListItemView[];
+      const deletedTournamentInList = body.find((t) => t.id === deletedTournament.id);
       expect(deletedTournamentInList).toBeDefined();
     });
 
     it('Deve filtrar torneios corretamente por nome', async () => {
       // Act
-      const response = await request(app.getHttpServer())
+      const response: Response = await request(app.getHttpServer())
         .get('/tournaments')
         .query({ filter: { name: testTournament1.name } })
         .set('Authorization', `Bearer ${adminUser.accessToken}`);
 
       // Assert
       expect(response.status).toBe(HttpStatus.OK);
-      expect(response.body.length).toBeGreaterThanOrEqual(1);
-      const foundTournament = response.body.find((t: any) => t.name === testTournament1.name);
+      const body = response.body as TournamentListItemView[];
+      expect(body.length).toBeGreaterThanOrEqual(1);
+      const foundTournament = body.find((t) => t.name === testTournament1.name);
       expect(foundTournament).toBeDefined();
-      expect(foundTournament.name).toBe(testTournament1.name);
+      expect(foundTournament!.name).toBe(testTournament1.name);
     });
 
     it('Deve filtrar torneios corretamente por tipo', async () => {
       // Act
-      const response = await request(app.getHttpServer())
+      const response: Response = await request(app.getHttpServer())
         .get('/tournaments')
         .query({ filter: { type: TournamentType.DUO } })
         .set('Authorization', `Bearer ${adminUser.accessToken}`);
 
       // Assert
       expect(response.status).toBe(HttpStatus.OK);
-      const duoTournaments = response.body.filter((t: any) => t.type === TournamentType.DUO);
+      const body = response.body as TournamentListItemView[];
+      const duoTournaments = body.filter((t) => t.type === (TournamentType.DUO as string));
       expect(duoTournaments.length).toBeGreaterThanOrEqual(1);
-      duoTournaments.forEach((tournament: any) => {
+      duoTournaments.forEach((tournament) => {
         expect(tournament.type).toBe(TournamentType.DUO);
       });
     });
 
     it('Deve suportar paginação corretamente', async () => {
       // Arrange - Verificar quantos torneios existem no total
-      const allTournamentsResponse = await request(app.getHttpServer()).get('/tournaments').set('Authorization', `Bearer ${adminUser.accessToken}`);
+      const allTournamentsResponse: Response = await request(app.getHttpServer())
+        .get('/tournaments')
+        .set('Authorization', `Bearer ${adminUser.accessToken}`);
 
-      const totalTournaments = allTournamentsResponse.body.length;
+      const allTournamentsBody = allTournamentsResponse.body as TournamentListItemView[];
+      const totalTournaments = allTournamentsBody.length;
 
       // Act - Fazer requisição com paginação
-      const response = await request(app.getHttpServer())
+      const response: Response = await request(app.getHttpServer())
         .get('/tournaments')
         .query({ pagination: { page: 1, limit: 2 } })
         .set('Authorization', `Bearer ${adminUser.accessToken}`);
 
       // Assert
       expect(response.status).toBe(HttpStatus.OK);
-      expect(response.body.length).toBeLessThanOrEqual(2);
+      const body = response.body as TournamentListItemView[];
+      expect(body.length).toBeLessThanOrEqual(2);
 
       // Se tiver mais de 2 torneios, verificar a segunda página
       if (totalTournaments > 2) {
-        const secondPageResponse = await request(app.getHttpServer())
+        const secondPageResponse: Response = await request(app.getHttpServer())
           .get('/tournaments')
           .query({ pagination: { page: 2, limit: 2 } })
           .set('Authorization', `Bearer ${adminUser.accessToken}`);
 
         expect(secondPageResponse.status).toBe(HttpStatus.OK);
-        expect(secondPageResponse.body.length).toBeGreaterThan(0);
+        const secondPageBody = secondPageResponse.body as TournamentListItemView[];
+        expect(secondPageBody.length).toBeGreaterThan(0);
       }
     });
   });

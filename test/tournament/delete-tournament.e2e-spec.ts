@@ -1,4 +1,5 @@
 import * as request from 'supertest';
+import { Response } from 'supertest';
 import { HttpStatus } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { PrismaService } from '@/infraestructure/database/prisma.service';
@@ -63,7 +64,7 @@ describe('(E2E) DeleteTournament', () => {
   describe('Cenários de Sucesso', () => {
     it('Deve realizar o soft-delete de um torneio e retornar 200', async () => {
       // Act
-      const response = await request(app.getHttpServer())
+      const response: Response = await request(app.getHttpServer())
         .post(`/tournaments/${testTournament.id}/delete`)
         .set('Authorization', `Bearer ${adminUser.accessToken}`);
 
@@ -84,7 +85,7 @@ describe('(E2E) DeleteTournament', () => {
   describe('Autorização e Autenticação', () => {
     it('Não deve permitir a deleção por um Holder e deve retornar 403', async () => {
       // Act
-      const response = await request(app.getHttpServer())
+      const response: Response = await request(app.getHttpServer())
         .post(`/tournaments/${testTournament.id}/delete`)
         .set('Authorization', `Bearer ${holderUser.accessToken}`);
 
@@ -102,7 +103,7 @@ describe('(E2E) DeleteTournament', () => {
 
     it('Não deve permitir a deleção por um usuário não autenticado e deve retornar 401', async () => {
       // Act
-      const response = await request(app.getHttpServer()).post(`/tournaments/${testTournament.id}/delete`);
+      const response: Response = await request(app.getHttpServer()).post(`/tournaments/${testTournament.id}/delete`);
 
       // Assert
       expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
@@ -136,7 +137,7 @@ describe('(E2E) DeleteTournament', () => {
       await request(app.getHttpServer()).post(`/tournaments/${testTournament.id}/delete`).set('Authorization', `Bearer ${adminUser.accessToken}`);
 
       // Act - Tentar deletar novamente
-      const response = await request(app.getHttpServer())
+      const response: Response = await request(app.getHttpServer())
         .post(`/tournaments/${testTournament.id}/delete`)
         .set('Authorization', `Bearer ${adminUser.accessToken}`);
 

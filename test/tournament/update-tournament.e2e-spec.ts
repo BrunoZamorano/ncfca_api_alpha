@@ -1,8 +1,10 @@
 import * as request from 'supertest';
+import { Response } from 'supertest';
 import { HttpStatus } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { PrismaService } from '@/infraestructure/database/prisma.service';
 import { TournamentType } from '@/domain/enums/tournament-type.enum';
+import { TournamentResponseDto } from '@/infraestructure/dtos/tournament/tournament-response.dto';
 
 import {
   setupTournamentApp,
@@ -70,19 +72,20 @@ describe('(E2E) UpdateTournament', () => {
       };
 
       // Act
-      const response = await request(app.getHttpServer())
+      const response: Response = await request(app.getHttpServer())
         .post(`/tournaments/${testTournament.id}/update`)
         .set('Authorization', `Bearer ${adminUser.accessToken}`)
         .send(updateData);
 
       // Assert
       expect(response.status).toBe(HttpStatus.CREATED);
-      expect(response.body).toMatchObject({
+      const body = response.body as TournamentResponseDto;
+      expect(body).toMatchObject({
         id: testTournament.id,
         name: updateData.name,
         description: updateData.description,
         type: updateData.type,
-        updatedAt: expect.any(String),
+        updatedAt: expect.any(String) as string,
       });
 
       // Verificar no banco se o torneio foi atualizado corretamente
@@ -106,7 +109,7 @@ describe('(E2E) UpdateTournament', () => {
       };
 
       // Act
-      const response = await request(app.getHttpServer())
+      const response: Response = await request(app.getHttpServer())
         .post(`/tournaments/${testTournament.id}/update`)
         .set('Authorization', `Bearer ${holderUser.accessToken}`)
         .send(updateData);
@@ -123,7 +126,7 @@ describe('(E2E) UpdateTournament', () => {
       };
 
       // Act
-      const response = await request(app.getHttpServer()).post(`/tournaments/${testTournament.id}/update`).send(updateData);
+      const response: Response = await request(app.getHttpServer()).post(`/tournaments/${testTournament.id}/update`).send(updateData);
 
       // Assert
       expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
@@ -156,7 +159,7 @@ describe('(E2E) UpdateTournament', () => {
       };
 
       // Act
-      const response = await request(app.getHttpServer())
+      const response: Response = await request(app.getHttpServer())
         .post(`/tournaments/${testTournament.id}/update`)
         .set('Authorization', `Bearer ${adminUser.accessToken}`)
         .send(invalidData);

@@ -1,8 +1,10 @@
 import * as request from 'supertest';
+import { Response } from 'supertest';
 import { HttpStatus } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { PrismaService } from '@/infraestructure/database/prisma.service';
 import { TournamentType } from '@/domain/enums/tournament-type.enum';
+import { TournamentResponseDto } from '@/infraestructure/dtos/tournament/tournament-response.dto';
 
 import { setupTournamentApp, createAdminUser, createHolderUser, createRegularUser, tournamentCleanup, TournamentTestUser } from './setup';
 
@@ -54,29 +56,30 @@ describe('(E2E) CreateTournament', () => {
       };
 
       // Act
-      const response = await request(app.getHttpServer())
+      const response: Response = await request(app.getHttpServer())
         .post('/tournaments/create')
         .set('Authorization', `Bearer ${adminUser.accessToken}`)
         .send(validTournamentData);
 
       // Assert
       expect(response.status).toBe(HttpStatus.CREATED);
-      expect(response.body).toMatchObject({
-        id: expect.any(String),
+      const body = response.body as TournamentResponseDto;
+      expect(body).toMatchObject({
+        id: expect.any(String) as string,
         name: 'Torneio Nacional de Debate',
         description: 'Um torneio nacional de debate para estudantes brasileiros participarem da NCFCA',
         type: TournamentType.INDIVIDUAL,
-        registrationStartDate: expect.any(String),
-        registrationEndDate: expect.any(String),
-        startDate: expect.any(String),
-        createdAt: expect.any(String),
-        updatedAt: expect.any(String),
+        registrationStartDate: expect.any(String) as string,
+        registrationEndDate: expect.any(String) as string,
+        startDate: expect.any(String) as string,
+        createdAt: expect.any(String) as string,
+        updatedAt: expect.any(String) as string,
         deletedAt: null,
       });
 
       // Verificar no banco se o torneio foi criado corretamente
       const createdTournament = await prisma.tournament.findUnique({
-        where: { id: response.body.id },
+        where: { id: body.id },
       });
 
       expect(createdTournament).toBeDefined();
@@ -98,7 +101,7 @@ describe('(E2E) CreateTournament', () => {
       };
 
       // Act
-      const response = await request(app.getHttpServer())
+      const response: Response = await request(app.getHttpServer())
         .post('/tournaments/create')
         .set('Authorization', `Bearer ${holderUser.accessToken}`)
         .send(validTournamentData);
@@ -119,7 +122,7 @@ describe('(E2E) CreateTournament', () => {
       };
 
       // Act
-      const response = await request(app.getHttpServer()).post('/tournaments/create').send(validTournamentData);
+      const response: Response = await request(app.getHttpServer()).post('/tournaments/create').send(validTournamentData);
 
       // Assert
       expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
@@ -138,7 +141,7 @@ describe('(E2E) CreateTournament', () => {
       };
 
       // Act
-      const response = await request(app.getHttpServer())
+      const response: Response = await request(app.getHttpServer())
         .post('/tournaments/create')
         .set('Authorization', `Bearer ${adminUser.accessToken}`)
         .send(invalidData);
@@ -159,7 +162,7 @@ describe('(E2E) CreateTournament', () => {
       };
 
       // Act
-      const response = await request(app.getHttpServer())
+      const response: Response = await request(app.getHttpServer())
         .post('/tournaments/create')
         .set('Authorization', `Bearer ${adminUser.accessToken}`)
         .send(invalidData);
@@ -180,7 +183,7 @@ describe('(E2E) CreateTournament', () => {
       };
 
       // Act
-      const response = await request(app.getHttpServer())
+      const response: Response = await request(app.getHttpServer())
         .post('/tournaments/create')
         .set('Authorization', `Bearer ${adminUser.accessToken}`)
         .send(invalidData);
@@ -201,7 +204,7 @@ describe('(E2E) CreateTournament', () => {
       };
 
       // Act
-      const response = await request(app.getHttpServer())
+      const response: Response = await request(app.getHttpServer())
         .post('/tournaments/create')
         .set('Authorization', `Bearer ${adminUser.accessToken}`)
         .send(invalidData);
