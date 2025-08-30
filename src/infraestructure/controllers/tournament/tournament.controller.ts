@@ -9,18 +9,20 @@ import { CreateTournament } from '@/application/use-cases/tournament/create-tour
 import { UpdateTournament } from '@/application/use-cases/tournament/update-tournament.use-case';
 import { DeleteTournament } from '@/application/use-cases/tournament/delete-tournament.use-case';
 import { CancelRegistration } from '@/application/use-cases/tournament/cancel-registration.use-case';
+import { AcceptDuoRegistration } from '@/application/use-cases/tournament/accept-duo-registration.use-case';
 import { TournamentDetailsView } from '@/application/queries/tournament-query/tournament-details.view';
 import { TournamentListItemView } from '@/application/queries/tournament-query/tournament-list-item.view';
-import { GetMyPendingRegistrationsListItemView } from '@/application/queries/tournament-query/get-my-pending-registrations-list-item.view';
 import { RequestDuoRegistration } from '@/application/use-cases/tournament/request-duo-registration.use-case';
-import { RequestIndividualRegistration } from '@/application/use-cases/tournament/request-individual-registration/request-individual-registration.use-case';
 import { GetMyPendingRegistrations } from '@/application/use-cases/tournament/get-my-pending-registrations.use-case';
+import { RequestIndividualRegistration } from '@/application/use-cases/tournament/request-individual-registration/request-individual-registration.use-case';
+import { GetMyPendingRegistrationsListItemView } from '@/application/queries/tournament-query/get-my-pending-registrations-list-item.view';
 
 import { CreateTournamentDto } from '@/infraestructure/dtos/tournament/create-tournament.dto';
 import { UpdateTournamentDto } from '@/infraestructure/dtos/tournament/update-tournament.dto';
 import { CancelRegistrationDto } from '@/infraestructure/dtos/tournament/cancel-registration.dto';
 import { TournamentResponseDto } from '@/infraestructure/dtos/tournament/tournament-response.dto';
 import { ListTournamentsQueryDto } from '@/infraestructure/dtos/tournament/list-tournaments-query.dto';
+import { AcceptDuoRegistrationResponseDto } from '@/infraestructure/dtos/tournament/accept-duo-registration.dto';
 import { RequestDuoRegistrationDto, RequestDuoRegistrationOutputDto } from '@/infraestructure/dtos/tournament/request-duo-registration.dto';
 import {
   RequestIndividualRegistrationInputDto,
@@ -44,10 +46,11 @@ export default class TournamentController {
     private readonly updateTournament: UpdateTournament,
     private readonly deleteTournament: DeleteTournament,
     private readonly cancelRegistration: CancelRegistration,
+    private readonly acceptDuoRegistration: AcceptDuoRegistration,
     private readonly requestDuoRegistration: RequestDuoRegistration,
-    private readonly requestIndividualRegistration: RequestIndividualRegistration,
     private readonly getMyPendingRegistrations: GetMyPendingRegistrations,
-  ) { }
+    private readonly requestIndividualRegistration: RequestIndividualRegistration,
+  ) {}
 
   @Post('create')
   @Roles(UserRoles.ADMIN)
@@ -182,6 +185,24 @@ export default class TournamentController {
     return {
       registrationId: registration.id,
       status: registration.status,
+    };
+  }
+
+  @Post('registrations/:id/accept')
+  @HttpCode(200)
+  @ApiOperation({ summary: 'Aceita uma inscrição de dupla pendente' })
+  @ApiResponse({ status: 200, description: 'Inscrição de dupla aceita com sucesso.', type: AcceptDuoRegistrationResponseDto })
+  @ApiResponse({ status: 400, description: 'Registro não está pendente de aprovação.' })
+  @ApiResponse({ status: 403, description: 'Acesso negado.' })
+  @ApiResponse({ status: 404, description: 'Torneio ou registro não encontrado.' })
+  async acceptDuoCompetitorRegistration(@Param('id') registrationId: string, @Request() req: HttpUser): Promise<AcceptDuoRegistrationResponseDto> {
+    await this.acceptDuoRegistration.execute({
+      registrationId,
+      userId: req.user.id,
+    });
+
+    return {
+      message: 'Inscrição de dupla aceita com sucesso',
     };
   }
 

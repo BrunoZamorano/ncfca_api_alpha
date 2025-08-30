@@ -1,16 +1,17 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
+import { GetTournament } from '@/application/use-cases/tournament/get-tournament.use-case';
+import { ListTournaments } from '@/application/use-cases/tournament/list-tournaments.use-case';
 import { CreateTournament } from '@/application/use-cases/tournament/create-tournament.use-case';
 import { UpdateTournament } from '@/application/use-cases/tournament/update-tournament.use-case';
 import { DeleteTournament } from '@/application/use-cases/tournament/delete-tournament.use-case';
-import { ListTournaments } from '@/application/use-cases/tournament/list-tournaments.use-case';
-import { GetTournament } from '@/application/use-cases/tournament/get-tournament.use-case';
-import { RequestIndividualRegistration } from '@/application/use-cases/tournament/request-individual-registration/request-individual-registration.use-case';
-import { RequestDuoRegistration } from '@/application/use-cases/tournament/request-duo-registration.use-case';
 import { CancelRegistration } from '@/application/use-cases/tournament/cancel-registration.use-case';
+import { AcceptDuoRegistration } from '@/application/use-cases/tournament/accept-duo-registration.use-case';
+import { RequestDuoRegistration } from '@/application/use-cases/tournament/request-duo-registration.use-case';
 import { SyncRegistrationUseCase } from '@/application/use-cases/tournament/sync-registration.use-case';
 import { GetMyPendingRegistrations } from '@/application/use-cases/tournament/get-my-pending-registrations.use-case';
+import { RequestIndividualRegistration } from '@/application/use-cases/tournament/request-individual-registration/request-individual-registration.use-case';
 
 import TournamentController from '@/infraestructure/controllers/tournament/tournament.controller';
 import { TournamentListener } from '@/infraestructure/controllers/listeners/tournament.listener';
@@ -28,10 +29,11 @@ import EventModule from '@/shared/modules/event.module';
     UpdateTournament,
     DeleteTournament,
     CancelRegistration,
+    AcceptDuoRegistration,
     RequestDuoRegistration,
     SyncRegistrationUseCase,
-    RequestIndividualRegistration,
     GetMyPendingRegistrations,
+    RequestIndividualRegistration,
   ],
 })
 export default class TournamentModule {}
