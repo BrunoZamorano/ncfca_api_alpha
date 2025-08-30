@@ -30,6 +30,7 @@ import {
 import AuthGuard from '@/shared/guards/auth.guard';
 import { Roles } from '@/shared/decorators/role.decorator';
 import { RolesGuard } from '@/shared/guards/roles.guard';
+import { HttpUser } from '../club-request.controller';
 
 @ApiTags('Torneios')
 @ApiBearerAuth('JWT-auth')
@@ -46,7 +47,7 @@ export default class TournamentController {
     private readonly requestDuoRegistration: RequestDuoRegistration,
     private readonly requestIndividualRegistration: RequestIndividualRegistration,
     private readonly getMyPendingRegistrations: GetMyPendingRegistrations,
-  ) {}
+  ) { }
 
   @Post('create')
   @Roles(UserRoles.ADMIN)
@@ -130,6 +131,15 @@ export default class TournamentController {
     return await this.listTournaments.execute(query);
   }
 
+  @Get('my-pending-registrations')
+  @ApiOperation({ summary: 'Lista inscrições de dupla pendentes para meus dependentes' })
+  @ApiResponse({ status: 200, description: 'Lista de inscrições pendentes retornada com sucesso.', type: [GetMyPendingRegistrationsListItemView] })
+  @ApiResponse({ status: 403, description: 'Acesso negado.' })
+  async listMyPendingRegistrations(@Request() req: HttpUser): Promise<GetMyPendingRegistrationsListItemView[]> {
+    const holderId = req.user.id;
+    return await this.getMyPendingRegistrations.execute(holderId);
+  }
+
   @Get(':id')
   @Roles(UserRoles.ADMIN, UserRoles.DONO_DE_CLUBE)
   @ApiOperation({ summary: 'Obtém detalhes de um torneio específico' })
@@ -138,15 +148,6 @@ export default class TournamentController {
   @ApiResponse({ status: 404, description: 'Torneio não encontrado.' })
   async getById(@Param('id') id: string): Promise<TournamentDetailsView> {
     return await this.getTournament.execute(id);
-  }
-
-  @Get('my-pending-registrations')
-  @ApiOperation({ summary: 'Lista inscrições de dupla pendentes para meus dependentes' })
-  @ApiResponse({ status: 200, description: 'Lista de inscrições pendentes retornada com sucesso.', type: [GetMyPendingRegistrationsListItemView] })
-  @ApiResponse({ status: 403, description: 'Acesso negado.' })
-  async listMyPendingRegistrations(@Request() req: any): Promise<GetMyPendingRegistrationsListItemView[]> {
-    const holderId = req.user.id;
-    return await this.getMyPendingRegistrations.execute(holderId);
   }
 
   @Post('registrations/request-individual')

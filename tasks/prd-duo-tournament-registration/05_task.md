@@ -1,5 +1,5 @@
 ---
-status: pending
+status: completed
 ---
 
 <task_context>
@@ -34,10 +34,11 @@ look at the examples to understand how do we implement this. also see @.cursor/r
 
 ## Subtasks
 
-- [ ] 5.1 Criar a `GetMyPendingRegistrations` com os parâmetros necessários (`holderId`) @in src/application/queries/tournament-query/tournament.query.ts
-- [ ] 5.2 Definir o modelo de visualização `GetMyPendingRegistrationsListItemView` com os campos a serem retornados pela API.
-- [ ] 5.3 Criar o use case de consulta CQRS (`GetMyPendingRegistrations`) para buscar os dados pelo QueryService -> Tournament Query. salve o use case em  em @/src/application/use-cases/tornament/, assim como o unit test.
-- [ ] 5.4 Adicionar o endpoint `GET /tournaments/my-pending-registrations` ao `TournamentController`.
+- [x] 5.1 Criar a `GetMyPendingRegistrations` com os parâmetros necessários (`holderId`) @in src/application/queries/tournament-query/tournament.query.ts
+- [x] 5.2 Definir o modelo de visualização `GetMyPendingRegistrationsListItemView` com os campos a serem retornados pela API.
+- [x] 5.3 Criar o use case de consulta CQRS (`GetMyPendingRegistrations`) para buscar os dados pelo QueryService -> Tournament Query. salve o use case em  em @/src/application/use-cases/tornament/, assim como o unit test.
+- [x] 5.4 Adicionar o endpoint `GET /tournaments/my-pending-registrations` ao `TournamentController`.
+- [x] 5.5 Criar testes E2E abrangentes para o endpoint (10 casos de teste cobrindo todos os cenários)
 
 ## Implementation Details
 

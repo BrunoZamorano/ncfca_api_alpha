@@ -21,8 +21,8 @@
 - [x] 1.0 Database Schema Migration
 - [x] 2.0 Enhance Registration Entity (as part of Tournament Aggregate) 
 - [x] 3.0 Enhance Tournament Aggregate with Duo Registration Management
-- [ ] 4.0 Implement Request Duo Registration Workflow
-- [ ] 5.0 Implement Get Pending Registrations Workflow
+- [x] 4.0 Implement Request Duo Registration Workflow
+- [x] 5.0 Implement Get Pending Registrations Workflow
 - [ ] 6.0 Implement Accept Duo Registration Workflow
 - [ ] 7.0 Implement Reject Duo Registration Workflow
 - [ ] 8.0 Implement End-to-End (E2E) Tests
