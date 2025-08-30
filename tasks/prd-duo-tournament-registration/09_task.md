@@ -39,6 +39,9 @@ Atualmente, não há listeners de eventos na base de código para usar como refe
 
 -   **Registro do Módulo de Eventos:** `@src/app.module.ts`
 -   **Módulo de Eventos Customizado (para emissores):** `@src/shared/modules/event.module.ts`
+-   **Domain Events:** `@src/domain/events/`
+-   **Example of custom domain event:** `@src/domain/events/registration-confirmed.event.ts`
+-   **Example of Listener:** `@src/infraestructure/controllers/listeners/club-events.listener.ts`
 
 ### Relevant Files
 

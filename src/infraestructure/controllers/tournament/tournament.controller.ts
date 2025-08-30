@@ -10,6 +10,7 @@ import { UpdateTournament } from '@/application/use-cases/tournament/update-tour
 import { DeleteTournament } from '@/application/use-cases/tournament/delete-tournament.use-case';
 import { CancelRegistration } from '@/application/use-cases/tournament/cancel-registration.use-case';
 import { AcceptDuoRegistration } from '@/application/use-cases/tournament/accept-duo-registration.use-case';
+import { RejectDuoRegistration } from '@/application/use-cases/tournament/reject-duo-registration.use-case';
 import { TournamentDetailsView } from '@/application/queries/tournament-query/tournament-details.view';
 import { TournamentListItemView } from '@/application/queries/tournament-query/tournament-list-item.view';
 import { RequestDuoRegistration } from '@/application/use-cases/tournament/request-duo-registration.use-case';
@@ -23,6 +24,7 @@ import { CancelRegistrationDto } from '@/infraestructure/dtos/tournament/cancel-
 import { TournamentResponseDto } from '@/infraestructure/dtos/tournament/tournament-response.dto';
 import { ListTournamentsQueryDto } from '@/infraestructure/dtos/tournament/list-tournaments-query.dto';
 import { AcceptDuoRegistrationResponseDto } from '@/infraestructure/dtos/tournament/accept-duo-registration.dto';
+import { RejectDuoRegistrationResponseDto } from '@/infraestructure/dtos/tournament/reject-duo-registration.dto';
 import { RequestDuoRegistrationDto, RequestDuoRegistrationOutputDto } from '@/infraestructure/dtos/tournament/request-duo-registration.dto';
 import {
   RequestIndividualRegistrationInputDto,
@@ -47,6 +49,7 @@ export default class TournamentController {
     private readonly deleteTournament: DeleteTournament,
     private readonly cancelRegistration: CancelRegistration,
     private readonly acceptDuoRegistration: AcceptDuoRegistration,
+    private readonly rejectDuoRegistration: RejectDuoRegistration,
     private readonly requestDuoRegistration: RequestDuoRegistration,
     private readonly getMyPendingRegistrations: GetMyPendingRegistrations,
     private readonly requestIndividualRegistration: RequestIndividualRegistration,
@@ -189,6 +192,7 @@ export default class TournamentController {
   }
 
   @Post('registrations/:id/accept')
+  @Roles(UserRoles.DONO_DE_CLUBE)
   @HttpCode(200)
   @ApiOperation({ summary: 'Aceita uma inscrição de dupla pendente' })
   @ApiResponse({ status: 200, description: 'Inscrição de dupla aceita com sucesso.', type: AcceptDuoRegistrationResponseDto })
@@ -203,6 +207,25 @@ export default class TournamentController {
 
     return {
       message: 'Inscrição de dupla aceita com sucesso',
+    };
+  }
+
+  @Post('registrations/:id/reject')
+  @Roles(UserRoles.DONO_DE_CLUBE)
+  @HttpCode(200)
+  @ApiOperation({ summary: 'Rejeita uma inscrição de dupla pendente' })
+  @ApiResponse({ status: 200, description: 'Inscrição de dupla rejeitada com sucesso.', type: RejectDuoRegistrationResponseDto })
+  @ApiResponse({ status: 400, description: 'Registro não está pendente de aprovação.' })
+  @ApiResponse({ status: 403, description: 'Acesso negado.' })
+  @ApiResponse({ status: 404, description: 'Torneio ou registro não encontrado.' })
+  async rejectDuoCompetitorRegistration(@Param('id') registrationId: string, @Request() req: HttpUser): Promise<RejectDuoRegistrationResponseDto> {
+    await this.rejectDuoRegistration.execute({
+      registrationId,
+      userId: req.user.id,
+    });
+
+    return {
+      message: 'Inscrição de dupla rejeitada com sucesso',
     };
   }
 

@@ -8,6 +8,7 @@ import { UpdateTournament } from '@/application/use-cases/tournament/update-tour
 import { DeleteTournament } from '@/application/use-cases/tournament/delete-tournament.use-case';
 import { CancelRegistration } from '@/application/use-cases/tournament/cancel-registration.use-case';
 import { AcceptDuoRegistration } from '@/application/use-cases/tournament/accept-duo-registration.use-case';
+import { RejectDuoRegistration } from '@/application/use-cases/tournament/reject-duo-registration.use-case';
 import { RequestDuoRegistration } from '@/application/use-cases/tournament/request-duo-registration.use-case';
 import { SyncRegistrationUseCase } from '@/application/use-cases/tournament/sync-registration.use-case';
 import { GetMyPendingRegistrations } from '@/application/use-cases/tournament/get-my-pending-registrations.use-case';
@@ -30,6 +31,7 @@ import EventModule from '@/shared/modules/event.module';
     DeleteTournament,
     CancelRegistration,
     AcceptDuoRegistration,
+    RejectDuoRegistration,
     RequestDuoRegistration,
     SyncRegistrationUseCase,
     GetMyPendingRegistrations,

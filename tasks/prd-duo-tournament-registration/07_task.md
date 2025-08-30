@@ -25,21 +25,27 @@ Esta tarefa implementa o fluxo para um usuário rejeitar um convite de registro 
 
 ## Subtasks
 
-- [ ] 7.1 Criar o `RejectDuoRegistrationCommand` (`registrationId`, `userId`).
+- [ ] 7.1 Criar o `RejectDuoRegistrationInput` (`registrationId`).
 - [ ] 7.2 Criar testes de unidade para o `RejectDuoRegistrationUseCase`.
 - [ ] 7.3 Implementar o `RejectDuoRegistrationUseCase`, que carrega o agregado `Tournament`, chama `tournament.rejectDuoRegistration(registrationId)`, e persiste a mudança.
-- [ ] 7.4 Garantir que a persistência inclua a criação de um registro `RegistrationSync` para o evento `DuoRegistration.Rejected`.
-- [ ] 7.5 Adicionar o endpoint `POST /registrations/:id/reject` ao controller.
+- [ ] 7.4 Adicionar o endpoint `POST /registrations/:id/reject` ao controller.
+- [ ] 7.5 Create e2e tests (see @test/club-management/README.md)
+- [ ] 7.8 Run pnpm test to run the e2e tests
+- [ ] 7.9 run npx eslint ./test to see the lint on test folder only.
 
 ## Implementation Examples
 
 - `@src/application/use-cases/club-request/approve-club-request/approve-club-request.use-case.ts`
+- `@test/club-management/README.md`
 
 ### Relevant Files
 
 -   `src/application/use-cases/tournaments/reject-duo-registration.use-case.ts`
--   `src/infraestructure/controllers/registration.controller.ts` (ou `tournament.controller.ts`)
+-   `src/infraestructure/controllers/tournament.controller.ts`
 -   `src/domain/entities/tournament/tournament.entity.ts`
+-   `src/domain/entities/tournament/registration.entity.ts`
+-   `src/domain/entities/tournament/registration-sync.entity.ts`
+
 
 ## Success Criteria
 
