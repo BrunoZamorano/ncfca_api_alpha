@@ -1,13 +1,13 @@
 import * as request from 'supertest';
-import { INestApplication, HttpStatus } from '@nestjs/common';
-
+import { HttpStatus } from '@nestjs/common';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { PrismaService } from '@/infraestructure/database/prisma.service';
 import { FamilyStatus } from '@/domain/enums/family-status';
 
 import { setupDependantApp, createRegularUser, createTestDependant, createIsolatedFamily, dependantCleanup, DependantTestUser } from './setup';
 
 describe('(E2E) DELETE /dependants/:id - Remoção de Dependentes', () => {
-  let app: INestApplication;
+  let app: NestExpressApplication;
   let prisma: PrismaService;
   let affiliatedUser: DependantTestUser;
   const testUsers: string[] = [];

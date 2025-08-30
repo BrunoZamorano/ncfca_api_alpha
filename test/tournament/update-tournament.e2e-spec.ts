@@ -1,6 +1,6 @@
 import * as request from 'supertest';
-import { INestApplication, HttpStatus } from '@nestjs/common';
-
+import { HttpStatus } from '@nestjs/common';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { PrismaService } from '@/infraestructure/database/prisma.service';
 import { TournamentType } from '@/domain/enums/tournament-type.enum';
 
@@ -16,7 +16,7 @@ import {
 } from './setup';
 
 describe('(E2E) UpdateTournament', () => {
-  let app: INestApplication;
+  let app: NestExpressApplication;
   let prisma: PrismaService;
   let adminUser: TournamentTestUser;
   let holderUser: TournamentTestUser;
@@ -56,7 +56,7 @@ describe('(E2E) UpdateTournament', () => {
     await app.close();
   });
 
-  afterEach(async () => {
+  afterEach(() => {
     jest.clearAllMocks();
   });
 

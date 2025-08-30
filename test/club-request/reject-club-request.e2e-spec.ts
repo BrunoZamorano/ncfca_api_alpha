@@ -1,7 +1,7 @@
 import * as request from 'supertest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
-
+import { HttpStatus, ValidationPipe } from '@nestjs/common';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { UserRoles } from '@/domain/enums/user-roles';
 
 import { PrismaService } from '@/infraestructure/database/prisma.service';
@@ -12,7 +12,7 @@ import { createTestUser } from '../utils/prisma/create-test-user';
 import { surgicalCleanup } from '../utils/prisma/cleanup';
 
 describe('E2E RejectClubRequest', () => {
-  let app: INestApplication;
+  let app: NestExpressApplication;
   let prisma: PrismaService;
   let admin: { userId: string; familyId: string; accessToken: string };
   let regularUser: { userId: string; familyId: string; accessToken: string };

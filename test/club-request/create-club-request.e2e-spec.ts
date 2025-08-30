@@ -1,7 +1,7 @@
 import * as request from 'supertest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
-
+import { HttpStatus, ValidationPipe } from '@nestjs/common';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { UserRoles } from '@/domain/enums/user-roles';
 
 import { PrismaService } from '@/infraestructure/database/prisma.service';
@@ -13,7 +13,7 @@ import { surgicalCleanup } from '../utils/prisma/cleanup';
 import { FamilyStatus } from '@/domain/enums/family-status';
 
 describe('Club Request Creation (e2e)', () => {
-  let app: INestApplication;
+  let app: NestExpressApplication;
   let prisma: PrismaService;
   let user: { userId: string; familyId: string; accessToken: string };
   const testUsers: string[] = [];
@@ -37,7 +37,7 @@ describe('Club Request Creation (e2e)', () => {
   //   await app.close();
   // });
 
-  // afterEach(async () => {
+  // afterEach(() => {
   //   await prisma.clubRequest.deleteMany({ where: { requester_id: user.userId } });
   //   await prisma.club.deleteMany({ where: { principal_id: user.userId } });
   // });

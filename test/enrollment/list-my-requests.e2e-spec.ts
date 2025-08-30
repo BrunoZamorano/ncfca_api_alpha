@@ -1,5 +1,5 @@
 import * as request from 'supertest';
-import { INestApplication } from '@nestjs/common';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { EnrollmentStatus } from '@prisma/client';
 
 import { PrismaService } from '@/infraestructure/database/prisma.service';
@@ -16,7 +16,7 @@ import {
 } from './setup';
 
 describe('(E2E) ListMyEnrollmentRequests', () => {
-  let app: INestApplication;
+  let app: NestExpressApplication;
   let prisma: PrismaService;
   let testUser: EnrollmentTestUser;
   let testClub: ClubTestData;
@@ -49,7 +49,7 @@ describe('(E2E) ListMyEnrollmentRequests', () => {
     await app.close();
   });
 
-  afterEach(async () => {
+  afterEach(() => {
     jest.clearAllMocks();
   });
 

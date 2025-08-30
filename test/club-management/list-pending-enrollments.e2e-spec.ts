@@ -1,5 +1,6 @@
 import * as request from 'supertest';
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { EnrollmentStatus } from '@prisma/client';
 
 import { PrismaService } from '@/infraestructure/database/prisma.service';
@@ -17,7 +18,7 @@ import {
 } from './setup';
 
 describe('(E2E) ListPendingEnrollments', () => {
-  let app: INestApplication;
+  let app: NestExpressApplication;
   let prisma: PrismaService;
   let clubOwner: ClubManagementTestUser;
   let otherClubOwner: ClubManagementTestUser;

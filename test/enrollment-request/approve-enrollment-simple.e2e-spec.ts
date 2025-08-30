@@ -1,7 +1,7 @@
 import * as request from 'supertest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
-
+import { HttpStatus, ValidationPipe } from '@nestjs/common';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { UserRoles } from '@/domain/enums/user-roles';
 
 import { PrismaService } from '@/infraestructure/database/prisma.service';
@@ -17,7 +17,7 @@ import { Sex } from '@/domain/enums/sex';
 import { EnrollmentStatus } from '@/domain/enums/enrollment-status';
 
 describe('E2E ApproveEnrollment', () => {
-  let app: INestApplication;
+  let app: NestExpressApplication;
   let prisma: PrismaService;
   let clubOwner: { userId: string; familyId: string; accessToken: string };
   let familyUser: { userId: string; familyId: string; accessToken: string };

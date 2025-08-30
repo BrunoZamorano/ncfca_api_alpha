@@ -1,5 +1,6 @@
 import * as request from 'supertest';
-import { INestApplication, HttpStatus } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { DependantRelationship, Sex } from '@prisma/client';
 import { DependantRelationship as DependantRelationshipEnum } from '@/domain/enums/dependant-relationship';
 import { Sex as SexEnum } from '@/domain/enums/sex';
@@ -18,7 +19,7 @@ import {
 } from './setup';
 
 describe('(E2E) PATCH /dependants/:id - Atualização de Dependentes', () => {
-  let app: INestApplication;
+  let app: NestExpressApplication;
   let prisma: PrismaService;
   let affiliatedUser: DependantTestUser;
   let nonAffiliatedUser: DependantTestUser;
@@ -48,7 +49,7 @@ describe('(E2E) PATCH /dependants/:id - Atualização de Dependentes', () => {
     await app.close();
   });
 
-  afterEach(async () => {
+  afterEach(() => {
     jest.clearAllMocks();
   });
 

@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { ValidationPipe } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { DependantRelationship, DependantType, Sex } from '@prisma/client';
 
@@ -32,7 +32,7 @@ export interface CreateDependantOptions {
 /**
  * Inicializa a aplicação de teste para os testes E2E do DependantController
  */
-export async function setupDependantApp(): Promise<{ app: INestApplication; prisma: PrismaService }> {
+export async function setupDependantApp(): Promise<{ app: NestExpressApplication; prisma: PrismaService }> {
   const moduleFixture: TestingModule = await Test.createTestingModule({
     imports: [AppModule],
   }).compile();
@@ -68,7 +68,7 @@ async function activateFamilyAffiliation(prisma: PrismaService, familyId: string
  * Cria um usuário regular com família afiliada para testes do DependantController
  */
 export async function createRegularUser(
-  app: INestApplication,
+  app: NestExpressApplication,
   prisma: PrismaService,
   familyStatus: FamilyStatus = FamilyStatus.AFFILIATED,
 ): Promise<DependantTestUser> {
@@ -91,7 +91,7 @@ export async function createRegularUser(
  * Cria um usuário admin para testes
  */
 export async function createAdminUser(
-  app: INestApplication,
+  app: NestExpressApplication,
   prisma: PrismaService,
   familyStatus: FamilyStatus = FamilyStatus.AFFILIATED,
 ): Promise<DependantTestUser> {
@@ -193,7 +193,7 @@ export async function createValidationTestDependant(
 /**
  * Cria uma família adicional para testes de isolamento (cross-family access)
  */
-export async function createIsolatedFamily(app: INestApplication, prisma: PrismaService): Promise<{ user: DependantTestUser; dependant: any }> {
+export async function createIsolatedFamily(app: NestExpressApplication, prisma: PrismaService): Promise<{ user: DependantTestUser; dependant: any }> {
   const user = await createRegularUser(app, prisma, FamilyStatus.AFFILIATED);
   const dependant = await createTestDependant(prisma, user.familyId, {
     firstName: 'Isolated',

@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { ValidationPipe } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { Transport } from '@nestjs/microservices';
 import { ConfigService } from '@nestjs/config';
@@ -92,7 +92,7 @@ async function activateFamilyAffiliation(prisma: PrismaService, familyId: string
  * Cria um usuário administrador para testes do Tournament Controller
  */
 export async function createAdminUser(
-  app: INestApplication,
+  app: NestExpressApplication,
   prisma: PrismaService,
   familyStatus: FamilyStatus = FamilyStatus.AFFILIATED,
 ): Promise<TournamentTestUser> {
@@ -111,7 +111,7 @@ export async function createAdminUser(
  * Cria um usuário holder (dono de clube) para testes do Tournament Controller
  */
 export async function createHolderUser(
-  app: INestApplication,
+  app: NestExpressApplication,
   prisma: PrismaService,
   familyStatus: FamilyStatus = FamilyStatus.AFFILIATED,
 ): Promise<TournamentTestUser> {
@@ -130,7 +130,7 @@ export async function createHolderUser(
  * Cria um usuário regular sem privilégios para testes
  */
 export async function createRegularUser(
-  app: INestApplication,
+  app: NestExpressApplication,
   prisma: PrismaService,
   familyStatus: FamilyStatus = FamilyStatus.AFFILIATED,
 ): Promise<TournamentTestUser> {

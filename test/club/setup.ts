@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { ValidationPipe } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 
 import { PrismaService } from '@/infraestructure/database/prisma.service';
@@ -26,7 +26,7 @@ export interface ClubTestData {
 /**
  * Inicializa a aplicação de teste para os testes E2E do Club Controller
  */
-export async function setupClubApp(): Promise<{ app: INestApplication; prisma: PrismaService }> {
+export async function setupClubApp(): Promise<{ app: NestExpressApplication; prisma: PrismaService }> {
   const moduleFixture: TestingModule = await Test.createTestingModule({
     imports: [AppModule],
   }).compile();
@@ -62,7 +62,7 @@ async function activateFamilyAffiliation(prisma: PrismaService, familyId: string
  * Cria um usuário regular para testes do Club Controller
  */
 export async function createRegularTestUser(
-  app: INestApplication,
+  app: NestExpressApplication,
   prisma: PrismaService,
   roles: UserRoles[] = [UserRoles.SEM_FUNCAO],
   familyStatus: FamilyStatus = FamilyStatus.AFFILIATED,
@@ -82,7 +82,7 @@ export async function createRegularTestUser(
  * Cria um usuário dono de clube para testes
  */
 export async function createClubOwnerUser(
-  app: INestApplication,
+  app: NestExpressApplication,
   prisma: PrismaService,
   familyStatus: FamilyStatus = FamilyStatus.AFFILIATED,
 ): Promise<ClubTestUser> {

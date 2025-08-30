@@ -1,5 +1,6 @@
 import * as request from 'supertest';
-import { INestApplication, HttpStatus } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { DependantRelationship, Sex } from '@prisma/client';
 
 import { PrismaService } from '@/infraestructure/database/prisma.service';
@@ -17,7 +18,7 @@ import {
 } from './setup';
 
 describe('(E2E) GET /dependants - Listagem de Dependentes', () => {
-  let app: INestApplication;
+  let app: NestExpressApplication;
   let prisma: PrismaService;
   let userWithDependants: DependantTestUser;
   let userWithoutDependants: DependantTestUser;
@@ -50,7 +51,7 @@ describe('(E2E) GET /dependants - Listagem de Dependentes', () => {
     await app.close();
   });
 
-  afterEach(async () => {
+  afterEach(() => {
     jest.clearAllMocks();
   });
 

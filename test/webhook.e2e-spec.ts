@@ -1,5 +1,6 @@
 import * as request from 'supertest';
-import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
+import { HttpStatus, ValidationPipe } from '@nestjs/common';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { WebhookPayload } from '@/domain/types/payment';
@@ -16,7 +17,7 @@ import { surgicalCleanup } from './utils/prisma/cleanup';
 import { AppModule } from '@/app.module';
 
 describe('WebhookController (e2e)', () => {
-  let app: INestApplication;
+  let app: NestExpressApplication;
   let prisma: PrismaService;
   let user: { userId: string; familyId: string; accessToken: string };
   const testUsers: string[] = [];

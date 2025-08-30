@@ -1,7 +1,7 @@
 import * as request from 'supertest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
-
+import { HttpStatus, ValidationPipe } from '@nestjs/common';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { UserRoles } from '@/domain/enums/user-roles';
 
 import { PrismaService } from '@/infraestructure/database/prisma.service';
@@ -15,7 +15,7 @@ import { ClubRequestStatus } from '@/domain/enums/club-request-status.enum';
 import { ClubRequest as ClubRequestModel } from '@prisma/client';
 
 describe('E2E ListPendingClubRequests', () => {
-  let app: INestApplication;
+  let app: NestExpressApplication;
   let prisma: PrismaService;
   let admin: { userId: string; familyId: string; accessToken: string };
   let regularUser: { userId: string; familyId: string; accessToken: string };

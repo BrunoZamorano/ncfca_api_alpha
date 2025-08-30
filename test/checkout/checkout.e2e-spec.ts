@@ -1,4 +1,5 @@
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { ValidationPipe } from '@nestjs/common';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { Test } from '@nestjs/testing';
 import AllExceptionsFilter from '@/infraestructure/filters/global-exception-filter';
 import * as request from 'supertest';
@@ -13,7 +14,7 @@ import { UserRoles } from '@/domain/enums/user-roles';
 import { randomUUID } from 'crypto';
 
 describe('E2E CheckoutUseCase', () => {
-  let app: INestApplication;
+  let app: NestExpressApplication;
   let prisma: PrismaService;
   const createdUsers: string[] = [];
 

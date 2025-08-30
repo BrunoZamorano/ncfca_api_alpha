@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { ValidationPipe } from '@nestjs/common';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { DependantRelationship, DependantType, Sex } from '@prisma/client';
 
 import { PrismaService } from '@/infraestructure/database/prisma.service';
@@ -26,12 +27,12 @@ export interface ClubTestData {
 /**
  * Inicializa a aplicação de teste para os testes E2E de Enrollment
  */
-export async function setupEnrollmentApp(): Promise<{ app: INestApplication; prisma: PrismaService }> {
+export async function setupEnrollmentApp(): Promise<{ app: NestExpressApplication; prisma: PrismaService }> {
   const moduleFixture: TestingModule = await Test.createTestingModule({
     imports: [AppModule],
   }).compile();
 
-  const app = moduleFixture.createNestApplication();
+  const app = moduleFixture.createNestApplication<NestExpressApplication>();
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }));
   app.useGlobalFilters(new GlobalExceptionFilter());
   await app.init();
@@ -60,7 +61,7 @@ async function activateFamilyAffiliation(prisma: PrismaService, familyId: string
 /**
  * Cria um usuário regular para testes com família afiliada
  */
-export async function createRegularUser(app: INestApplication, prisma: PrismaService): Promise<EnrollmentTestUser> {
+export async function createRegularUser(app: NestExpressApplication, prisma: PrismaService): Promise<EnrollmentTestUser> {
   const email = `${crypto.randomUUID()}@enrollment.test`;
   const user = await createTestUser(email, [UserRoles.SEM_FUNCAO], prisma, app, FamilyStatus.NOT_AFFILIATED);
 

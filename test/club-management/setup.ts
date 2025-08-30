@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { ValidationPipe } from '@nestjs/common';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { DependantRelationship, DependantType, Sex, EnrollmentStatus, MembershipStatus } from '@prisma/client';
 
 import { PrismaService } from '@/infraestructure/database/prisma.service';
@@ -26,12 +27,12 @@ export interface ClubTestData {
 /**
  * Inicializa a aplicação de teste para os testes E2E de ClubManagement
  */
-export async function setupClubManagementApp(): Promise<{ app: INestApplication; prisma: PrismaService }> {
+export async function setupClubManagementApp(): Promise<{ app: NestExpressApplication; prisma: PrismaService }> {
   const moduleFixture: TestingModule = await Test.createTestingModule({
     imports: [AppModule],
   }).compile();
 
-  const app = moduleFixture.createNestApplication();
+  const app = moduleFixture.createNestApplication<NestExpressApplication>();
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }));
   app.useGlobalFilters(new GlobalExceptionFilter());
   await app.init();
@@ -61,7 +62,7 @@ async function activateFamilyAffiliation(prisma: PrismaService, familyId: string
  * Cria um usuário com role DONO_DE_CLUBE para testes
  */
 export async function createClubOwnerUser(
-  app: INestApplication,
+  app: NestExpressApplication,
   prisma: PrismaService,
   familyStatus: FamilyStatus = FamilyStatus.AFFILIATED,
 ): Promise<ClubManagementTestUser> {
@@ -80,7 +81,7 @@ export async function createClubOwnerUser(
  * Cria um usuário regular (SEM_FUNCAO) para testes
  */
 export async function createRegularUser(
-  app: INestApplication,
+  app: NestExpressApplication,
   prisma: PrismaService,
   familyStatus: FamilyStatus = FamilyStatus.AFFILIATED,
 ): Promise<ClubManagementTestUser> {
@@ -99,7 +100,7 @@ export async function createRegularUser(
  * Cria um usuário admin para testes
  */
 export async function createAdminUser(
-  app: INestApplication,
+  app: NestExpressApplication,
   prisma: PrismaService,
   familyStatus: FamilyStatus = FamilyStatus.AFFILIATED,
 ): Promise<ClubManagementTestUser> {
@@ -239,7 +240,7 @@ export async function createTestClubMembership(
  * Cria uma família afiliada para testes
  */
 export async function createTestFamily(
-  app: INestApplication,
+  app: NestExpressApplication,
   prisma: PrismaService,
   familyStatus: FamilyStatus = FamilyStatus.AFFILIATED,
 ): Promise<ClubManagementTestUser> {

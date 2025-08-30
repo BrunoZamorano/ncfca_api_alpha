@@ -1,4 +1,5 @@
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { ValidationPipe } from '@nestjs/common';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { Test } from '@nestjs/testing';
 import AllExceptionsFilter from '@/infraestructure/filters/global-exception-filter';
 import * as request from 'supertest';
@@ -10,7 +11,7 @@ import { UserRoles } from '@/domain/enums/user-roles';
 import { randomUUID } from 'crypto';
 
 describe('E2E ChangeUserPassword', () => {
-  let app: INestApplication;
+  let app: NestExpressApplication;
   let prisma: PrismaService;
   let user: { userId: string; familyId: string; accessToken: string };
   const testUsers: string[] = [];
@@ -30,7 +31,7 @@ describe('E2E ChangeUserPassword', () => {
     testUsers.push(user.userId);
   });
 
-  afterEach(async () => {
+  afterEach(() => {
     // Apenas limpar dados específicos criados pelos testes se necessário
   });
 

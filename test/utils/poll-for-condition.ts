@@ -18,11 +18,11 @@ export function pollForCondition(assertion: () => Promise<void>, timeout = 5000,
         if (isTimeOver()) {
           reject(new Error(`Polling timed out after ${timeout}ms. Last error: ${error.message}`));
         } else {
-          setTimeout(tryAssertion, interval);
+          setTimeout(() => void tryAssertion(), interval);
         }
       }
     }
-    tryAssertion();
+    void tryAssertion();
   });
 
   function isTimeOver() {

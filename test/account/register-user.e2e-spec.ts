@@ -1,4 +1,5 @@
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { ValidationPipe } from '@nestjs/common';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { Test } from '@nestjs/testing';
 import AllExceptionsFilter from '@/infraestructure/filters/global-exception-filter';
 import * as request from 'supertest';
@@ -10,7 +11,7 @@ import { CpfGenerator } from '@/infraestructure/services/cpf-generator.service';
 import { surgicalCleanup } from '../utils/prisma/cleanup';
 
 describe('E2E RegisterUser', () => {
-  let app: INestApplication;
+  let app: NestExpressApplication;
   let prisma: PrismaService;
   const testUsers: string[] = [];
   let cpfGenerator: CpfGenerator;

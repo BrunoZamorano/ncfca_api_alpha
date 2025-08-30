@@ -1,5 +1,5 @@
 import * as request from 'supertest';
-import { INestApplication } from '@nestjs/common';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 import { PrismaClient } from '@prisma/client';
 
@@ -10,7 +10,18 @@ import { CpfGenerator } from '@/infraestructure/services/cpf-generator.service';
 import HashingService from '@/domain/services/hashing-service';
 import { HASHING_SERVICE } from '@/shared/constants/service-constants';
 
-export async function createTestUser(email: string, roles: UserRoles[], prisma: PrismaClient, app: INestApplication, familyStatus?: FamilyStatus) {
+interface LoginResponse {
+  accessToken: string;
+  refreshToken: string;
+}
+
+export async function createTestUser(
+  email: string,
+  roles: UserRoles[],
+  prisma: PrismaClient,
+  app: NestExpressApplication,
+  familyStatus?: FamilyStatus,
+) {
   const cpfGenerator = new CpfGenerator();
   const hashingService = app.get<HashingService>(HASHING_SERVICE);
   const password = 'Password@123';
@@ -42,5 +53,6 @@ export async function createTestUser(email: string, roles: UserRoles[], prisma: 
   }
   const testUser = await getTestUser();
   const loginResponse = await request(app.getHttpServer()).post('/auth/login').send({ email, password });
-  return { accessToken: loginResponse.body.accessToken, userId: testUser.id, familyId: testUser.family!.id };
+  const loginBody = loginResponse.body as LoginResponse;
+  return { accessToken: loginBody.accessToken, userId: testUser.id, familyId: testUser.family!.id };
 }

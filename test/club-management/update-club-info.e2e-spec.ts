@@ -1,12 +1,12 @@
 import * as request from 'supertest';
-import { HttpStatus, INestApplication } from '@nestjs/common';
-
+import { HttpStatus } from '@nestjs/common';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { PrismaService } from '@/infraestructure/database/prisma.service';
 
 import { setupClubManagementApp, createClubOwnerUser, createTestClub, clubManagementCleanup, ClubManagementTestUser, ClubTestData } from './setup';
 
 describe('(E2E) UpdateClubInfo', () => {
-  let app: INestApplication;
+  let app: NestExpressApplication;
   let prisma: PrismaService;
   let clubOwner: ClubManagementTestUser;
   let otherClubOwner: ClubManagementTestUser;

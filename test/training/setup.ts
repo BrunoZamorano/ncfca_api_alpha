@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { ValidationPipe } from '@nestjs/common';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { Training } from '@prisma/client';
 
 import { PrismaService } from '@/infraestructure/database/prisma.service';
@@ -20,12 +21,12 @@ export interface TrainingTestUser {
 /**
  * Inicializa a aplicação de teste para os testes E2E de Training
  */
-export async function setupTrainingApp(): Promise<{ app: INestApplication; prisma: PrismaService }> {
+export async function setupTrainingApp(): Promise<{ app: NestExpressApplication; prisma: PrismaService }> {
   const moduleFixture: TestingModule = await Test.createTestingModule({
     imports: [AppModule],
   }).compile();
 
-  const app = moduleFixture.createNestApplication();
+  const app = moduleFixture.createNestApplication<NestExpressApplication>();
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }));
   app.useGlobalFilters(new GlobalExceptionFilter());
   await app.init();
@@ -55,7 +56,7 @@ async function activateFamilyAffiliation(prisma: PrismaService, familyId: string
  * Cria um usuário admin para testes
  */
 export async function createAdminUser(
-  app: INestApplication,
+  app: NestExpressApplication,
   prisma: PrismaService,
   familyStatus: FamilyStatus = FamilyStatus.AFFILIATED,
 ): Promise<TrainingTestUser> {
@@ -74,7 +75,7 @@ export async function createAdminUser(
  * Cria um usuário com role DONO_DE_CLUBE para testes
  */
 export async function createClubOwnerUser(
-  app: INestApplication,
+  app: NestExpressApplication,
   prisma: PrismaService,
   familyStatus: FamilyStatus = FamilyStatus.AFFILIATED,
 ): Promise<TrainingTestUser> {
@@ -93,7 +94,7 @@ export async function createClubOwnerUser(
  * Cria um usuário regular (SEM_FUNCAO) para testes
  */
 export async function createRegularUser(
-  app: INestApplication,
+  app: NestExpressApplication,
   prisma: PrismaService,
   familyStatus: FamilyStatus = FamilyStatus.AFFILIATED,
 ): Promise<TrainingTestUser> {
