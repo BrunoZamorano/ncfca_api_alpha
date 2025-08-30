@@ -4,7 +4,7 @@
 - fix the supertest's return types that are logging erros on npx eslint <target-test-folder>
 </task>
 
-<target-test-folder>./test/account/</target-test-folder>
+<target-test-folder>./test/club/</target-test-folder>
 
 <the-solving-plan>
 **FOR EACH TEST FILE ON <target-test-folder>**

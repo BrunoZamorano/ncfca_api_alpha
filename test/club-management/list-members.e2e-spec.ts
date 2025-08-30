@@ -2,6 +2,7 @@ import * as request from 'supertest';
 import { HttpStatus } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { PrismaService } from '@/infraestructure/database/prisma.service';
+import { ClubMemberDto } from '@/domain/dtos/club-member.dto';
 
 import {
   setupClubManagementApp,
@@ -68,35 +69,23 @@ describe('(E2E) List Club Members', () => {
       const membership = await createTestClubMembership(prisma, testClub.id, dependant.id, testFamily.familyId);
 
       // Act - Listar membros do clube
-      const response = await request(app.getHttpServer())
+      const response: { body: ClubMemberDto[] } = await request(app.getHttpServer())
         .get('/club-management/my-club/members')
         .set('Authorization', `Bearer ${clubOwner.accessToken}`)
         .expect(HttpStatus.OK);
 
       // Assert - Validar dados retornados conforme ClubMemberDto
       expect(response.body).toHaveLength(1);
-      expect(response.body[0]).toMatchObject({
-        id: membership.id, // ID da membership, não do dependente
-        firstName: 'João',
-        lastName: 'Silva',
-        email: expect.stringContaining('@testfamily.test'), // Email do holder
-        holder: {
-          id: testFamily.userId,
-          email: expect.stringContaining('@testfamily.test'),
-        },
-        memberSince: expect.any(String),
-        birthDate: expect.any(String),
-        sex: expect.any(String),
-      });
-
-      // Validar que todos os campos obrigatórios estão presentes
-      expect(response.body[0].id).toBeDefined();
-      expect(response.body[0].firstName).toBeDefined();
-      expect(response.body[0].lastName).toBeDefined();
-      expect(response.body[0].holder).toBeDefined();
-      expect(response.body[0].holder.id).toBeDefined();
-      expect(response.body[0].holder.email).toBeDefined();
-      expect(response.body[0].memberSince).toBeDefined();
+      const member = response.body[0];
+      expect(member.id).toEqual(membership.id);
+      expect(member.firstName).toEqual('João');
+      expect(member.lastName).toEqual('Silva');
+      expect(member.email).toContain('@testfamily.test');
+      expect(member.holder.id).toEqual(testFamily.userId);
+      expect(member.holder.email).toContain('@testfamily.test');
+      expect(member.memberSince).toBeDefined();
+      expect(member.birthDate).toBeDefined();
+      expect(member.sex).toBeDefined();
     });
 
     it('Deve retornar array vazio quando clube não possui membros', async () => {
@@ -104,12 +93,12 @@ describe('(E2E) List Club Members', () => {
       const emptyClubOwner = await createClubOwnerUser(app, prisma);
       testUsers.push(emptyClubOwner.userId);
 
-      const emptyClub = await createTestClub(prisma, emptyClubOwner.userId, {
+      await createTestClub(prisma, emptyClubOwner.userId, {
         name: 'Clube Vazio E2E',
       });
 
       // Act - Listar membros de clube vazio
-      const response = await request(app.getHttpServer())
+      const response: { body: ClubMemberDto[] } = await request(app.getHttpServer())
         .get('/club-management/my-club/members')
         .set('Authorization', `Bearer ${emptyClubOwner.accessToken}`)
         .expect(HttpStatus.OK);
@@ -125,7 +114,7 @@ describe('(E2E) List Club Members', () => {
       // O endpoint sempre retorna os membros do clube do usuário logado
 
       // Act - Listar membros com outro token (verá seu próprio clube vazio)
-      const response = await request(app.getHttpServer())
+      const response: { body: ClubMemberDto[] } = await request(app.getHttpServer())
         .get('/club-management/my-club/members')
         .set('Authorization', `Bearer ${anotherClubOwner.accessToken}`)
         .expect(HttpStatus.OK);

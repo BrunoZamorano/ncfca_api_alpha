@@ -9,7 +9,6 @@ import { PrismaService } from '@/infraestructure/database/prisma.service';
 import { AppModule } from '@/app.module';
 
 import { createTestUser } from '../utils/prisma/create-test-user';
-import { surgicalCleanup } from '../utils/prisma/cleanup';
 import { FamilyStatus } from '@/domain/enums/family-status';
 
 describe('Club Request Creation (e2e)', () => {

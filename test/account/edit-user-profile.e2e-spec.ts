@@ -3,6 +3,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { Test } from '@nestjs/testing';
 import AllExceptionsFilter from '@/infraestructure/filters/global-exception-filter';
 import * as request from 'supertest';
+import { Response } from 'supertest';
 import { AppModule } from '@/app.module';
 import { createTestUser } from '../utils/prisma/create-test-user';
 import { surgicalCleanup } from '../utils/prisma/cleanup';
@@ -50,7 +51,10 @@ describe('E2E EditUserProfile', () => {
     };
 
     // Act
-    const response = await request(app.getHttpServer()).patch('/account/profile').set('Authorization', `Bearer ${user.accessToken}`).send(updateData);
+    const response: Response = await request(app.getHttpServer())
+      .patch('/account/profile')
+      .set('Authorization', `Bearer ${user.accessToken}`)
+      .send(updateData);
 
     // Assert
     expect(response.status).toBe(204);
@@ -73,7 +77,7 @@ describe('E2E EditUserProfile', () => {
     };
 
     // Act
-    const response = await request(app.getHttpServer()).patch('/account/profile').send(updateData);
+    const response: Response = await request(app.getHttpServer()).patch('/account/profile').send(updateData);
 
     // Assert
     expect(response.status).toBe(401);
@@ -87,14 +91,14 @@ describe('E2E EditUserProfile', () => {
     };
 
     // Act
-    const response = await request(app.getHttpServer())
+    const response: Response = await request(app.getHttpServer())
       .patch('/account/profile')
       .set('Authorization', `Bearer ${user.accessToken}`)
       .send(invalidData);
 
     // Assert
     expect(response.status).toBe(400);
-    expect(response.body.message).toBeDefined();
+    expect((response.body as { message?: string }).message).toBeDefined();
   });
 
   it('Deve permitir atualização de campos individuais', async () => {
@@ -108,7 +112,7 @@ describe('E2E EditUserProfile', () => {
     };
 
     // Act
-    const response = await request(app.getHttpServer())
+    const response: Response = await request(app.getHttpServer())
       .patch('/account/profile')
       .set('Authorization', `Bearer ${user.accessToken}`)
       .send(partialUpdateData);

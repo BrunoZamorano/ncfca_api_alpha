@@ -138,7 +138,7 @@ describe('E2E GetUserClubRequests', () => {
       .expect(HttpStatus.OK);
 
     expect(response.body).toHaveLength(1);
-    expect(response.body[0]).toMatchObject({
+    expect((response.body as any[])[0]).toMatchObject({
       clubName: 'Meu Clube',
     });
   });

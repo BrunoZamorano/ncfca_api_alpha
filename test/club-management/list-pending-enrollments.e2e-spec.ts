@@ -4,6 +4,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { EnrollmentStatus } from '@prisma/client';
 
 import { PrismaService } from '@/infraestructure/database/prisma.service';
+import { ListPendingEnrollmentsOutputDto } from '@/infraestructure/dtos/list-pending-enrollments.dto';
 
 import {
   setupClubManagementApp,
@@ -91,7 +92,7 @@ describe('(E2E) ListPendingEnrollments', () => {
       // Arrange - Dados já preparados no beforeAll
 
       // Act - Buscar matrículas pendentes
-      const response = await request(app.getHttpServer())
+      const response: { body: ListPendingEnrollmentsOutputDto[] } = await request(app.getHttpServer())
         .get(`/club-management/${testClub.id}/enrollments/pending`)
         .set('Authorization', `Bearer ${clubOwner.accessToken}`)
         .expect(HttpStatus.OK);
@@ -101,12 +102,12 @@ describe('(E2E) ListPendingEnrollments', () => {
       expect(response.body).toHaveLength(2);
 
       // Verificar que todos os enrollments são PENDING
-      response.body.forEach((enrollment: any) => {
+      response.body.forEach((enrollment: ListPendingEnrollmentsOutputDto) => {
         expect(enrollment.status).toBe(EnrollmentStatus.PENDING);
       });
 
       // Verificar que cada enrollment tem os campos obrigatórios incluindo dependantName
-      response.body.forEach((enrollment: any) => {
+      response.body.forEach((enrollment: ListPendingEnrollmentsOutputDto) => {
         expect(enrollment).toHaveProperty('id');
         expect(enrollment).toHaveProperty('status', EnrollmentStatus.PENDING);
         expect(enrollment).toHaveProperty('clubId', testClub.id);
@@ -123,7 +124,7 @@ describe('(E2E) ListPendingEnrollments', () => {
       });
 
       // Verificar que os nomes dos dependentes estão corretos
-      const dependantNames = response.body.map((enrollment: any) => enrollment.dependantName);
+      const dependantNames = response.body.map((enrollment: ListPendingEnrollmentsOutputDto) => enrollment.dependantName);
       expect(dependantNames).toContain('João Silva');
       expect(dependantNames).toContain('Maria Santos');
     });
@@ -138,7 +139,7 @@ describe('(E2E) ListPendingEnrollments', () => {
       });
 
       // Act - Buscar pendentes do clube vazio
-      const response = await request(app.getHttpServer())
+      const response: { body: ListPendingEnrollmentsOutputDto[] } = await request(app.getHttpServer())
         .get(`/club-management/${newClub.id}/enrollments/pending`)
         .set('Authorization', `Bearer ${newClubOwner.accessToken}`)
         .expect(HttpStatus.OK);

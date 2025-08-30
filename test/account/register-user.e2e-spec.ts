@@ -3,12 +3,14 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { Test } from '@nestjs/testing';
 import AllExceptionsFilter from '@/infraestructure/filters/global-exception-filter';
 import * as request from 'supertest';
+import { Response } from 'supertest';
 import { AppModule } from '@/app.module';
 import { PrismaService } from '@/infraestructure/database/prisma.service';
 import { FamilyStatus } from '@/domain/enums/family-status';
 import { randomUUID } from 'crypto';
 import { CpfGenerator } from '@/infraestructure/services/cpf-generator.service';
 import { surgicalCleanup } from '../utils/prisma/cleanup';
+import { RegisterUserOutputDto } from '@/infraestructure/dtos/register-user.dto';
 
 describe('E2E RegisterUser', () => {
   let app: NestExpressApplication;
@@ -58,14 +60,15 @@ describe('E2E RegisterUser', () => {
     const userData = createValidUserData();
 
     // Act
-    const response = await request(app.getHttpServer()).post('/account/user').send(userData);
+    const response: Response = await request(app.getHttpServer()).post('/account/user').send(userData);
 
     // Assert
     expect(response.status).toBe(201);
-    expect(response.body).toHaveProperty('accessToken');
-    expect(response.body).toHaveProperty('refreshToken');
-    expect(typeof response.body.accessToken).toBe('string');
-    expect(typeof response.body.refreshToken).toBe('string');
+    const body = response.body as RegisterUserOutputDto;
+    expect(body).toHaveProperty('accessToken');
+    expect(body).toHaveProperty('refreshToken');
+    expect(typeof body.accessToken).toBe('string');
+    expect(typeof body.refreshToken).toBe('string');
 
     // Verificar se usuário foi criado no banco
     const createdUser = await prisma.user.findUnique({
@@ -92,7 +95,7 @@ describe('E2E RegisterUser', () => {
     const userData = createValidUserData();
 
     // Criar primeiro usuário
-    const firstResponse = await request(app.getHttpServer()).post('/account/user').send(userData);
+    const firstResponse: Response = await request(app.getHttpServer()).post('/account/user').send(userData);
 
     expect(firstResponse.status).toBe(201);
 
@@ -106,11 +109,11 @@ describe('E2E RegisterUser', () => {
     duplicateUserData.email = userData.email; // Mesmo email
 
     // Act
-    const response = await request(app.getHttpServer()).post('/account/user').send(duplicateUserData);
+    const response: Response = await request(app.getHttpServer()).post('/account/user').send(duplicateUserData);
 
     // Assert
     expect(response.status).toBe(500); // O use case lança Error, não InvalidOperationException
-    expect(response.body.message).toContain('O email não está disponível');
+    expect((response.body as { message?: string }).message).toContain('O email não está disponível');
   });
 
   it('Não deve registrar usuário com CPF já existente', async () => {
@@ -119,7 +122,7 @@ describe('E2E RegisterUser', () => {
     const userData2 = createValidUserData();
 
     // Criar primeiro usuário
-    const firstResponse = await request(app.getHttpServer()).post('/account/user').send(userData1);
+    const firstResponse: Response = await request(app.getHttpServer()).post('/account/user').send(userData1);
     expect(firstResponse.status).toBe(201);
 
     const firstUser = await prisma.user.findUnique({ where: { email: userData1.email } });
@@ -134,11 +137,11 @@ describe('E2E RegisterUser', () => {
     };
 
     // Act
-    const response = await request(app.getHttpServer()).post('/account/user').send(duplicateUserData);
+    const response: Response = await request(app.getHttpServer()).post('/account/user').send(duplicateUserData);
 
     // Assert
     expect(response.status).toBe(500);
-    expect(response.body.message).toContain('Unique constraint failed on the fields: (`cpf`)');
+    expect((response.body as { message?: string }).message).toContain('Unique constraint failed on the fields: (`cpf`)');
   });
 
   it('Não deve registrar usuário com dados inválidos', async () => {
@@ -163,11 +166,11 @@ describe('E2E RegisterUser', () => {
     };
 
     // Act
-    const response = await request(app.getHttpServer()).post('/account/user').send(invalidUserData);
+    const response: Response = await request(app.getHttpServer()).post('/account/user').send(invalidUserData);
 
     // Assert
     expect(response.status).toBe(400);
-    expect(response.body.message).toBeDefined();
+    expect((response.body as { message?: string }).message).toBeDefined();
   });
 
   it('Não deve registrar usuário com senhas diferentes', async () => {
@@ -176,10 +179,10 @@ describe('E2E RegisterUser', () => {
     userData.confirmPassword = 'DifferentPassword@123';
 
     // Act
-    const response = await request(app.getHttpServer()).post('/account/user').send(userData);
+    const response: Response = await request(app.getHttpServer()).post('/account/user').send(userData);
 
     // Assert
     expect(response.status).toBe(400);
-    expect(response.body.message).toEqual(expect.arrayContaining([expect.stringContaining('As senhas não coincidem')]));
+    expect((response.body as { message?: string[] }).message).toEqual(expect.arrayContaining([expect.stringContaining('As senhas não coincidem')]));
   });
 });

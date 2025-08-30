@@ -1,8 +1,10 @@
 import * as request from 'supertest';
 import { HttpStatus } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { Response } from 'supertest';
 
 import { PrismaService } from '@/infraestructure/database/prisma.service';
+import ClubDto from '@/domain/dtos/club.dto';
 
 import { setupClubApp, createRegularTestUser, createClubOwnerUser, createTestClub, clubCleanup, ClubTestUser, ClubTestData } from './setup';
 
@@ -50,13 +52,14 @@ describe('(E2E) GetClubInfo', () => {
     // Arrange - Clube já criado no beforeAll
 
     // Act - Fazer requisição GET /club/:id usando o ID do clube criado
-    const response = await request(app.getHttpServer())
+    const response: request.Response = await request(app.getHttpServer())
       .get(`/club/${testClub.id}`)
       .set('Authorization', `Bearer ${testUser.accessToken}`)
       .expect(HttpStatus.OK);
 
     // Assert - Verificar se os dados correspondem ao clube criado
-    expect(response.body).toMatchObject({
+    const clubResponse: ClubDto = response.body as ClubDto;
+    expect(clubResponse).toMatchObject({
       id: testClub.id,
       name: testClub.name,
       maxMembers: 25,
@@ -74,12 +77,12 @@ describe('(E2E) GetClubInfo', () => {
     });
 
     // Verificar se todos os campos obrigatórios estão presentes
-    expect(response.body.id).toBeDefined();
-    expect(response.body.name).toBeDefined();
-    expect(response.body.address).toBeDefined();
-    expect(response.body.principalId).toBeDefined();
-    expect(response.body.createdAt).toBeDefined();
-    expect(typeof response.body.corum).toBe('number');
+    expect(clubResponse.id).toBeDefined();
+    expect(clubResponse.name).toBeDefined();
+    expect(clubResponse.address).toBeDefined();
+    expect(clubResponse.principalId).toBeDefined();
+    expect(clubResponse.createdAt).toBeDefined();
+    expect(typeof clubResponse.corum).toBe('number');
   });
 
   it('Não deve retornar um clube se o ID for inválido', async () => {

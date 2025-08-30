@@ -7,6 +7,7 @@ import { AppModule } from '@/app.module';
 import { createTestUser } from '../utils/prisma/create-test-user';
 import { surgicalCleanup } from '../utils/prisma/cleanup';
 import { UserRoles } from '@/domain/enums/user-roles';
+import { ValidateTokenOutputDto } from '@/infraestructure/dtos/validate-token.dto';
 
 describe('E2E ValidateToken', () => {
   let app: NestExpressApplication;
@@ -14,7 +15,6 @@ describe('E2E ValidateToken', () => {
   let userId: string;
   let accessToken: string;
   const testEmail = `e2e-validate-${crypto.randomUUID()}@test.com`;
-  const testPassword = 'Password@123';
   const testUsers: string[] = [];
 
   beforeAll(async () => {
@@ -43,6 +43,8 @@ describe('E2E ValidateToken', () => {
 
     expect(response.body).toHaveProperty('sub', userId);
     expect(response.body).toHaveProperty('email', testEmail);
+    expect((response.body as ValidateTokenOutputDto).sub).toBe(userId);
+    expect((response.body as ValidateTokenOutputDto).email).toBe(testEmail);
   });
 
   it('Não deve validar um access token inválido ou expirado', async () => {

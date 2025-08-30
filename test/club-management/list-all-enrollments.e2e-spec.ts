@@ -4,6 +4,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { EnrollmentStatus } from '@prisma/client';
 
 import { PrismaService } from '@/infraestructure/database/prisma.service';
+import { EnrollmentRequestDto } from '@/domain/dtos/enrollment-request.dto';
 
 import {
   setupClubManagementApp,
@@ -73,7 +74,7 @@ describe('(E2E) ListAllEnrollments', () => {
       // Arrange - Dados já preparados no beforeAll
 
       // Act - Buscar todas as matrículas
-      const response = await request(app.getHttpServer())
+      const response: { body: EnrollmentRequestDto[] } = await request(app.getHttpServer())
         .get('/club-management/my-club/enrollments')
         .set('Authorization', `Bearer ${clubOwner.accessToken}`)
         .expect(HttpStatus.OK);
@@ -83,7 +84,7 @@ describe('(E2E) ListAllEnrollments', () => {
       expect(response.body).toHaveLength(3);
 
       // Verificar que cada enrollment tem os campos obrigatórios
-      response.body.forEach((enrollment: any) => {
+      response.body.forEach((enrollment: EnrollmentRequestDto) => {
         expect(enrollment).toHaveProperty('id');
         expect(enrollment).toHaveProperty('status');
         expect(enrollment).toHaveProperty('clubId', testClub.id);
@@ -95,7 +96,7 @@ describe('(E2E) ListAllEnrollments', () => {
       });
 
       // Verificar que todos os status estão presentes
-      const statuses = response.body.map((enrollment: any) => enrollment.status);
+      const statuses = response.body.map((enrollment: EnrollmentRequestDto) => enrollment.status);
       expect(statuses).toContain(EnrollmentStatus.PENDING);
       expect(statuses).toContain(EnrollmentStatus.APPROVED);
       expect(statuses).toContain(EnrollmentStatus.REJECTED);
@@ -111,7 +112,7 @@ describe('(E2E) ListAllEnrollments', () => {
       });
 
       // Act - Buscar matrículas do clube vazio
-      const response = await request(app.getHttpServer())
+      const response: { body: EnrollmentRequestDto[] } = await request(app.getHttpServer())
         .get('/club-management/my-club/enrollments')
         .set('Authorization', `Bearer ${newClubOwner.accessToken}`)
         .expect(HttpStatus.OK);

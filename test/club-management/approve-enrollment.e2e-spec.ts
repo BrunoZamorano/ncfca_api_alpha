@@ -31,7 +31,7 @@ describe('(E2E) ApproveEnrollment', () => {
   let notAffiliatedFamily: ClubManagementTestUser;
   let testClub: ClubTestData;
   let fullCapacityClub: ClubTestData;
-  let otherTestClub: ClubTestData;
+
   const testUsers: string[] = [];
 
   beforeAll(async () => {
@@ -75,10 +75,6 @@ describe('(E2E) ApproveEnrollment', () => {
     });
 
     // Criar outro clube para outro dono
-    otherTestClub = await createTestClub(prisma, otherClubOwner.userId, {
-      name: 'Outro Clube E2E',
-      maxMembers: 25,
-    });
   });
 
   afterAll(async () => {
@@ -98,7 +94,7 @@ describe('(E2E) ApproveEnrollment', () => {
       const enrollmentRequest = await createTestEnrollmentRequest(prisma, testClub.id, dependant.id, testFamily.familyId, EnrollmentStatus.PENDING);
 
       // Act - Aprovar a matrícula
-      const response = await request(app.getHttpServer())
+      const response: request.Response = await request(app.getHttpServer())
         .post(`/club-management/enrollments/${enrollmentRequest.id}/approve`)
         .set('Authorization', `Bearer ${clubOwner.accessToken}`)
         .expect(HttpStatus.NO_CONTENT);

@@ -3,6 +3,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { Test } from '@nestjs/testing';
 import AllExceptionsFilter from '@/infraestructure/filters/global-exception-filter';
 import * as request from 'supertest';
+import { Response } from 'supertest';
 import { AppModule } from '@/app.module';
 import { createTestUser } from '../utils/prisma/create-test-user';
 import { surgicalCleanup } from '../utils/prisma/cleanup';
@@ -49,7 +50,7 @@ describe('E2E ChangeUserPassword', () => {
     };
 
     // Act
-    const response = await request(app.getHttpServer())
+    const response: Response = await request(app.getHttpServer())
       .post('/account/change-password')
       .set('Authorization', `Bearer ${user.accessToken}`)
       .send(passwordData);
@@ -66,7 +67,7 @@ describe('E2E ChangeUserPassword', () => {
     };
 
     // Act
-    const response = await request(app.getHttpServer()).post('/account/change-password').send(passwordData);
+    const response: Response = await request(app.getHttpServer()).post('/account/change-password').send(passwordData);
 
     // Assert
     expect(response.status).toBe(401);
@@ -80,14 +81,14 @@ describe('E2E ChangeUserPassword', () => {
     };
 
     // Act
-    const response = await request(app.getHttpServer())
+    const response: Response = await request(app.getHttpServer())
       .post('/account/change-password')
       .set('Authorization', `Bearer ${user.accessToken}`)
       .send(passwordData);
 
     // Assert
     expect(response.status).toBe(400);
-    expect(response.body.message).toBeDefined();
+    expect((response.body as { message?: string }).message).toBeDefined();
   });
 
   it('Não deve aceitar nova senha que não atenda aos critérios', async () => {
@@ -99,14 +100,14 @@ describe('E2E ChangeUserPassword', () => {
     };
 
     // Act
-    const response = await request(app.getHttpServer())
+    const response: Response = await request(app.getHttpServer())
       .post('/account/change-password')
       .set('Authorization', `Bearer ${user.accessToken}`)
       .send(passwordData);
 
     // Assert
     expect(response.status).toBe(400);
-    expect(response.body.message).toBeDefined();
+    expect((response.body as { message?: string }).message).toBeDefined();
   });
 
   it('Não deve permitir nova senha igual à atual', async () => {
@@ -118,13 +119,13 @@ describe('E2E ChangeUserPassword', () => {
     };
 
     // Act
-    const response = await request(app.getHttpServer())
+    const response: Response = await request(app.getHttpServer())
       .post('/account/change-password')
       .set('Authorization', `Bearer ${user.accessToken}`)
       .send(passwordData);
 
     // Assert
     expect(response.status).toBe(400);
-    expect(response.body.message).toContain('Invalid credentials.');
+    expect((response.body as { message?: string }).message).toContain('Invalid credentials.');
   });
 });

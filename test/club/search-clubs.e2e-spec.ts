@@ -1,8 +1,11 @@
 import * as request from 'supertest';
 import { HttpStatus } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { Response } from 'supertest';
 
 import { PrismaService } from '@/infraestructure/database/prisma.service';
+import { PaginatedClubDto } from '@/domain/dtos/paginated-output.dto';
+import ClubDto from '@/domain/dtos/club.dto';
 
 import { setupClubApp, createRegularTestUser, createClubOwnerUser, createTestClub, clubCleanup, ClubTestUser, ClubTestData } from './setup';
 
@@ -38,6 +41,7 @@ describe('(E2E) SearchClubs', () => {
 
     // Criar clubes com dados variados para testes
     testClub1 = await createTestClub(prisma, clubOwner1.userId, {
+      name: 'Clube de Debate Alpha',
       city: 'São Paulo',
       state: 'SP',
     });
@@ -53,6 +57,11 @@ describe('(E2E) SearchClubs', () => {
       city: 'Brasília',
       state: 'DF',
     });
+
+    // Ensure clubs are created for search functionality testing
+    expect(testClub1).toBeDefined();
+    expect(testClub2).toBeDefined();
+    expect(testClub3).toBeDefined();
   });
 
   afterAll(async () => {
@@ -65,68 +74,79 @@ describe('(E2E) SearchClubs', () => {
     // Arrange - Dados já preparados no beforeAll
 
     // Act - Fazer requisição GET /club sem parâmetros
-    const response = await request(app.getHttpServer()).get('/club').set('Authorization', `Bearer ${testUser.accessToken}`).expect(HttpStatus.OK);
+    const response: request.Response = await request(app.getHttpServer())
+      .get('/club')
+      .set('Authorization', `Bearer ${testUser.accessToken}`)
+      .expect(HttpStatus.OK);
 
     // Assert - Validar estrutura da resposta
-    expect(response.body).toHaveProperty('data');
-    expect(response.body).toHaveProperty('meta');
-    expect(response.body.data).toBeInstanceOf(Array);
-    expect(response.body.meta).toHaveProperty('total');
-    expect(response.body.meta).toHaveProperty('page');
-    expect(response.body.meta).toHaveProperty('limit');
-    expect(response.body.meta).toHaveProperty('totalPages');
-    expect(response.body.meta.total).toBeGreaterThanOrEqual(3);
+    const paginatedResponse: PaginatedClubDto = response.body as PaginatedClubDto;
+    expect(paginatedResponse).toHaveProperty('data');
+    expect(paginatedResponse).toHaveProperty('meta');
+    expect(paginatedResponse.data).toBeInstanceOf(Array);
+    expect(paginatedResponse.meta).toHaveProperty('total');
+    expect(paginatedResponse.meta).toHaveProperty('page');
+    expect(paginatedResponse.meta).toHaveProperty('limit');
+    expect(paginatedResponse.meta).toHaveProperty('totalPages');
+    expect(paginatedResponse.meta.total).toBeGreaterThanOrEqual(3);
   });
 
   it('Deve filtrar clubes pelo nome', async () => {
     // Arrange - Clube com nome único já criado
 
     // Act - Fazer requisição GET /club com filtro por nome
-    const response = await request(app.getHttpServer())
+    const response: request.Response = await request(app.getHttpServer())
       .get('/club')
       .query({ filter: { name: testClub1.name } })
       .set('Authorization', `Bearer ${testUser.accessToken}`)
       .expect(HttpStatus.OK);
 
     // Assert - Verificar se retornou apenas o clube filtrado
-    expect(response.body.meta.total).toBe(1);
-    expect(response.body.data).toHaveLength(1);
-    expect(response.body.data[0].name).toBe(testClub1.name);
+    const paginatedResponse: PaginatedClubDto = response.body as PaginatedClubDto;
+    expect(paginatedResponse.meta.total).toBe(1);
+    expect(paginatedResponse.data).toHaveLength(1);
+    const clubData: ClubDto[] = paginatedResponse.data;
+    expect(clubData[0].name).toBe(testClub1.name);
   });
 
   it('Deve retornar um array vazio se nenhum clube corresponder ao filtro', async () => {
     // Arrange - Garantir que não existe clube com esse nome
 
     // Act - Fazer requisição GET /club com filtro inexistente
-    const response = await request(app.getHttpServer())
+    const response: request.Response = await request(app.getHttpServer())
       .get('/club')
       .query({ filter: { name: 'Inexistente' } })
       .set('Authorization', `Bearer ${testUser.accessToken}`)
       .expect(HttpStatus.OK);
 
     // Assert - Verificar lista vazia
-    expect(response.body.meta.total).toBe(0);
-    expect(response.body.data).toBeInstanceOf(Array);
-    expect(response.body.data).toHaveLength(0);
+    const paginatedResponse: PaginatedClubDto = response.body as PaginatedClubDto;
+    expect(paginatedResponse.meta.total).toBe(0);
+    expect(paginatedResponse.data).toBeInstanceOf(Array);
+    const clubData: ClubDto[] = paginatedResponse.data;
+    expect(clubData).toHaveLength(0);
   });
 
   it('Deve paginar os resultados corretamente', async () => {
     // Arrange - Verificar quantos clubes existem no total
-    const allClubsResponse = await request(app.getHttpServer()).get('/club').set('Authorization', `Bearer ${testUser.accessToken}`);
+    const allClubsResponse: request.Response = await request(app.getHttpServer()).get('/club').set('Authorization', `Bearer ${testUser.accessToken}`);
 
-    const totalClubs = allClubsResponse.body.meta.total;
+    const allClubsPaginatedResponse: PaginatedClubDto = allClubsResponse.body as PaginatedClubDto;
+    const totalClubs = allClubsPaginatedResponse.meta.total;
 
     // Act - Fazer requisição GET /club com paginação (página 2, limit 2)
-    const response = await request(app.getHttpServer())
+    const response: request.Response = await request(app.getHttpServer())
       .get('/club')
       .query({ pagination: { page: 2, limit: 2 } })
       .set('Authorization', `Bearer ${testUser.accessToken}`)
       .expect(HttpStatus.OK);
 
     // Assert - Verificar paginação
-    expect(response.body.meta.total).toBe(totalClubs);
-    expect(response.body.meta.page).toBe(2);
-    expect(response.body.meta.limit).toBe(2);
-    expect(response.body.data).toHaveLength(2); // Página 2 com limit 2 deve ter 2 itens ou menos dependendo do total
+    const paginatedResponse: PaginatedClubDto = response.body as PaginatedClubDto;
+    expect(paginatedResponse.meta.total).toBe(totalClubs);
+    expect(paginatedResponse.meta.page).toBe(2);
+    expect(paginatedResponse.meta.limit).toBe(2);
+    const clubData: ClubDto[] = paginatedResponse.data;
+    expect(clubData).toHaveLength(2); // Página 2 com limit 2 deve ter 2 itens ou menos dependendo do total
   });
 });

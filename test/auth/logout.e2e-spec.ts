@@ -15,7 +15,6 @@ describe('E2E Logout', () => {
   let accessToken: string;
   const testUsers: string[] = [];
   const testEmail = `e2e-logout-${crypto.randomUUID()}@test.com`;
-  const testPassword = 'Password@123';
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({

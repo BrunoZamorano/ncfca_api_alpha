@@ -7,6 +7,7 @@ import { AppModule } from '@/app.module';
 import { createTestUser } from '../utils/prisma/create-test-user';
 import { surgicalCleanup } from '../utils/prisma/cleanup';
 import { UserRoles } from '@/domain/enums/user-roles';
+import { LoginOutputDto } from '@/infraestructure/dtos/login.dto';
 
 describe('E2E Login', () => {
   let app: NestExpressApplication;
@@ -43,6 +44,8 @@ describe('E2E Login', () => {
 
     expect(response.body).toHaveProperty('accessToken');
     expect(response.body).toHaveProperty('refreshToken');
+    expect(typeof (response.body as LoginOutputDto).accessToken).toBe('string');
+    expect(typeof (response.body as LoginOutputDto).refreshToken).toBe('string');
   });
 
   it('Não deve autenticar com senha incorreta', async () => {

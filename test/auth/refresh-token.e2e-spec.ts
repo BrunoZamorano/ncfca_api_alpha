@@ -7,11 +7,12 @@ import { AppModule } from '@/app.module';
 import { createTestUser } from '../utils/prisma/create-test-user';
 import { surgicalCleanup } from '../utils/prisma/cleanup';
 import { UserRoles } from '@/domain/enums/user-roles';
+import { LoginOutputDto } from '@/infraestructure/dtos/login.dto';
+import { RefreshTokenOutputDto } from '@/infraestructure/dtos/refresh-token.dto';
 
 describe('E2E RefreshToken', () => {
   let app: NestExpressApplication;
   let prisma: PrismaService;
-  let userId: string;
   let refreshToken: string;
   const testEmail = `e2e-refresh-${crypto.randomUUID()}@test.com`;
   const testPassword = 'Password@123';
@@ -33,9 +34,7 @@ describe('E2E RefreshToken', () => {
     // Login to get a valid refresh token
     const loginResponse = await request(app.getHttpServer()).post('/auth/login').send({ email: testEmail, password: testPassword });
 
-    refreshToken = loginResponse.body.refreshToken;
-    const userInDb = await prisma.user.findUnique({ where: { email: testEmail } });
-    userId = userInDb!.id;
+    refreshToken = (loginResponse.body as LoginOutputDto).refreshToken;
   });
 
   afterAll(async () => {
@@ -48,7 +47,7 @@ describe('E2E RefreshToken', () => {
 
     expect(response.body).toHaveProperty('accessToken');
     expect(response.body).toHaveProperty('refreshToken');
-    expect(response.body.refreshToken).not.toBe(refreshToken);
+    expect((response.body as RefreshTokenOutputDto).refreshToken).not.toBe(refreshToken);
   });
 
   it('Não deve gerar tokens com um refresh token inválido ou expirado', async () => {

@@ -63,7 +63,9 @@ describe('(E2E) DependantController Setup Validation', () => {
     });
 
     it('Deve criar família isolada para testes de cross-access', async () => {
-      const { user: isolatedUser, dependant } = await createIsolatedFamily(app, prisma);
+      const isolatedFamily = await createIsolatedFamily(app, prisma);
+      const isolatedUser = isolatedFamily.user;
+      const dependant = isolatedFamily.dependant as { family_id: string };
       testUsers.push(isolatedUser.userId);
 
       expect(isolatedUser.userId).toBeDefined();
@@ -76,7 +78,9 @@ describe('(E2E) DependantController Setup Validation', () => {
   describe('Testes de Isolamento', () => {
     it('Deve ter famílias isoladas funcionando', async () => {
       // Criar dependente para outra família
-      const { user: otherUser, dependant: otherDependant } = await createIsolatedFamily(app, prisma);
+      const otherFamily = await createIsolatedFamily(app, prisma);
+      const otherUser = otherFamily.user;
+      const otherDependant = otherFamily.dependant as { family_id: string; id: string };
       testUsers.push(otherUser.userId);
 
       // Verificar que as famílias são diferentes

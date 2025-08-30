@@ -6,7 +6,14 @@ import { DependantRelationship, Sex } from '@prisma/client';
 import { PrismaService } from '@/infraestructure/database/prisma.service';
 import { FamilyStatus } from '@/domain/enums/family-status';
 
-import { setupDependantApp, createRegularUser, createAdminUser, createIsolatedFamily, dependantCleanup, DependantTestUser } from './setup';
+import { setupDependantApp, createRegularUser, createAdminUser, dependantCleanup, DependantTestUser } from './setup';
+import DependantDto from '@/domain/dtos/dependant.dto';
+
+interface ErrorResponse {
+  message: string | string[];
+  error?: string;
+  statusCode?: number;
+}
 
 describe('(E2E) POST /dependants - Adição de Dependentes', () => {
   let app: NestExpressApplication;
@@ -57,24 +64,24 @@ describe('(E2E) POST /dependants - Adição de Dependentes', () => {
       };
 
       // Act
-      const response = await request(app.getHttpServer())
+      const response = (await request(app.getHttpServer())
         .post('/dependants')
         .set('Authorization', `Bearer ${affiliatedUser.accessToken}`)
-        .send(validDependantData);
+        .send(validDependantData)) as { status: number; body: DependantDto };
 
       // Assert
       expect(response.status).toBe(HttpStatus.CREATED);
       expect(response.body).toMatchObject({
-        id: expect.any(String),
+        id: expect.any(String) as string,
         firstName: 'João',
         lastName: 'Silva',
-        birthdate: expect.any(String),
+        birthdate: expect.any(String) as string,
         relationship: DependantRelationship.SON,
         sex: Sex.MALE,
         email: 'joao.silva@test.com',
         phone: '11987654321',
-        type: expect.any(String),
-        familyId: expect.any(String),
+        type: expect.any(String) as string,
+        familyId: expect.any(String) as string,
       });
 
       // Verificar no banco se o dependente foi criado corretamente
@@ -100,10 +107,10 @@ describe('(E2E) POST /dependants - Adição de Dependentes', () => {
       };
 
       // Act
-      const response = await request(app.getHttpServer())
+      const response = (await request(app.getHttpServer())
         .post('/dependants')
         .set('Authorization', `Bearer ${affiliatedUser.accessToken}`)
-        .send(minimalDependantData);
+        .send(minimalDependantData)) as { status: number; body: DependantDto };
 
       // Assert
       expect(response.status).toBe(HttpStatus.CREATED);
@@ -136,10 +143,10 @@ describe('(E2E) POST /dependants - Adição de Dependentes', () => {
           email: `${testCase.firstName.toLowerCase()}.test@example.com`,
         };
 
-        const response = await request(app.getHttpServer())
+        const response = (await request(app.getHttpServer())
           .post('/dependants')
           .set('Authorization', `Bearer ${affiliatedUser.accessToken}`)
-          .send(dependantData);
+          .send(dependantData)) as { status: number; body: DependantDto };
 
         expect(response.status).toBe(HttpStatus.CREATED);
         expect(response.body.relationship).toBe(testCase.relationship);
@@ -160,10 +167,10 @@ describe('(E2E) POST /dependants - Adição de Dependentes', () => {
       };
 
       // Act
-      const response = await request(app.getHttpServer())
+      const response = (await request(app.getHttpServer())
         .post('/dependants')
         .set('Authorization', `Bearer ${affiliatedUser.accessToken}`)
-        .send(invalidData);
+        .send(invalidData)) as { status: number; body: ErrorResponse };
 
       // Assert
       expect(response.status).toBe(HttpStatus.BAD_REQUEST);
@@ -181,10 +188,10 @@ describe('(E2E) POST /dependants - Adição de Dependentes', () => {
       };
 
       // Act
-      const response = await request(app.getHttpServer())
+      const response = (await request(app.getHttpServer())
         .post('/dependants')
         .set('Authorization', `Bearer ${affiliatedUser.accessToken}`)
-        .send(invalidData);
+        .send(invalidData)) as { status: number; body: ErrorResponse };
 
       // Assert
       expect(response.status).toBe(HttpStatus.BAD_REQUEST);
@@ -202,10 +209,10 @@ describe('(E2E) POST /dependants - Adição de Dependentes', () => {
       };
 
       // Act
-      const response = await request(app.getHttpServer())
+      const response = (await request(app.getHttpServer())
         .post('/dependants')
         .set('Authorization', `Bearer ${affiliatedUser.accessToken}`)
-        .send(invalidData);
+        .send(invalidData)) as { status: number; body: ErrorResponse };
 
       // Assert
       expect(response.status).toBe(HttpStatus.BAD_REQUEST);
@@ -223,10 +230,10 @@ describe('(E2E) POST /dependants - Adição de Dependentes', () => {
       };
 
       // Act
-      const response = await request(app.getHttpServer())
+      const response = (await request(app.getHttpServer())
         .post('/dependants')
         .set('Authorization', `Bearer ${affiliatedUser.accessToken}`)
-        .send(invalidData);
+        .send(invalidData)) as { status: number; body: ErrorResponse };
 
       // Assert
       expect(response.status).toBe(HttpStatus.BAD_REQUEST);
@@ -244,10 +251,10 @@ describe('(E2E) POST /dependants - Adição de Dependentes', () => {
       };
 
       // Act
-      const response = await request(app.getHttpServer())
+      const response = (await request(app.getHttpServer())
         .post('/dependants')
         .set('Authorization', `Bearer ${affiliatedUser.accessToken}`)
-        .send(invalidData);
+        .send(invalidData)) as { status: number; body: ErrorResponse };
 
       // Assert
       expect(response.status).toBe(HttpStatus.BAD_REQUEST);
@@ -265,10 +272,10 @@ describe('(E2E) POST /dependants - Adição de Dependentes', () => {
       };
 
       // Act
-      const response = await request(app.getHttpServer())
+      const response = (await request(app.getHttpServer())
         .post('/dependants')
         .set('Authorization', `Bearer ${affiliatedUser.accessToken}`)
-        .send(invalidData);
+        .send(invalidData)) as { status: number; body: ErrorResponse };
 
       // Assert
       expect(response.status).toBe(HttpStatus.BAD_REQUEST);
@@ -289,10 +296,10 @@ describe('(E2E) POST /dependants - Adição de Dependentes', () => {
       };
 
       // Act
-      const response = await request(app.getHttpServer())
+      const response = (await request(app.getHttpServer())
         .post('/dependants')
         .set('Authorization', `Bearer ${affiliatedUser.accessToken}`)
-        .send(invalidData);
+        .send(invalidData)) as { status: number; body: ErrorResponse };
 
       // Assert
       expect(response.status).toBe(HttpStatus.BAD_REQUEST);
@@ -311,10 +318,10 @@ describe('(E2E) POST /dependants - Adição de Dependentes', () => {
       };
 
       // Act
-      const response = await request(app.getHttpServer())
+      const response = (await request(app.getHttpServer())
         .post('/dependants')
         .set('Authorization', `Bearer ${affiliatedUser.accessToken}`)
-        .send(invalidData);
+        .send(invalidData)) as { status: number; body: ErrorResponse };
 
       // Assert
       expect(response.status).toBe(HttpStatus.BAD_REQUEST);
@@ -333,10 +340,10 @@ describe('(E2E) POST /dependants - Adição de Dependentes', () => {
       };
 
       // Act
-      const response = await request(app.getHttpServer())
+      const response = (await request(app.getHttpServer())
         .post('/dependants')
         .set('Authorization', `Bearer ${affiliatedUser.accessToken}`)
-        .send(invalidData);
+        .send(invalidData)) as { status: number; body: ErrorResponse };
 
       // Assert
       expect(response.status).toBe(HttpStatus.BAD_REQUEST);
@@ -355,10 +362,10 @@ describe('(E2E) POST /dependants - Adição de Dependentes', () => {
       };
 
       // Act
-      const response = await request(app.getHttpServer())
+      const response = (await request(app.getHttpServer())
         .post('/dependants')
         .set('Authorization', `Bearer ${affiliatedUser.accessToken}`)
-        .send(invalidData);
+        .send(invalidData)) as { status: number; body: ErrorResponse };
 
       // Assert
       expect(response.status).toBe(HttpStatus.BAD_REQUEST);
@@ -377,10 +384,10 @@ describe('(E2E) POST /dependants - Adição de Dependentes', () => {
       };
 
       // Act
-      const response = await request(app.getHttpServer())
+      const response = (await request(app.getHttpServer())
         .post('/dependants')
         .set('Authorization', `Bearer ${affiliatedUser.accessToken}`)
-        .send(invalidData);
+        .send(invalidData)) as { status: number; body: ErrorResponse };
 
       // Assert
       expect(response.status).toBe(HttpStatus.BAD_REQUEST);
@@ -401,10 +408,10 @@ describe('(E2E) POST /dependants - Adição de Dependentes', () => {
       };
 
       // Act
-      const response = await request(app.getHttpServer())
+      const response = (await request(app.getHttpServer())
         .post('/dependants')
         .set('Authorization', `Bearer ${affiliatedUser.accessToken}`)
-        .send(invalidData);
+        .send(invalidData)) as { status: number; body: ErrorResponse };
 
       // Assert
       expect(response.status).toBe(HttpStatus.BAD_REQUEST);
@@ -424,10 +431,10 @@ describe('(E2E) POST /dependants - Adição de Dependentes', () => {
       };
 
       // Act
-      const response = await request(app.getHttpServer())
+      const response = (await request(app.getHttpServer())
         .post('/dependants')
         .set('Authorization', `Bearer ${affiliatedUser.accessToken}`)
-        .send(invalidData);
+        .send(invalidData)) as { status: number; body: ErrorResponse };
 
       // Assert
       expect(response.status).toBe(HttpStatus.BAD_REQUEST);
@@ -448,7 +455,7 @@ describe('(E2E) POST /dependants - Adição de Dependentes', () => {
       };
 
       // Act
-      const response = await request(app.getHttpServer()).post('/dependants').send(validDependantData);
+      const response = (await request(app.getHttpServer()).post('/dependants').send(validDependantData)) as { status: number; body: ErrorResponse };
 
       // Assert
       expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
@@ -466,7 +473,10 @@ describe('(E2E) POST /dependants - Adição de Dependentes', () => {
       };
 
       // Act
-      const response = await request(app.getHttpServer()).post('/dependants').set('Authorization', 'Bearer invalid-token').send(validDependantData);
+      const response = (await request(app.getHttpServer())
+        .post('/dependants')
+        .set('Authorization', 'Bearer invalid-token')
+        .send(validDependantData)) as { status: number; body: ErrorResponse };
 
       // Assert
       expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
@@ -486,10 +496,10 @@ describe('(E2E) POST /dependants - Adição de Dependentes', () => {
       };
 
       // Act
-      const response = await request(app.getHttpServer())
+      const response = (await request(app.getHttpServer())
         .post('/dependants')
         .set('Authorization', `Bearer ${nonAffiliatedUser.accessToken}`)
-        .send(validDependantData);
+        .send(validDependantData)) as { status: number; body: ErrorResponse };
 
       // Assert
       // Status específico depende da implementação da regra de negócio
@@ -512,10 +522,10 @@ describe('(E2E) POST /dependants - Adição de Dependentes', () => {
       };
 
       // Act
-      const response = await request(app.getHttpServer())
+      const response = (await request(app.getHttpServer())
         .post('/dependants')
         .set('Authorization', `Bearer ${affiliatedUser.accessToken}`)
-        .send(dataWithExtraFields);
+        .send(dataWithExtraFields)) as { status: number; body: ErrorResponse };
 
       // Assert
       expect(response.status).toBe(HttpStatus.BAD_REQUEST);

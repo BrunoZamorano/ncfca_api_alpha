@@ -2,6 +2,7 @@ import * as request from 'supertest';
 import { HttpStatus } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { PrismaService } from '@/infraestructure/database/prisma.service';
+import ClubDto from '@/domain/dtos/club.dto';
 
 import { setupClubManagementApp, createClubOwnerUser, createTestClub, clubManagementCleanup, ClubManagementTestUser, ClubTestData } from './setup';
 
@@ -50,7 +51,7 @@ describe('(E2E) GetMyClub', () => {
       // Arrange - Dados já preparados no beforeAll
 
       // Act - Buscar informações do clube
-      const response = await request(app.getHttpServer())
+      const response: { body: ClubDto } = await request(app.getHttpServer())
         .get('/club-management/my-club')
         .set('Authorization', `Bearer ${clubOwner.accessToken}`)
         .expect(HttpStatus.OK);

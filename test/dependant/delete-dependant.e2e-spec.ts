@@ -5,6 +5,7 @@ import { PrismaService } from '@/infraestructure/database/prisma.service';
 import { FamilyStatus } from '@/domain/enums/family-status';
 
 import { setupDependantApp, createRegularUser, createTestDependant, createIsolatedFamily, dependantCleanup, DependantTestUser } from './setup';
+import DependantDto from '@/domain/dtos/dependant.dto';
 
 describe('(E2E) DELETE /dependants/:id - Remoção de Dependentes', () => {
   let app: NestExpressApplication;
@@ -36,10 +37,10 @@ describe('(E2E) DELETE /dependants/:id - Remoção de Dependentes', () => {
       });
 
       // Act - Fazer requisição DELETE
-      const response = await request(app.getHttpServer())
+      const response = (await request(app.getHttpServer())
         .delete(`/dependants/${dependant.id}`)
         .set('Authorization', `Bearer ${affiliatedUser.accessToken}`)
-        .expect(HttpStatus.NO_CONTENT);
+        .expect(HttpStatus.NO_CONTENT)) as { status: number; body: Record<string, never> };
 
       // Assert - Verificar se a resposta está correta
       expect(response.body).toEqual({});
@@ -58,7 +59,9 @@ describe('(E2E) DELETE /dependants/:id - Remoção de Dependentes', () => {
 
     it('deve retornar erro 404 se o dependente pertencer a outra família', async () => {
       // Arrange - Criar uma família isolada com dependente
-      const { user: isolatedUser, dependant: isolatedDependant } = await createIsolatedFamily(app, prisma);
+      const isolatedFamily = await createIsolatedFamily(app, prisma);
+      const isolatedUser = isolatedFamily.user;
+      const isolatedDependant = isolatedFamily.dependant as { id: string };
       testUsers.push(isolatedUser.userId);
 
       // Act & Assert - Tentar deletar dependente de outra família (retorna 404 por não pertencer à família do usuário)
@@ -76,12 +79,12 @@ describe('(E2E) DELETE /dependants/:id - Remoção de Dependentes', () => {
       });
 
       // Verificar que o dependente existe antes da remoção
-      const listBeforeDelete = await request(app.getHttpServer())
+      const listBeforeDelete = (await request(app.getHttpServer())
         .get('/dependants')
         .set('Authorization', `Bearer ${affiliatedUser.accessToken}`)
-        .expect(HttpStatus.OK);
+        .expect(HttpStatus.OK)) as { status: number; body: DependantDto[] };
 
-      const dependantExistsBefore = listBeforeDelete.body.some((dep: any) => dep.id === dependant.id);
+      const dependantExistsBefore = listBeforeDelete.body.some((dep) => dep.id === dependant.id);
       expect(dependantExistsBefore).toBe(true);
 
       // Act - Remover o dependente
@@ -91,12 +94,12 @@ describe('(E2E) DELETE /dependants/:id - Remoção de Dependentes', () => {
         .expect(HttpStatus.NO_CONTENT);
 
       // Assert - Verificar que o dependente não aparece mais na listagem
-      const listAfterDelete = await request(app.getHttpServer())
+      const listAfterDelete = (await request(app.getHttpServer())
         .get('/dependants')
         .set('Authorization', `Bearer ${affiliatedUser.accessToken}`)
-        .expect(HttpStatus.OK);
+        .expect(HttpStatus.OK)) as { status: number; body: DependantDto[] };
 
-      const dependantExistsAfter = listAfterDelete.body.some((dep: any) => dep.id === dependant.id);
+      const dependantExistsAfter = listAfterDelete.body.some((dep) => dep.id === dependant.id);
       expect(dependantExistsAfter).toBe(false);
     });
   });

@@ -2,8 +2,6 @@ import * as request from 'supertest';
 import { HttpStatus } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { DependantRelationship, Sex } from '@prisma/client';
-import { DependantRelationship as DependantRelationshipEnum } from '@/domain/enums/dependant-relationship';
-import { Sex as SexEnum } from '@/domain/enums/sex';
 
 import { PrismaService } from '@/infraestructure/database/prisma.service';
 import { FamilyStatus } from '@/domain/enums/family-status';
@@ -17,6 +15,12 @@ import {
   dependantCleanup,
   DependantTestUser,
 } from './setup';
+
+interface ErrorResponse {
+  message: string | string[];
+  error?: string;
+  statusCode?: number;
+}
 
 describe('(E2E) PATCH /dependants/:id - Atualização de Dependentes', () => {
   let app: NestExpressApplication;
@@ -65,10 +69,10 @@ describe('(E2E) PATCH /dependants/:id - Atualização de Dependentes', () => {
       const updateData = { firstName: 'José' };
 
       // Act
-      const response = await request(app.getHttpServer())
+      const response = (await request(app.getHttpServer())
         .patch(`/dependants/${dependant.id}`)
         .set('Authorization', `Bearer ${affiliatedUser.accessToken}`)
-        .send(updateData);
+        .send(updateData)) as { status: number; body: Record<string, never> };
 
       // Assert
       expect(response.status).toBe(HttpStatus.NO_CONTENT);
@@ -95,10 +99,10 @@ describe('(E2E) PATCH /dependants/:id - Atualização de Dependentes', () => {
       const updateData = { lastName: 'Oliveira' };
 
       // Act
-      const response = await request(app.getHttpServer())
+      const response = (await request(app.getHttpServer())
         .patch(`/dependants/${dependant.id}`)
         .set('Authorization', `Bearer ${affiliatedUser.accessToken}`)
-        .send(updateData);
+        .send(updateData)) as { status: number; body: Record<string, never> };
 
       // Assert
       expect(response.status).toBe(HttpStatus.NO_CONTENT);
@@ -122,10 +126,10 @@ describe('(E2E) PATCH /dependants/:id - Atualização de Dependentes', () => {
       const updateData = { birthdate: '2011-05-20' };
 
       // Act
-      const response = await request(app.getHttpServer())
+      const response = (await request(app.getHttpServer())
         .patch(`/dependants/${dependant.id}`)
         .set('Authorization', `Bearer ${affiliatedUser.accessToken}`)
-        .send(updateData);
+        .send(updateData)) as { status: number; body: Record<string, never> };
 
       // Assert
       expect(response.status).toBe(HttpStatus.NO_CONTENT);
@@ -149,10 +153,10 @@ describe('(E2E) PATCH /dependants/:id - Atualização de Dependentes', () => {
       const updateData = { relationship: DependantRelationship.DAUGHTER };
 
       // Act
-      const response = await request(app.getHttpServer())
+      const response = (await request(app.getHttpServer())
         .patch(`/dependants/${dependant.id}`)
         .set('Authorization', `Bearer ${affiliatedUser.accessToken}`)
-        .send(updateData);
+        .send(updateData)) as { status: number; body: Record<string, never> };
 
       // Assert
       expect(response.status).toBe(HttpStatus.NO_CONTENT);
@@ -175,10 +179,10 @@ describe('(E2E) PATCH /dependants/:id - Atualização de Dependentes', () => {
       const updateData = { sex: Sex.FEMALE };
 
       // Act
-      const response = await request(app.getHttpServer())
+      const response = (await request(app.getHttpServer())
         .patch(`/dependants/${dependant.id}`)
         .set('Authorization', `Bearer ${affiliatedUser.accessToken}`)
-        .send(updateData);
+        .send(updateData)) as { status: number; body: Record<string, never> };
 
       // Assert
       expect(response.status).toBe(HttpStatus.NO_CONTENT);
@@ -201,10 +205,10 @@ describe('(E2E) PATCH /dependants/:id - Atualização de Dependentes', () => {
       const updateData = { email: 'carlos.new@test.com' };
 
       // Act
-      const response = await request(app.getHttpServer())
+      const response = (await request(app.getHttpServer())
         .patch(`/dependants/${dependant.id}`)
         .set('Authorization', `Bearer ${affiliatedUser.accessToken}`)
-        .send(updateData);
+        .send(updateData)) as { status: number; body: Record<string, never> };
 
       // Assert
       expect(response.status).toBe(HttpStatus.NO_CONTENT);
@@ -227,10 +231,10 @@ describe('(E2E) PATCH /dependants/:id - Atualização de Dependentes', () => {
       const updateData = { phone: '11123456789' };
 
       // Act
-      const response = await request(app.getHttpServer())
+      const response = (await request(app.getHttpServer())
         .patch(`/dependants/${dependant.id}`)
         .set('Authorization', `Bearer ${affiliatedUser.accessToken}`)
-        .send(updateData);
+        .send(updateData)) as { status: number; body: Record<string, never> };
 
       // Assert
       expect(response.status).toBe(HttpStatus.NO_CONTENT);
@@ -253,10 +257,10 @@ describe('(E2E) PATCH /dependants/:id - Atualização de Dependentes', () => {
       const updateData = { phone: '' };
 
       // Act
-      const response = await request(app.getHttpServer())
+      const response = (await request(app.getHttpServer())
         .patch(`/dependants/${dependant.id}`)
         .set('Authorization', `Bearer ${affiliatedUser.accessToken}`)
-        .send(updateData);
+        .send(updateData)) as { status: number; body: Record<string, never> };
 
       // Assert
       expect(response.status).toBe(HttpStatus.NO_CONTENT);
@@ -294,10 +298,10 @@ describe('(E2E) PATCH /dependants/:id - Atualização de Dependentes', () => {
       };
 
       // Act
-      const response = await request(app.getHttpServer())
+      const response = (await request(app.getHttpServer())
         .patch(`/dependants/${dependant.id}`)
         .set('Authorization', `Bearer ${affiliatedUser.accessToken}`)
-        .send(updateData);
+        .send(updateData)) as { status: number; body: Record<string, never> };
 
       // Assert
       expect(response.status).toBe(HttpStatus.NO_CONTENT);
@@ -335,10 +339,10 @@ describe('(E2E) PATCH /dependants/:id - Atualização de Dependentes', () => {
       };
 
       // Act
-      const response = await request(app.getHttpServer())
+      const response = (await request(app.getHttpServer())
         .patch(`/dependants/${dependant.id}`)
         .set('Authorization', `Bearer ${affiliatedUser.accessToken}`)
-        .send(updateData);
+        .send(updateData)) as { status: number; body: Record<string, never> };
 
       // Assert
       expect(response.status).toBe(HttpStatus.NO_CONTENT);
@@ -375,7 +379,7 @@ describe('(E2E) PATCH /dependants/:id - Atualização de Dependentes', () => {
 
       // Assert
       expect(response.status).toBe(HttpStatus.BAD_REQUEST);
-      expect(response.body.message).toContain('firstName must be longer than or equal to 2 characters');
+      expect((response as { body: ErrorResponse }).body.message).toContain('firstName must be longer than or equal to 2 characters');
     });
 
     it('Não deve atualizar com lastName muito curto', async () => {
@@ -391,7 +395,7 @@ describe('(E2E) PATCH /dependants/:id - Atualização de Dependentes', () => {
 
       // Assert
       expect(response.status).toBe(HttpStatus.BAD_REQUEST);
-      expect(response.body.message).toContain('lastName must be longer than or equal to 2 characters');
+      expect((response as { body: ErrorResponse }).body.message).toContain('lastName must be longer than or equal to 2 characters');
     });
 
     it('Não deve atualizar com birthdate inválida', async () => {
@@ -407,7 +411,7 @@ describe('(E2E) PATCH /dependants/:id - Atualização de Dependentes', () => {
 
       // Assert
       expect(response.status).toBe(HttpStatus.BAD_REQUEST);
-      expect(response.body.message).toContain('birthdate must be a valid ISO 8601 date string');
+      expect((response as { body: ErrorResponse }).body.message).toContain('birthdate must be a valid ISO 8601 date string');
     });
 
     it('Não deve atualizar com relationship inválido', async () => {
@@ -423,7 +427,9 @@ describe('(E2E) PATCH /dependants/:id - Atualização de Dependentes', () => {
 
       // Assert
       expect(response.status).toBe(HttpStatus.BAD_REQUEST);
-      expect(response.body.message).toContain('relationship must be one of the following values: DAUGHTER, HUSBAND, CHILD, WIFE, SON, OTHER');
+      expect((response as { body: ErrorResponse }).body.message).toContain(
+        'relationship must be one of the following values: DAUGHTER, HUSBAND, CHILD, WIFE, SON, OTHER',
+      );
     });
 
     it('Não deve atualizar com sex inválido', async () => {
@@ -439,7 +445,7 @@ describe('(E2E) PATCH /dependants/:id - Atualização de Dependentes', () => {
 
       // Assert
       expect(response.status).toBe(HttpStatus.BAD_REQUEST);
-      expect(response.body.message).toContain('sex must be one of the following values: FEMALE, MALE');
+      expect((response as { body: ErrorResponse }).body.message).toContain('sex must be one of the following values: FEMALE, MALE');
     });
 
     it('Não deve atualizar com email inválido', async () => {
@@ -455,7 +461,7 @@ describe('(E2E) PATCH /dependants/:id - Atualização de Dependentes', () => {
 
       // Assert
       expect(response.status).toBe(HttpStatus.BAD_REQUEST);
-      expect(response.body.message).toContain('email must be an email');
+      expect((response as { body: ErrorResponse }).body.message).toContain('email must be an email');
     });
   });
 
@@ -473,7 +479,7 @@ describe('(E2E) PATCH /dependants/:id - Atualização de Dependentes', () => {
 
       // Assert
       expect(response.status).toBe(HttpStatus.BAD_REQUEST);
-      expect(response.body.message).toContain('firstName must be a string');
+      expect((response as { body: ErrorResponse }).body.message).toContain('firstName must be a string');
     });
 
     it('Não deve atualizar com phone não sendo string', async () => {
@@ -489,7 +495,7 @@ describe('(E2E) PATCH /dependants/:id - Atualização de Dependentes', () => {
 
       // Assert
       expect(response.status).toBe(HttpStatus.BAD_REQUEST);
-      expect(response.body.message).toContain('phone must be a string');
+      expect((response as { body: ErrorResponse }).body.message).toContain('phone must be a string');
     });
 
     it('Não deve atualizar com birthdate não sendo string de data', async () => {
@@ -505,7 +511,7 @@ describe('(E2E) PATCH /dependants/:id - Atualização de Dependentes', () => {
 
       // Assert
       expect(response.status).toBe(HttpStatus.BAD_REQUEST);
-      expect(response.body.message).toContain('birthdate must be a valid ISO 8601 date string');
+      expect((response as { body: ErrorResponse }).body.message).toContain('birthdate must be a valid ISO 8601 date string');
     });
   });
 
@@ -544,7 +550,9 @@ describe('(E2E) PATCH /dependants/:id - Atualização de Dependentes', () => {
   describe('Autorização - Acesso Cross-Family', () => {
     it('Não deve atualizar dependente de outra família', async () => {
       // Arrange - Criar família isolada
-      const { user: otherUser, dependant: otherFamilyDependant } = await createIsolatedFamily(app, prisma);
+      const otherFamily = await createIsolatedFamily(app, prisma);
+      const otherUser = otherFamily.user;
+      const otherFamilyDependant = otherFamily.dependant as { id: string };
       testUsers.push(otherUser.userId);
 
       const updateData = { firstName: 'Hacker' };
@@ -559,9 +567,9 @@ describe('(E2E) PATCH /dependants/:id - Atualização de Dependentes', () => {
       expect(response.status).toBe(HttpStatus.NOT_FOUND);
 
       // Verificar que o dependente não foi alterado
-      const unchangedDependant = await prisma.dependant.findUnique({
+      const unchangedDependant = (await prisma.dependant.findUnique({
         where: { id: otherFamilyDependant.id },
-      });
+      })) as { id: string; first_name: string } | null;
 
       expect(unchangedDependant?.first_name).toBe('Isolated'); // Nome original
       expect(unchangedDependant?.first_name).not.toBe('Hacker');
@@ -805,16 +813,16 @@ describe('(E2E) PATCH /dependants/:id - Atualização de Dependentes', () => {
       const updateData = { phone: null };
 
       // Act
-      const response = await request(app.getHttpServer())
+      const response = (await request(app.getHttpServer())
         .patch(`/dependants/${dependant.id}`)
         .set('Authorization', `Bearer ${affiliatedUser.accessToken}`)
-        .send(updateData);
+        .send(updateData)) as { status: number; body: ErrorResponse | Record<string, never> };
 
       // Assert
       // O sistema pode não aceitar null explicitamente através de validação
       // Verificamos se rejeita com Bad Request ou se aceita com No Content
-      if (response.status === HttpStatus.BAD_REQUEST) {
-        expect(response.body.message).toContain('phone');
+      if ((response.status as HttpStatus) === HttpStatus.BAD_REQUEST) {
+        expect((response as { body: ErrorResponse }).body.message).toContain('phone');
       } else {
         expect(response.status).toBe(HttpStatus.NO_CONTENT);
 

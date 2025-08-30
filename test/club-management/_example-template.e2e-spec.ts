@@ -4,6 +4,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { EnrollmentStatus } from '@prisma/client';
 
 import { PrismaService } from '@/infraestructure/database/prisma.service';
+import ClubDto from '@/domain/dtos/club.dto';
 
 import {
   setupClubManagementApp,
@@ -69,7 +70,7 @@ describe('(E2E) ExemploTemplate - ClubManagement', () => {
       // Arrange - Dados já preparados no beforeAll
 
       // Act - Buscar informações do clube
-      const response = await request(app.getHttpServer())
+      const response: { body: ClubDto } = await request(app.getHttpServer())
         .get('/club-management/my-club')
         .set('Authorization', `Bearer ${clubOwner.accessToken}`)
         .expect(HttpStatus.OK);
@@ -111,7 +112,7 @@ describe('(E2E) ExemploTemplate - ClubManagement', () => {
       await createTestEnrollmentRequest(prisma, testClub.id, dependant.id, regularUser.familyId, EnrollmentStatus.PENDING);
 
       // Act - Listar enrollments pendentes
-      const response = await request(app.getHttpServer())
+      const response: { body: any[] } = await request(app.getHttpServer())
         .get(`/club-management/${testClub.id}/enrollments/pending`)
         .set('Authorization', `Bearer ${clubOwner.accessToken}`)
         .expect(HttpStatus.OK);
@@ -133,7 +134,7 @@ describe('(E2E) ExemploTemplate - ClubManagement', () => {
       });
 
       // Act - Buscar enrollments pendentes
-      const response = await request(app.getHttpServer())
+      const response: { body: any[] } = await request(app.getHttpServer())
         .get(`/club-management/${newClub.id}/enrollments/pending`)
         .set('Authorization', `Bearer ${secondClubOwner.accessToken}`)
         .expect(HttpStatus.OK);

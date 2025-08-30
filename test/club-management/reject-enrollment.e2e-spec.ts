@@ -27,7 +27,7 @@ describe('(E2E) RejectEnrollment', () => {
   let unauthorizedUser: ClubManagementTestUser;
   let testFamily: ClubManagementTestUser;
   let testClub: ClubTestData;
-  let otherTestClub: ClubTestData;
+
   const testUsers: string[] = [];
 
   beforeAll(async () => {
@@ -57,10 +57,6 @@ describe('(E2E) RejectEnrollment', () => {
     });
 
     // Criar outro clube para outro dono
-    otherTestClub = await createTestClub(prisma, otherClubOwner.userId, {
-      name: 'Outro Clube E2E',
-      maxMembers: 25,
-    });
   });
 
   afterAll(async () => {
@@ -82,7 +78,7 @@ describe('(E2E) RejectEnrollment', () => {
       const rejectionReason = 'Infelizmente, todas as vagas para esta faixa etária já foram preenchidas.';
 
       // Act - Rejeitar a matrícula
-      const response = await request(app.getHttpServer())
+      const response: request.Response = await request(app.getHttpServer())
         .post(`/club-management/enrollments/${enrollmentRequest.id}/reject`)
         .set('Authorization', `Bearer ${clubOwner.accessToken}`)
         .send({ reason: rejectionReason })

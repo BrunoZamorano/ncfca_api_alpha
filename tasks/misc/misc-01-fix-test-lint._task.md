@@ -1,3 +1,5 @@
+- status: complete
+
 <task> 
 - fix the supertest's return types that are logging erros on npx eslint <target-test-folder>
 </task>

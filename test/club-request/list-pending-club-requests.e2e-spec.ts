@@ -151,7 +151,7 @@ describe('E2E ListPendingClubRequests', () => {
       .expect(HttpStatus.OK);
 
     expect(response.body).toHaveLength(query.length);
-    expect(response.body[0]).toMatchObject({
+    expect((response.body as any[])[0]).toMatchObject({
       clubName: 'Clube Pendente',
       status: 'PENDING',
     });
