@@ -152,6 +152,25 @@ export default class Tournament {
     eventEmitter.emit(event);
   }
 
+  public confirmDuoRegistration(registrationId: string, eventEmitter: EventEmitter): void {
+    const registration = this.findRegistrationById(registrationId);
+
+    if (registration.status !== RegistrationStatus.CONFIRMED) {
+      throw new InvalidOperationException('Registration must be confirmed before final confirmation.');
+    }
+
+    this._updatedAt = new Date();
+    this._version++;
+
+    const event = new RegistrationConfirmed({
+      registrationId: registration.id,
+      tournamentId: this._id,
+      competitorId: registration.competitorId,
+      isDuo: true,
+    });
+    eventEmitter.emit(event);
+  }
+
   public update(props: UpdateTournamentProps): void {
     if (this._registrations.length > 0) throw new InvalidOperationException('Cannot update a tournament that already has registrations.');
     if (this._deletedAt) throw new InvalidOperationException('Cannot update a deleted tournament.');

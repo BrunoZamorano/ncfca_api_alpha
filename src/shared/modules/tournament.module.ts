@@ -13,16 +13,18 @@ import { RequestDuoRegistration } from '@/application/use-cases/tournament/reque
 import { SyncRegistrationUseCase } from '@/application/use-cases/tournament/sync-registration.use-case';
 import { GetMyPendingRegistrations } from '@/application/use-cases/tournament/get-my-pending-registrations.use-case';
 import { RequestIndividualRegistration } from '@/application/use-cases/tournament/request-individual-registration/request-individual-registration.use-case';
+import { ConfirmDuoRegistration } from '@/application/use-cases/tournaments/confirm-registration/confirm-duo-registration.use-case';
 
 import TournamentController from '@/infraestructure/controllers/tournament/tournament.controller';
 import { TournamentListener } from '@/infraestructure/controllers/listeners/tournament.listener';
+import { DuoRegistrationAcceptedListener } from '@/infraestructure/listeners/duo-registration-accepted.listener';
 
 import SharedModule from '@/shared/modules/shared.module';
 import EventModule from '@/shared/modules/event.module';
 
 @Module({
   imports: [ConfigModule, SharedModule, EventModule],
-  controllers: [TournamentController, TournamentListener],
+  controllers: [TournamentController, TournamentListener, DuoRegistrationAcceptedListener],
   providers: [
     GetTournament,
     ListTournaments,
@@ -36,6 +38,7 @@ import EventModule from '@/shared/modules/event.module';
     SyncRegistrationUseCase,
     GetMyPendingRegistrations,
     RequestIndividualRegistration,
+    ConfirmDuoRegistration,
   ],
 })
 export default class TournamentModule {}
