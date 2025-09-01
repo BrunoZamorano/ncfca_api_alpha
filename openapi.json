@@ -1540,7 +1540,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/RequestEnrollmentDto"
+                "$ref": "#/components/schemas/RequestEnrollmentInputDto"
               }
             }
           }
@@ -2168,6 +2168,39 @@
         ]
       }
     },
+    "/tournaments/my-pending-registrations": {
+      "get": {
+        "operationId": "TournamentController_listMyPendingRegistrations",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Lista de inscrições pendentes retornada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GetMyPendingRegistrationsListItemView"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Acesso negado."
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Lista inscrições de dupla pendentes para meus dependentes",
+        "tags": [
+          "Torneios"
+        ]
+      }
+    },
     "/tournaments/{id}": {
       "get": {
         "operationId": "TournamentController_getById",
@@ -2219,14 +2252,21 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/RequestIndividualRegistrationDto"
+                "$ref": "#/components/schemas/RequestIndividualRegistrationInputDto"
               }
             }
           }
         },
         "responses": {
           "201": {
-            "description": "Inscrição realizada com sucesso."
+            "description": "Inscrição realizada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestIndividualRegistrationOutputDto"
+                }
+              }
+            }
           },
           "400": {
             "description": "Dados inválidos."
@@ -2244,6 +2284,142 @@
           }
         ],
         "summary": "Solicita inscrição individual em um torneio",
+        "tags": [
+          "Torneios"
+        ]
+      }
+    },
+    "/tournaments/registrations/request-duo": {
+      "post": {
+        "operationId": "TournamentController_requestDuoCompetitorRegistration",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestDuoRegistrationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Solicitação de inscrição de dupla criada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestDuoRegistrationOutputDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados inválidos."
+          },
+          "404": {
+            "description": "Torneio, competidor ou parceiro não encontrado."
+          },
+          "409": {
+            "description": "Competidor ou parceiro já está inscrito neste torneio."
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Solicita inscrição de dupla em um torneio",
+        "tags": [
+          "Torneios"
+        ]
+      }
+    },
+    "/tournaments/registrations/{id}/accept": {
+      "post": {
+        "operationId": "TournamentController_acceptDuoCompetitorRegistration",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Inscrição de dupla aceita com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AcceptDuoRegistrationResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Registro não está pendente de aprovação."
+          },
+          "403": {
+            "description": "Acesso negado."
+          },
+          "404": {
+            "description": "Torneio ou registro não encontrado."
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Aceita uma inscrição de dupla pendente",
+        "tags": [
+          "Torneios"
+        ]
+      }
+    },
+    "/tournaments/registrations/{id}/reject": {
+      "post": {
+        "operationId": "TournamentController_rejectDuoCompetitorRegistration",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Inscrição de dupla rejeitada com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RejectDuoRegistrationResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Registro não está pendente de aprovação."
+          },
+          "403": {
+            "description": "Acesso negado."
+          },
+          "404": {
+            "description": "Torneio ou registro não encontrado."
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Rejeita uma inscrição de dupla pendente",
         "tags": [
           "Torneios"
         ]
@@ -3605,7 +3781,7 @@
           }
         }
       },
-      "RequestEnrollmentDto": {
+      "RequestEnrollmentInputDto": {
         "type": "object",
         "properties": {
           "dependantId": {
@@ -4212,6 +4388,50 @@
           "registrationStartDate"
         ]
       },
+      "GetMyPendingRegistrationsListItemView": {
+        "type": "object",
+        "properties": {
+          "registrationId": {
+            "type": "string",
+            "description": "ID único da inscrição",
+            "format": "uuid"
+          },
+          "tournamentName": {
+            "type": "string",
+            "description": "Nome do torneio",
+            "example": "Torneio Nacional 2024"
+          },
+          "competitorName": {
+            "type": "string",
+            "description": "Nome do dependente solicitante",
+            "example": "João Silva"
+          },
+          "competitorId": {
+            "type": "string",
+            "description": "ID do dependente solicitante",
+            "format": "uuid"
+          },
+          "requestedAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Data da solicitação",
+            "example": "2024-01-15T10:30:00Z"
+          },
+          "tournamentType": {
+            "type": "string",
+            "description": "Tipo do torneio",
+            "example": "DUO"
+          }
+        },
+        "required": [
+          "registrationId",
+          "tournamentName",
+          "competitorName",
+          "competitorId",
+          "requestedAt",
+          "tournamentType"
+        ]
+      },
       "TournamentDetailsView": {
         "type": "object",
         "properties": {
@@ -4289,7 +4509,7 @@
           "registrationStartDate"
         ]
       },
-      "RequestIndividualRegistrationDto": {
+      "RequestIndividualRegistrationInputDto": {
         "type": "object",
         "properties": {
           "tournamentId": {
@@ -4306,6 +4526,101 @@
         "required": [
           "tournamentId",
           "competitorId"
+        ]
+      },
+      "RequestIndividualRegistrationOutputDto": {
+        "type": "object",
+        "properties": {
+          "registrationId": {
+            "type": "string",
+            "description": "ID único da inscrição individual criada",
+            "example": "550e8400-e29b-41d4-a716-446655440002"
+          },
+          "status": {
+            "type": "string",
+            "description": "Status atual da inscrição individual",
+            "example": "CONFIRMED",
+            "enum": [
+              "CONFIRMED"
+            ]
+          }
+        },
+        "required": [
+          "registrationId",
+          "status"
+        ]
+      },
+      "RequestDuoRegistrationDto": {
+        "type": "object",
+        "properties": {
+          "tournamentId": {
+            "type": "string",
+            "description": "ID do torneio para o qual deseja se registrar a dupla",
+            "example": "550e8400-e29b-41d4-a716-446655440000"
+          },
+          "competitorId": {
+            "type": "string",
+            "description": "ID do competidor (dependente) que será registrado",
+            "example": "550e8400-e29b-41d4-a716-446655440001"
+          },
+          "partnerId": {
+            "type": "string",
+            "description": "ID do parceiro (dependente) que será convidado para formar a dupla",
+            "example": "550e8400-e29b-41d4-a716-446655440002"
+          }
+        },
+        "required": [
+          "tournamentId",
+          "competitorId",
+          "partnerId"
+        ]
+      },
+      "RequestDuoRegistrationOutputDto": {
+        "type": "object",
+        "properties": {
+          "registrationId": {
+            "type": "string",
+            "description": "ID único da inscrição de dupla criada",
+            "example": "550e8400-e29b-41d4-a716-446655440003"
+          },
+          "status": {
+            "type": "string",
+            "description": "Status atual da inscrição da dupla",
+            "example": "PENDING_APPROVAL",
+            "enum": [
+              "PENDING_APPROVAL"
+            ]
+          }
+        },
+        "required": [
+          "registrationId",
+          "status"
+        ]
+      },
+      "AcceptDuoRegistrationResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Mensagem de confirmação da aceitação da inscrição",
+            "example": "Inscrição de dupla aceita com sucesso"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "RejectDuoRegistrationResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Mensagem de confirmação da rejeição da inscrição",
+            "example": "Inscrição de dupla rejeitada com sucesso"
+          }
+        },
+        "required": [
+          "message"
         ]
       },
       "CancelRegistrationDto": {

@@ -1,11 +1,77 @@
 import { Inject } from '@nestjs/common';
 
+import { PaginatedClubDto } from '@/domain/dtos/paginated-output.dto';
+import { MembershipStatus } from '@/domain/enums/membership-status';
+import SearchClubsQueryDto from '@/domain/dtos/search-clubs-query.dto';
+import Address from '@/domain/value-objects/address/address';
+
 import { ClubQuery, ClubMemberDto } from '@/application/queries/club-query/club.query';
 
 import { PrismaService } from '@/infraestructure/database/prisma.service';
 
 export class ClubQueryPrisma implements ClubQuery {
-  constructor(@Inject(PrismaService) private readonly prisma: PrismaService) {}
+  private readonly select = {
+    id: true,
+    name: true,
+    _count: { select: { memberships: { where: { status: MembershipStatus.ACTIVE } } } },
+    created_at: true,
+    updated_at: true,
+    max_members: true,
+    memberships: { where: { status: MembershipStatus.ACTIVE } },
+    principal_id: true,
+    city: true,
+    state: true,
+    number: true,
+    street: true,
+    zip_code: true,
+    complement: true,
+    neighborhood: true,
+  };
+
+  constructor(@Inject(PrismaService) private readonly prisma: PrismaService) { }
+
+  async search(query: SearchClubsQueryDto): Promise<PaginatedClubDto> {
+    const { page = 1, limit = 10 } = query?.pagination ?? {};
+    const where = {
+      name: { contains: query.filter?.name, mode: 'insensitive' as const },
+      city: { contains: query.filter?.city, mode: 'insensitive' as const },
+      state: { contains: query.filter?.state, mode: 'insensitive' as const },
+    };
+    const total = await this.prisma.club.count({ where });
+    const clubsData = await this.prisma.club.findMany({
+      where,
+      skip: (page - 1) * limit,
+      take: limit,
+      select: this.select,
+    });
+    const clubDtos = clubsData.map((c) => ({
+      id: c.id,
+      name: c.name,
+      address: new Address({
+        city: c.city,
+        state: c.state,
+        number: c.number,
+        street: c.street,
+        zipCode: c.zip_code,
+        district: c.neighborhood,
+        complement: c.complement ?? undefined,
+      }),
+      maxMembers: c.max_members ?? undefined,
+      corum: c._count.memberships,
+      createdAt: c.created_at,
+      principalId: c.principal_id,
+    }));
+
+    return {
+      data: clubDtos,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  }
 
   async getClubMembersListView(clubId: string): Promise<ClubMemberDto[]> {
     const result = await this.prisma.clubMembership.findMany({

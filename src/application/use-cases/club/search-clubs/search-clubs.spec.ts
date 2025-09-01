@@ -7,6 +7,7 @@ import ClubRepositoryMemory from '@/infraestructure/repositories/club-repository
 describe('Search Clubs', function () {
   it('Deve retornar todos os clubes até o limite máximo', async function () {
     const input: SearchClubsQueryDto = { pagination: { page: 1, limit: 100 } };
+    //todo: change to ClubQuery
     const useCase = new SearchClubs(new ClubRepositoryMemory({ options: { totalClubs: 250 } }));
     const output = await useCase.execute(input);
     expect(output.meta.totalPages).toBe(3);

@@ -1,3 +1,11 @@
+import SearchClubsQueryDto from '@/domain/dtos/search-clubs-query.dto';
+import { PaginatedClubDto } from '@/domain/dtos/paginated-output.dto';
+
+export interface ClubQuery {
+  getClubMembersListView(clubId: string): Promise<ClubMemberDto[]>;
+  search(query: SearchClubsQueryDto): Promise<PaginatedClubDto>;
+}
+
 export interface ClubMemberDto {
   id: string;
   dependantId: string;
@@ -18,8 +26,4 @@ export interface ClubMemberDto {
     phone: string;
     cpf: string;
   };
-}
-
-export interface ClubQuery {
-  getClubMembersListView(clubId: string): Promise<ClubMemberDto[]>;
 }

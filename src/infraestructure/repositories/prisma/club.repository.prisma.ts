@@ -3,14 +3,10 @@ import { PrismaService } from '@/infraestructure/database/prisma.service';
 
 import ClubRepository from '@/domain/repositories/club-repository';
 import Club from '@/domain/entities/club/club';
-
-import { PaginatedClubDto } from '@/domain/dtos/paginated-output.dto';
 import { MembershipStatus } from '@/domain/enums/membership-status';
-import SearchClubsQueryDto from '@/domain/dtos/search-clubs-query.dto';
 
 import ClubMembershipMapper from '@/shared/mappers/club-membership.mapper';
 import ClubMapper from '@/shared/mappers/club.mapper';
-import Address from '@/domain/value-objects/address/address';
 
 @Injectable()
 export class ClubRepositoryPrisma implements ClubRepository {
@@ -54,7 +50,7 @@ export class ClubRepositoryPrisma implements ClubRepository {
 
   async findAll(): Promise<Club[]> {
     const clubs = await this.prisma.club.findMany({ select: this.select });
-    return clubs.map(ClubMapper.modelToEntity);
+    return clubs.map((model) => ClubMapper.modelToEntity(model));
   }
 
   async save(club: Club): Promise<Club> {
@@ -77,48 +73,5 @@ export class ClubRepositoryPrisma implements ClubRepository {
       ...memberOperations,
     ]);
     return ClubMapper.modelToEntity(upsertedClub);
-  }
-
-  async search(query: SearchClubsQueryDto): Promise<PaginatedClubDto> {
-    const { page = 1, limit = 10 } = query?.pagination ?? {};
-    const where = {
-      name: { contains: query.filter?.name, mode: 'insensitive' as const },
-      city: { contains: query.filter?.city, mode: 'insensitive' as const },
-      state: { contains: query.filter?.state, mode: 'insensitive' as const },
-    };
-    const total = await this.prisma.club.count({ where });
-    const clubsData = await this.prisma.club.findMany({
-      where,
-      skip: (page - 1) * limit,
-      take: limit,
-      select: this.select,
-    });
-    const clubDtos = clubsData.map((c) => ({
-      id: c.id,
-      name: c.name,
-      address: new Address({
-        city: c.city,
-        state: c.state,
-        number: c.number,
-        street: c.street,
-        zipCode: c.zip_code,
-        district: c.neighborhood,
-        complement: c.complement ?? undefined,
-      }),
-      maxMembers: c.max_members ?? undefined,
-      corum: c._count.memberships,
-      createdAt: c.created_at,
-      principalId: c.principal_id,
-    }));
-
-    return {
-      data: clubDtos,
-      meta: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
-    };
   }
 }
