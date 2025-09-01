@@ -1,0 +1,64 @@
+{
+  "dashboard": {
+    "id": null,
+    "uid": "dlq-monitor",
+    "title": "Monitoramento da Dead Letter Queue",
+    "panels": [
+      {
+        "id": 1,
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+        "type": "stat",
+        "title": "Mensagens na DLQ (ClubRequest)",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "b7ba9837-2811-4bc8-a86a-79d38ce28504"
+        },
+        "targets": [
+          {
+            "refId": "A",
+            "expr": "rabbitmq_dlq_messages_ready{queue_name=\"ClubRequest-dlq\"}",
+            "legendFormat": "{{queue_name}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                { "color": "green", "value": null },
+                { "color": "red", "value": 1 }
+              ]
+            },
+            "mappings": [],
+            "unit": "none"
+          }
+        }
+      }
+    ],
+    "time": {
+      "from": "now-6h",
+      "to": "now"
+    },
+    "timepicker": {
+      "refresh_intervals": [
+        "5s",
+        "10s",
+        "30s",
+        "1m",
+        "5m",
+        "15m",
+        "30m",
+        "1h",
+        "2h",
+        "1d"
+      ]
+    },
+    "timezone": "browser",
+    "refresh": "10s"
+  },
+  "folderId": 0,
+  "overwrite": true
+}

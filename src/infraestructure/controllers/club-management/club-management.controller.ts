@@ -1,30 +1,35 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, Patch, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Request, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+
+import { EnrollmentRequestDto } from '@/domain/dtos/enrollment-request.dto';
+import { ClubMemberDto } from '@/domain/dtos/club-member.dto';
+import { UserRoles } from '@/domain/enums/user-roles';
+import ClubDto from '@/domain/dtos/club.dto';
+
 import ListPendingEnrollments from '@/application/use-cases/club-management/list-pending-enrollments/list-pending-enrollments';
+import ListMembersOfMyClub from '@/application/use-cases/club/list-members-of-my-club/list-members-of-my-club';
+import ListAllEnrollments from '@/application/use-cases/club-management/list-all-enrollments/list-all-enrollments';
 import ApproveEnrollment from '@/application/use-cases/club-management/approve-enrollment/approve-enrollment';
 import RejectEnrollment from '@/application/use-cases/club-management/reject-enrollment/reject-enrollment';
 import RemoveClubMember from '@/application/use-cases/club/remove-club-member/remove-club-member';
 import UpdateClubInfo from '@/application/use-cases/club/update-club-info/update-club-info';
 import GetMyClubInfo from '@/application/use-cases/club/get-my-club-info/get-my-club-info';
-import { UserRoles } from '@/domain/enums/user-roles';
+
+import { ListPendingEnrollmentsOutputDto } from '@/infraestructure/dtos/list-pending-enrollments.dto';
 import { RejectEnrollmentDto } from '@/infraestructure/dtos/reject-enrollment.dto';
 import { UpdateClubDto } from '@/infraestructure/dtos/update-club.dto';
+
 import { RolesGuard } from '@/shared/guards/roles.guard';
 import { Roles } from '@/shared/decorators/role.decorator';
 import AuthGuard from '@/shared/guards/auth.guard';
-import ListMembersOfMyClub from '@/application/use-cases/club/list-members-of-my-club/list-members-of-my-club';
-import ClubDto from '@/domain/dtos/club.dto';
-import { EnrollmentRequestDto } from '@/domain/dtos/enrollment-request.dto';
-import { ClubMemberDto } from '@/domain/dtos/club-member.dto';
-import ListAllEnrollments from '@/application/use-cases/club-management/list-all-enrollments/list-all-enrollments';
-import { ListPendingEnrollmentsOutputDto } from '@/infraestructure/dtos/list-pending-enrollments.dto';
+
 import { HttpUser } from '../club-request.controller';
 
 @ApiTags('Gestão de Clube (Diretor)')
 @ApiBearerAuth('JWT-auth')
 @UseGuards(AuthGuard, RolesGuard)
 @Roles(UserRoles.DONO_DE_CLUBE)
-@Controller('club-management')
+@Controller('')
 export default class ClubManagementController {
   constructor(
     private readonly _listPendingEnrollments: ListPendingEnrollments,
@@ -45,7 +50,7 @@ export default class ClubManagementController {
     return this._getMyClubInfo.execute(input);
   }
 
-  @Patch()
+  @Post('my-club')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Atualiza as informações de um clube específico que o usuário dirige' })
   @ApiResponse({ status: 204, description: 'Clube atualizado com sucesso.' })
@@ -64,15 +69,22 @@ export default class ClubManagementController {
     return this._listAllEnrollments.execute({ loggedInUserId: req.user.id });
   }
 
-  @Get('/:clubId/enrollments/pending')
+  @Get('/my-club/enrollments/pending')
   @ApiOperation({ summary: 'Lista as solicitações de matrícula pendentes para um clube específico' })
   @ApiResponse({
     status: 200,
     description: 'Lista de solicitações pendentes.',
     type: [ListPendingEnrollmentsOutputDto],
   })
-  async listPending(@Request() req: HttpUser, @Param('clubId') clubId: string) {
-    return this._listPendingEnrollments.execute({ loggedInUserId: req.user.id, clubId });
+  async listPending(@Request() req: HttpUser) {
+    return this._listPendingEnrollments.execute({ principalId: req.user.id });
+  }
+
+  @Get('/my-club/members')
+  @ApiOperation({ summary: 'Lista todos os membros ativos do meu clube' })
+  @ApiResponse({ status: 200, description: 'Lista de membros ativos.', type: [ClubMemberDto] }) // Nota: Deveria ser um DTO de Membro, mas usando o de request por ora.
+  async listMembersOfMyClub(@Request() req: HttpUser) {
+    return this._listMembersOfMyClub.execute({ loggedInUserId: req.user.id });
   }
 
   @Post('/enrollments/:enrollmentId/approve')
@@ -93,13 +105,6 @@ export default class ClubManagementController {
       enrollmentRequestId: enrollmentId,
       reason: body.reason,
     });
-  }
-
-  @Get('/my-club/members')
-  @ApiOperation({ summary: 'Lista todos os membros ativos do meu clube' })
-  @ApiResponse({ status: 200, description: 'Lista de membros ativos.', type: [ClubMemberDto] }) // Nota: Deveria ser um DTO de Membro, mas usando o de request por ora.
-  async listMembersOfMyClub(@Request() req: HttpUser) {
-    return this._listMembersOfMyClub.execute({ loggedInUserId: req.user.id });
   }
 
   @Post('/membership/:membershipId/revoke')

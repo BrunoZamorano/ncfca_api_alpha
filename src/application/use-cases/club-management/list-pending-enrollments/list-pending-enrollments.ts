@@ -9,15 +9,12 @@ export default class ListPendingEnrollments {
   constructor(@Inject(UNIT_OF_WORK) private readonly uow: UnitOfWork) {}
 
   async execute(input: Input): Promise<(EnrollmentRequest & { dependantName: string })[]> {
-    const club = await this.uow.clubRepository.find(input.clubId);
-    if (!club) throw new EntityNotFoundException('Club', input.clubId);
-    if (club.principalId !== input.loggedInUserId) {
-      throw new ForbiddenException('User is not the owner of this club.');
-    }
-    const allRequests = await this.uow.enrollmentRequestRepository.findByClubId(input.clubId);
-    if (!allRequests || allRequests.length === 0) {
-      return [];
-    }
+    const club = await this.uow.clubRepository.findByPrincipalId(input.principalId);
+    if (!club) throw new EntityNotFoundException('Club', input.principalId);
+    if (this.isPrincipalMismatch(club.principalId, input.principalId)) throw new ForbiddenException('User is not the owner of this club.');
+    const allRequests = await this.uow.enrollmentRequestRepository.findByClubId(input.principalId);
+    if (this.hasNoPendingEnrollments(allRequests)) return [];
+    //todo: move responsibility to the clubQuery src/application/queries/club-query/club.query.ts, it is ridiculous
     const pendingRequests = allRequests.filter((request) => request.status === EnrollmentStatus.PENDING);
     for (const request of pendingRequests) {
       const family = await this.uow.familyRepository.find(request.familyId);
@@ -28,9 +25,16 @@ export default class ListPendingEnrollments {
     }
     return pendingRequests as (EnrollmentRequest & { dependantName: string })[];
   }
+
+  private hasNoPendingEnrollments(allRequests: EnrollmentRequest[]) {
+    return !allRequests || allRequests.length === 0;
+  }
+
+  private isPrincipalMismatch(clubPrincipalId: string, inputPrincipalId: string) {
+    return clubPrincipalId !== inputPrincipalId;
+  }
 }
 
 interface Input {
-  loggedInUserId: string;
-  clubId: string;
+  principalId: string;
 }

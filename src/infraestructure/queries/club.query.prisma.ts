@@ -28,7 +28,7 @@ export class ClubQueryPrisma implements ClubQuery {
     neighborhood: true,
   };
 
-  constructor(@Inject(PrismaService) private readonly prisma: PrismaService) { }
+  constructor(@Inject(PrismaService) private readonly prisma: PrismaService) {}
 
   async search(query: SearchClubsQueryDto): Promise<PaginatedClubDto> {
     const { page = 1, limit = 10 } = query?.pagination ?? {};

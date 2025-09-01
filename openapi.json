@@ -1591,7 +1591,7 @@
         ]
       }
     },
-    "/club-management/my-club": {
+    "/my-club": {
       "get": {
         "operationId": "ClubManagementController_getMyClubInfo",
         "parameters": [],
@@ -1616,10 +1616,8 @@
         "tags": [
           "Gestão de Clube (Diretor)"
         ]
-      }
-    },
-    "/club-management": {
-      "patch": {
+      },
+      "post": {
         "operationId": "ClubManagementController_updateClub",
         "parameters": [],
         "requestBody": {
@@ -1648,7 +1646,7 @@
         ]
       }
     },
-    "/club-management/my-club/enrollments": {
+    "/my-club/enrollments": {
       "get": {
         "operationId": "ClubManagementController_listEnrollments",
         "parameters": [],
@@ -1678,7 +1676,7 @@
         ]
       }
     },
-    "/club-management/{clubId}/enrollments/pending": {
+    "/my-club/enrollments/pending": {
       "get": {
         "operationId": "ClubManagementController_listPending",
         "parameters": [
@@ -1717,7 +1715,37 @@
         ]
       }
     },
-    "/club-management/enrollments/{enrollmentId}/approve": {
+    "/my-club/members": {
+      "get": {
+        "operationId": "ClubManagementController_listMembersOfMyClub",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Lista de membros ativos.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ClubMemberDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Lista todos os membros ativos do meu clube",
+        "tags": [
+          "Gestão de Clube (Diretor)"
+        ]
+      }
+    },
+    "/enrollments/{enrollmentId}/approve": {
       "post": {
         "operationId": "ClubManagementController_approve",
         "parameters": [
@@ -1746,7 +1774,7 @@
         ]
       }
     },
-    "/club-management/enrollments/{enrollmentId}/reject": {
+    "/enrollments/{enrollmentId}/reject": {
       "post": {
         "operationId": "ClubManagementController_reject",
         "parameters": [
@@ -1785,37 +1813,7 @@
         ]
       }
     },
-    "/club-management/my-club/members": {
-      "get": {
-        "operationId": "ClubManagementController_listMembersOfMyClub",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "Lista de membros ativos.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ClubMemberDto"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWT-auth": []
-          }
-        ],
-        "summary": "Lista todos os membros ativos do meu clube",
-        "tags": [
-          "Gestão de Clube (Diretor)"
-        ]
-      }
-    },
-    "/club-management/membership/{membershipId}/revoke": {
+    "/membership/{membershipId}/revoke": {
       "post": {
         "operationId": "ClubManagementController_removeMember",
         "parameters": [
@@ -3958,20 +3956,6 @@
           "rejectionReason"
         ]
       },
-      "RejectEnrollmentDto": {
-        "type": "object",
-        "properties": {
-          "reason": {
-            "type": "string",
-            "description": "Motivo detalhado para a rejeição da matrícula. Mínimo de 10 caracteres.",
-            "example": "Infelizmente, todas as vagas para esta faixa etária já foram preenchidas.",
-            "minLength": 10
-          }
-        },
-        "required": [
-          "reason"
-        ]
-      },
       "ClubMemberDto": {
         "type": "object",
         "properties": {
@@ -4041,6 +4025,20 @@
           "memberSince",
           "birthDate",
           "sex"
+        ]
+      },
+      "RejectEnrollmentDto": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "description": "Motivo detalhado para a rejeição da matrícula. Mínimo de 10 caracteres.",
+            "example": "Infelizmente, todas as vagas para esta faixa etária já foram preenchidas.",
+            "minLength": 10
+          }
+        },
+        "required": [
+          "reason"
         ]
       },
       "CreateClubRequestDto": {

@@ -19,6 +19,7 @@ import AdminModule from '@/shared/modules/admin.module';
 import TrainingModule from '@/shared/modules/training.module';
 import ClubRequestModule from '@/shared/modules/club-request.module';
 import TournamentModule from '@/shared/modules/tournament.module';
+import { MetricsController } from '@/infraestructure/controllers/metrics/metrics.controller';
 
 const env = process.env.NODE_ENV ? `.env.${process.env.NODE_ENV}` : '.env.development';
 
@@ -44,7 +45,7 @@ const env = process.env.NODE_ENV ? `.env.${process.env.NODE_ENV}` : '.env.develo
     ClubRequestModule,
     TournamentModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, MetricsController],
   providers: [AppService],
 })
 export class AppModule {}

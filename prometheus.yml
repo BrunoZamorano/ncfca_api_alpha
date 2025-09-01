@@ -1,0 +1,11 @@
+global:
+  scrape_interval: 15s # A cada 15 segundos, o Prometheus coletará as métricas.
+
+scrape_configs:
+  - job_name: 'ncfca-api'
+    # O Prometheus fará uma requisição HTTP para este endereço para coletar as métricas.
+    # 'host.docker.internal' é um DNS especial que, de dentro de um container Docker,
+    # resolve para o IP da máquina host. Isso permite que o Prometheus (rodando em Docker)
+    # acesse a API NestJS (rodando no host).
+    static_configs:
+      - targets: ['host.docker.internal:3000']
