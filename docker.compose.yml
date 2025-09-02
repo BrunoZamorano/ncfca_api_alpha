@@ -1,63 +1,35 @@
 services:
+
   db_dev:
     image: postgres
     restart: unless-stopped
     ports:
-      - '${DB_PORT}:5432'
+      - "${DB_PORT}:5432"
     environment:
       POSTGRES_DATABASE: ${DB_DATABASE}
       POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
     volumes:
-      - ncfca-db-dev-data:/var/lib/postgresql/data
+      - ncfca-db-dev-data:/var/lib/mysql
     networks:
       - ncfca-net
-
+  
   rabbitmq:
     image: rabbitmq:4.1.2-management
-    hostname: rabbitmq
-    restart: unless-stopped
     environment:
-      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
-      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
     ports:
-      - '5672:5672'
-      - '15672:15672'
+      - "5672:5672"
+      - "15672:15672"
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq/
-    networks:
-      - ncfca-net
-
-  prometheus:
-    image: prom/prometheus:v2.47.2
-    container_name: prometheus
-    restart: unless-stopped
-    ports:
-      - '9090:9090'
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-    networks:
-      - ncfca-net
-
-  grafana:
-    image: grafana/grafana:10.1.5
-    container_name: grafana
-    restart: unless-stopped
-    ports:
-      - '3001:3000' # Mapeado para 3001 para evitar conflito com a API
-    volumes:
-      - grafana_data:/var/lib/grafana
-    networks:
-      - ncfca-net
 
 volumes:
   ncfca-db-dev-data:
+  ncfca-db-test-data:    
   rabbitmq_data:
-  grafana_data:
-
 networks:
   ncfca-net:
     driver: bridge
